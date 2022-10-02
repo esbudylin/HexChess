@@ -12,7 +12,6 @@ config_version=4
 
 config/name="HexChess"
 run/main_scene="res://map.tscn"
-config/icon="res://icon.png"
 
 [gui]
 
