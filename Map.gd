@@ -10,33 +10,41 @@ func _ready():
 	$TileMap.visible = true
 	
 	$Camera2D.camera_following($TileMap)
+	$TileMap.history.append ($TileMap.npc_coord())
 	
 func _unhandled_input(event):
 				
 	if event is InputEventMouseButton:
 		if event.pressed:
 			var clicked_cell = $TileMap.world_to_map(get_global_mouse_position())
-			
-			if clicked_cell in $TileMap.npc_coord():
-				for piece in $TileMap.npc_list:
-					if piece.tile_position == clicked_cell and piece.color == turn:
-						piece.range_of_movement = $TileMap.find_possible_moves(piece, clicked_cell)
-						$TileMap.set_cells ($TileMap.coord_tiles, 1)
 						
-						range_of_movement = piece.range_of_movement
-						active_piece = piece
-						$TileMap.set_cells (piece.range_of_movement, 10)
-						break
-						
-			elif clicked_cell in range_of_movement:
+			if clicked_cell in range_of_movement:
+				range_of_movement = []
+				
+				if clicked_cell in $TileMap.npc_coord():
+					for piece in $TileMap.npc_list:
+						if piece.tile_position == clicked_cell and piece !=active_piece:
+							$TileMap.npc_die(piece)
+							
 				active_piece.position = $TileMap.map_to_world(clicked_cell)
 				active_piece.tile_position = clicked_cell
 				$TileMap.set_cells ($TileMap.coord_tiles, 1)
+				$TileMap.history.append ($TileMap.npc_coord())
 				
 				if turn == 'white':
 					turn = 'black'
 				else:
 					turn = 'white'
+					
+			elif clicked_cell in $TileMap.npc_coord():
+				var piece = $TileMap.npc_coord()[clicked_cell]
+				if piece.tile_position == clicked_cell and piece.color == turn:
+					piece.range_of_movement = $TileMap.find_possible_moves(piece, clicked_cell)
+					$TileMap.set_cells ($TileMap.coord_tiles, 1)
+					
+					range_of_movement = piece.range_of_movement
+					active_piece = piece
+					$TileMap.set_cells (piece.range_of_movement, 10)
 						
 func _on_TryAgain_pressed():
 # warning-ignore:return_value_discarded

@@ -74,3 +74,18 @@ func draw_diagonal_line (position, length, mod, updown):
 		coord_tiles.append(current_tile)
 
 	return coord_tiles
+
+func bishop_diagonal (position, x, y, z = 1, iterations = 5):
+	var coord_tiles_local = []
+	var current_tile = position
+	
+	for iteration in iterations:
+		if int(current_tile[0])%2!=0:
+			current_tile[1] +=x
+		else:
+			current_tile[1] +=y
+			
+		current_tile[0] += z
+		coord_tiles_local+= [current_tile]
+	
+	return coord_tiles_local
