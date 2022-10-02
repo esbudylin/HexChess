@@ -1,0 +1,1 @@
+extends "res://NPC.gd"
