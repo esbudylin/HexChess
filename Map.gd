@@ -13,6 +13,9 @@ func _ready():
 	
 	$Camera2D.camera_following($TileMap)
 	
+	for button in $HUD/PromotionBox.get_children ():
+		button.connect ('pressed', self, '_on_Promotion_pressed', [button.text])
+	
 func _unhandled_input(event):
 				
 	if event is InputEventMouseButton:
@@ -65,3 +68,8 @@ func _unhandled_input(event):
 func _on_TryAgain_pressed():
 # warning-ignore:return_value_discarded
 	get_tree().reload_current_scene()
+
+func _on_Promotion_pressed(piece):
+	$TileMap.promote_pawn(active_piece, piece)
+	clickable = true
+	$HUD/PromotionBox.visible = false

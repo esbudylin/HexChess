@@ -28,17 +28,17 @@ func set_cells (set_tiles, tile_number):
 	for tile in set_tiles:
 		set_cell(tile[0], tile[1], tile_number)
 
-func add_piece (piece, tile_position):
+func add_piece (piece, tile_position, color = null):
 	add_child(piece)
 		
 	piece.tile_position = tile_position
 	piece.position = map_to_world(piece.tile_position)
 	piece.visible = true
 	
-	if tile_position[1] < 0:
+	if color == 'black' or color == null and tile_position[1] < 0:
 		piece.get_child(0).visible = true
 		piece.color = 'black'
-	else:
+	elif color == 'white' or color == null and tile_position[1] > 0:
 		piece.get_child(1).visible = true
 		piece.color = 'white'
 		
@@ -248,6 +248,11 @@ func king_movement (king, position):
 					coord_tiles_local.erase (tile)
 								
 	return coord_tiles_local
+
+func promote_pawn (pawn, promotion):
+	npc_die(pawn)
+	var new_piece = get_node("Piece/"+promotion).duplicate()
+	add_piece(new_piece, pawn.tile_position, pawn.color)
 	
 func delete_duplicates (array):
 	var unique_elements = []
