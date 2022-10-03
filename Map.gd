@@ -4,6 +4,8 @@ var range_of_movement = Array()
 var active_piece
 var turn = "white"
 
+var clickable = true
+
 func _ready():
 	
 	$TileMap.place_pieces ()
@@ -14,9 +16,9 @@ func _ready():
 func _unhandled_input(event):
 				
 	if event is InputEventMouseButton:
-		if event.pressed:
+		if event.pressed and clickable:
 			var clicked_cell = $TileMap.world_to_map(get_global_mouse_position())
-						
+
 			if clicked_cell in range_of_movement:
 				range_of_movement = []
 				
@@ -38,6 +40,10 @@ func _unhandled_input(event):
 						$TileMap.jumped_over_tiles[tile] = active_piece
 
 				$TileMap.passable_tiles = {}
+				
+				if 'Pawn' in active_piece.name and clicked_cell in $TileMap.promotion_tiles:
+					$HUD/PromotionBox.visible = true
+					clickable = false
 				
 				if turn == 'white':
 					turn = 'black'

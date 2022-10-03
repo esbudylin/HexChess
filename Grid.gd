@@ -5,8 +5,20 @@ var npc_list = Array()
 var jumped_over_tiles = Dictionary ()
 var passable_tiles = Dictionary ()
 
-onready var initial_pawn_tiles_white = delete_duplicates($Mapping.draw_diagonal_line(Vector2(0, 1), 4, 1, 1)+$Mapping.draw_diagonal_line(Vector2(0, 1), 4, -1, 1))
-onready var initial_pawn_tiles_black = delete_duplicates($Mapping.draw_diagonal_line(Vector2(0, -1), 4, 1, -1)+$Mapping.draw_diagonal_line(Vector2(0, -1), 4, -1, -1))
+onready var initial_pawn_tiles_white = delete_duplicates(\
+$Mapping.draw_diagonal_line(Vector2(0, 1), 4, 1, 1)\
++$Mapping.draw_diagonal_line(Vector2(0, 1), 4, -1, 1))
+
+onready var initial_pawn_tiles_black = delete_duplicates(\
+$Mapping.draw_diagonal_line(Vector2(0, -1), 4, 1, -1)\
++$Mapping.draw_diagonal_line(Vector2(0, -1), 4, -1, -1))
+
+onready var promotion_tiles = delete_duplicates(\
+$Mapping.draw_diagonal_line(Vector2(0, -5), 5, 1, 1)\
++$Mapping.draw_diagonal_line(Vector2(0, -5), 5, -1, 1)\
++$Mapping.draw_diagonal_line(Vector2(0, 5), 5, 1, -1)\
++$Mapping.draw_diagonal_line(Vector2(0, 5), 5, -1, -1)) 
+
 onready var coord_tiles = $Mapping.regular_hexagon(0, 0)
 
 func _ready():
@@ -78,9 +90,9 @@ func place_pieces ():
 	place_bishops()
 	place_knights()
 	place_rooks()
-	place_pawns ()
 	place_queens()
 	place_kings()
+	place_pawns ()
 	
 func npc_coord (npc_list_local = npc_list):
 	var npc_coord_list = Dictionary ()

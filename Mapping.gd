@@ -9,10 +9,20 @@ func find_closest_tiles (position):
 	var closest_tiles = Array()
 	
 	if int(position[0])%2!=0:
-		closest_tiles += [Vector2(position[0]+1, position[1]+1), Vector2(position[0]+1, position[1]), Vector2(position[0], position[1]-1), Vector2(position[0]-1, position[1]), Vector2(position[0]-1, position[1]+1), Vector2(position[0], position[1]+1)]
+		closest_tiles += [Vector2(position[0]+1, position[1]+1), \
+		Vector2(position[0]+1, position[1]), \
+		Vector2(position[0], position[1]-1), \
+		Vector2(position[0]-1, position[1]), \
+		Vector2(position[0]-1, position[1]+1), \
+		Vector2(position[0], position[1]+1)]
 
 	else:
-		closest_tiles += [Vector2(position[0]+1, position[1]-1), Vector2(position[0]+1, position[1]), Vector2(position[0], position[1]-1), Vector2(position[0]-1, position[1]), Vector2(position[0]-1, position[1]-1), Vector2(position[0], position[1]+1)]	
+		closest_tiles += [Vector2(position[0]+1, position[1]-1), \
+		Vector2(position[0]+1, position[1]), \
+		Vector2(position[0], position[1]-1), \
+		Vector2(position[0]-1, position[1]), \
+		Vector2(position[0]-1, position[1]-1), \
+		Vector2(position[0], position[1]+1)]	
 	
 	return closest_tiles
 
