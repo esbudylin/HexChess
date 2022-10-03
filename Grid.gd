@@ -1,7 +1,9 @@
 extends TileMap
 
 var npc_list = Array()
-var history = Array ()
+
+var jumped_over_tiles = Dictionary ()
+var passable_tiles = Dictionary ()
 
 onready var initial_pawn_tiles_white = delete_duplicates($Mapping.draw_diagonal_line(Vector2(0, 1), 4, 1, 1)+$Mapping.draw_diagonal_line(Vector2(0, 1), 4, -1, 1))
 onready var initial_pawn_tiles_black = delete_duplicates($Mapping.draw_diagonal_line(Vector2(0, -1), 4, 1, -1)+$Mapping.draw_diagonal_line(Vector2(0, -1), 4, -1, -1))
@@ -173,10 +175,13 @@ func pawn_movement (pawn, position):
 		coord_tiles_local += check_array($Mapping.draw_vertical_line(position, 2))
 	
 	elif pawn.color == 'white' and position in initial_pawn_tiles_white:
-		coord_tiles_local += check_array($Mapping.draw_vertical_line(position, 3, -1))	
+		coord_tiles_local += check_array($Mapping.draw_vertical_line(position, 3, -1))
 	
 	else:
 		coord_tiles_local += check_array($Mapping.draw_vertical_line(position, 2, -1))
+	
+	if delete_duplicates(coord_tiles_local).size () == 3:
+		passable_tiles[delete_duplicates(coord_tiles_local)[1]] = pawn
 	
 	return delete_duplicates(coord_tiles_local) + pawn_attack(pawn, position)
 
@@ -201,11 +206,14 @@ func pawn_attack (pawn, position, check = true):
 		for tile in attack_tiles:
 			if tile in npc_coord():
 				var piece = npc_coord()[tile]
-				if not 'King' in piece.name and piece.color != pawn.color:
+				if piece.color != pawn.color:
 					coord_tiles_local.append (tile)
+					
+			elif tile in jumped_over_tiles and jumped_over_tiles[tile].color != pawn.color:
+				coord_tiles_local.append (tile)
 	else:
 		coord_tiles_local = attack_tiles
-	
+
 	return coord_tiles_local
 	
 func king_movement (king, position):
@@ -237,6 +245,11 @@ func delete_duplicates (array):
 		
 	return unique_elements
 
+func clean_up_jumped_over (color):
+	for tile in jumped_over_tiles.keys():
+		if jumped_over_tiles[tile].color == color:
+			jumped_over_tiles.erase(tile)
+
 func find_possible_moves (NPC, position):
 	var range_of_movement = Array ()
 	
@@ -253,7 +266,7 @@ func find_possible_moves (NPC, position):
 		range_of_movement = rook_movement(NPC, position)
 		
 	elif "Queen" in NPC.name:
-		range_of_movement = bishop_movement(NPC, position)+rook_movement(NPC, position)
+		range_of_movement = delete_duplicates(bishop_movement(NPC, position)+rook_movement(NPC, position))
 	
 	elif "King" in NPC.name:
 		range_of_movement = king_movement(NPC, position)
