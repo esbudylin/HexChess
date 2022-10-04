@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=2]
+[gd_scene load_steps=25 format=2]
 
 [ext_resource path="res://chess_tileset.tres" type="TileSet" id=1]
 [ext_resource path="res://Grid.gd" type="Script" id=2]
@@ -9,6 +9,7 @@
 [ext_resource path="res://tiles/white_king.png" type="Texture" id=7]
 [ext_resource path="res://NPC.gd" type="Script" id=8]
 [ext_resource path="res://tiles/black_queen.png" type="Texture" id=9]
+[ext_resource path="res://Russo_One.ttf" type="DynamicFontData" id=10]
 [ext_resource path="res://tiles/white_pawn.png" type="Texture" id=11]
 [ext_resource path="res://tiles/white_knight.png" type="Texture" id=12]
 [ext_resource path="res://Map.gd" type="Script" id=13]
@@ -19,6 +20,13 @@
 [ext_resource path="res://tiles/black_knight.png" type="Texture" id=22]
 [ext_resource path="res://tiles/black_rook.png" type="Texture" id=23]
 [ext_resource path="res://tiles/black_bishop.png" type="Texture" id=26]
+
+[sub_resource type="DynamicFont" id=6]
+size = 24
+font_data = ExtResource( 10 )
+
+[sub_resource type="DynamicFont" id=7]
+font_data = ExtResource( 10 )
 
 [sub_resource type="InputEventAction" id=4]
 action = "ui_accept"
@@ -164,15 +172,17 @@ centered = false
 
 [node name="GameOver" type="Label" parent="HUD"]
 visible = false
+modulate = Color( 0, 0, 0, 1 )
+self_modulate = Color( 0, 0, 0, 1 )
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -128.0
-margin_top = -13.0
-margin_right = 7.0
-margin_bottom = 1.0
-rect_scale = Vector2( 2, 2 )
+margin_left = -126.5
+margin_top = -14.0
+margin_right = 126.5
+margin_bottom = 14.0
+custom_fonts/font = SubResource( 6 )
 text = "White is checkmated"
 
 [node name="TryAgain" type="Button" parent="HUD"]
@@ -181,10 +191,11 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -36.0
-margin_top = 38.0
-margin_right = 36.0
-margin_bottom = 58.0
+margin_left = -47.0
+margin_top = 43.5
+margin_right = 47.0
+margin_bottom = 68.5
+custom_fonts/font = SubResource( 7 )
 shortcut = SubResource( 5 )
 text = "try again?"
 
