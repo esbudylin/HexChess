@@ -43,56 +43,24 @@ func add_piece (piece, tile_position, color = null):
 		piece.color = 'white'
 		
 	npc_list.append(piece)
-	
-func place_bishops ():
-	var tiles = [-5, -4, -3, 3, 4, 5]
-	
+
+func place_type_of_pieces (type, tiles):
 	for tile in tiles:
-		var piece_copy = $Piece/Bishop.duplicate()
-		add_piece (piece_copy, Vector2 (0, tile))
-		
-func place_knights ():
-	var tiles = [Vector2 (-2, -4), Vector2 (2, -4), Vector2 (-2, 4), Vector2 (2, 4)]
-	
-	for tile in tiles:
-		var piece_copy = $Piece/Knight.duplicate()
-		add_piece (piece_copy, tile)
-		
-func place_rooks ():
-	var tiles = [Vector2 (-3, -4), Vector2 (3, -4), Vector2 (-3, 3), Vector2 (3, 3)]
-	
-	for tile in tiles:
-		var piece_copy = $Piece/Rook.duplicate()
+		var piece_copy = type.duplicate()
 		add_piece (piece_copy, tile)
 
-func place_pawns ():
-	var tiles = initial_pawn_tiles_black + initial_pawn_tiles_white
-	
-	for tile in tiles:
-		var piece_copy = $Piece/Pawn.duplicate()
-		add_piece (piece_copy, tile)
-
-func place_kings ():
-	var tiles = [Vector2 (1, 4), Vector2 (1, -5)]
-	
-	for tile in tiles:
-		var piece_copy = $Piece/King.duplicate()
-		add_piece (piece_copy, tile)
-
-func place_queens ():
-	var tiles = [Vector2 (-1, -5), Vector2 (-1, 4)]
-	
-	for tile in tiles:
-		var piece_copy = $Piece/Queen.duplicate()
-		add_piece (piece_copy, tile)
-		
 func place_pieces ():
-	place_bishops()
-	place_knights()
-	place_rooks()
-	place_queens()
-	place_kings()
-	place_pawns ()
+	var pieces_places = {
+	$Piece/King: $Mapping.king_tiles,\
+	$Piece/Queen: $Mapping.queen_tiles,\
+	$Piece/Rook: $Mapping.rook_tiles,\
+	$Piece/Bishop: $Mapping.bishop_tiles,\
+	$Piece/Knight: $Mapping.knight_tiles,\
+	$Piece/Pawn: initial_pawn_tiles_black + initial_pawn_tiles_white
+	}
+	
+	for type in pieces_places:
+		place_type_of_pieces (type, pieces_places[type])
 	
 func npc_coord (npc_list_local = npc_list):
 	var npc_coord_list = Dictionary ()

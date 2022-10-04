@@ -1,5 +1,17 @@
 extends Node
 
+
+var knight_tiles = [Vector2 (-2, -4), Vector2 (2, -4), Vector2 (-2, 4), Vector2 (2, 4)]
+var rook_tiles = [Vector2 (-3, -4), Vector2 (3, -4), Vector2 (-3, 3), Vector2 (3, 3)]
+var king_tiles = [Vector2 (1, 4), Vector2 (1, -5)]
+var queen_tiles = [Vector2 (-1, -5), Vector2 (-1, 4)]
+var bishop_tiles = Array()
+
+func _ready():
+	var tiles = [-5, -4, -3, 3, 4, 5]
+	for tile in tiles:
+		bishop_tiles.append(Vector2 (0, tile))
+
 func regular_hexagon(center_position_x, center_position_y):
 	var coord_tiles = find_tiles_in_range (Vector2(center_position_x, center_position_y), 5)
 				
