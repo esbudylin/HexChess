@@ -96,22 +96,29 @@ func npc_die (NPC):
 	NPC.visible = false
 	npc_list.erase(NPC)
 	
-func rook_movement (NPC, position, iterations = 12):
+func rook_movement (NPC, position, iterations = 12, check = true):
 	var coord_tiles_local = []
 	var diagonals = [[1, 1], [1, -1], [-1, 1], [-1, -1]]
 	
 	for diagonal in diagonals:
-		coord_tiles_local+=check_array(\
-		$Mapping.draw_diagonal_line (position, iterations-1, diagonal[0], diagonal[1]), true, NPC)
-	
-	coord_tiles_local+=check_array($Mapping.draw_vertical_line (position, iterations), true, NPC)
-	coord_tiles_local+=check_array($Mapping.draw_vertical_line (position, iterations, -1), true, NPC)
-
+		if check:
+			coord_tiles_local+=check_array(\
+			$Mapping.draw_diagonal_line (position, iterations-1, diagonal[0], diagonal[1]), true, NPC)
+		else:
+			coord_tiles_local+=$Mapping.draw_diagonal_line (position, iterations-1, diagonal[0], diagonal[1])
+			
+	if check:
+		coord_tiles_local+=check_array($Mapping.draw_vertical_line (position, iterations), true, NPC)
+		coord_tiles_local+=check_array($Mapping.draw_vertical_line (position, iterations, -1), true, NPC)
+	else:
+		coord_tiles_local+=$Mapping.draw_vertical_line (position, iterations)
+		coord_tiles_local+=$Mapping.draw_vertical_line (position, iterations, -1)
+		
 	coord_tiles_local = delete_duplicates(coord_tiles_local)
 	
 	return coord_tiles_local
 
-func bishop_movement (NPC, position, iterations = 5):
+func bishop_movement (NPC, position, iterations = 5, check = true):
 	var coord_tiles_local = []
 	var horizontal1 = []
 	var horizontal2 = []
@@ -119,15 +126,21 @@ func bishop_movement (NPC, position, iterations = 5):
 	for iteration in iterations+1:
 		horizontal1 += [Vector2(position[0]+iteration*2, position[1])]
 		horizontal2 += [Vector2(position[0]-iteration*2, position[1])]
-		
-	coord_tiles_local += check_array(horizontal1, true, NPC)+check_array(horizontal2, true, NPC)
 	
+	if check:
+		coord_tiles_local += check_array(horizontal1, true, NPC)+check_array(horizontal2, true, NPC)
+	else:
+		coord_tiles_local += horizontal1 + horizontal2
+		
 	var diagonals = [[2, 1, 1], [-1, -2, 1], [2, 1, -1], [-1, -2, -1]]
 	
 	for diagonal in diagonals:
-		coord_tiles_local+=check_array(\
-		$Mapping.bishop_diagonal(position, diagonal[0], diagonal[1], diagonal[2], iterations), false, NPC)
-	
+		if check:
+			coord_tiles_local+=check_array(\
+			$Mapping.bishop_diagonal(position, diagonal[0], diagonal[1], diagonal[2], iterations), false, NPC)
+		else:
+			coord_tiles_local+=$Mapping.bishop_diagonal(position, diagonal[0], diagonal[1], diagonal[2], iterations)
+			
 	coord_tiles_local = delete_duplicates(coord_tiles_local)
 	return coord_tiles_local
 
@@ -215,8 +228,8 @@ func king_movement (king, position):
 					coord_tiles_local.erase (tile)
 					
 			elif piece.color != king.color and 'King' in piece.name:
-				if tile in delete_duplicates(rook_movement(piece, piece.tile_position, 2)\
-				 + bishop_movement(piece, piece.tile_position, 1)):
+				if tile in delete_duplicates(rook_movement(piece, piece.tile_position, 2, false)\
+				 + bishop_movement(piece, piece.tile_position, 1, false)):
 					coord_tiles_local.erase (tile)
 					
 			elif piece.color != king.color and 'Pawn' in piece.name:
