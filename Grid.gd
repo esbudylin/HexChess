@@ -21,9 +21,37 @@ $Mapping.draw_diagonal_line(Vector2(0, -5), 5, 1, 1)\
 
 onready var coord_tiles = $Mapping.regular_hexagon(0, 0)
 
-func _ready():
-	set_cells (coord_tiles, 1)
+onready var verticals_1 = $Mapping.draw_diagonal_line(Vector2(-5, -3), 5, 1, -1)
+onready var verticals_2 = $Mapping.draw_diagonal_line(Vector2(5, -3), 4, -1, -1)
 
+func _ready():
+	draw_map ()
+	
+func draw_map ():
+	set_verticals (verticals_1)
+	set_verticals(verticals_2)
+
+func set_verticals (tile_array):
+	var tilenumbers = [0, 1, 2]
+	var index = 0
+	for vertical in tile_array:
+		var tile = vertical
+		var iteration = 0
+		var index_while = index
+		
+		while tile in coord_tiles:
+			set_cell(tile[0], tile[1], tilenumbers[index_while])
+			tile = Vector2(vertical[0], vertical[1]+iteration)
+			iteration+=1
+			
+			index_while+=1
+			if index_while == tilenumbers.size():
+				index_while = 0
+				
+		index+=1
+		if index == tilenumbers.size():
+			index = 0
+			
 func set_cells (set_tiles, tile_number):
 	for tile in set_tiles:
 		set_cell(tile[0], tile[1], tile_number)

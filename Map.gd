@@ -21,7 +21,7 @@ func _unhandled_input(event):
 	if event is InputEventMouseButton:
 		if event.pressed and clickable:
 			var clicked_cell = $TileMap.world_to_map(get_global_mouse_position())
-
+			print (clicked_cell)
 			if clicked_cell in range_of_movement:
 				range_of_movement = []
 				
@@ -36,7 +36,7 @@ func _unhandled_input(event):
 							
 				active_piece.position = $TileMap.map_to_world(clicked_cell)
 				active_piece.tile_position = clicked_cell
-				$TileMap.set_cells ($TileMap.coord_tiles, 1)
+				$TileMap.draw_map ()
 				
 				for tile in $TileMap.passable_tiles:
 					if $TileMap.passable_tiles[tile] == active_piece:
@@ -64,10 +64,10 @@ func _unhandled_input(event):
 			elif clicked_cell in $TileMap.npc_coord():
 				var piece = $TileMap.npc_coord()[clicked_cell]
 				if piece.tile_position == clicked_cell and piece.color == turn:
-					$TileMap.set_cells ($TileMap.coord_tiles, 1)
+					$TileMap.draw_map ()
 					range_of_movement = $TileMap.check_check(piece, $TileMap.find_possible_moves(piece, clicked_cell))
 					active_piece = piece
-					$TileMap.set_cells (range_of_movement, 10)
+					$TileMap.set_cells (range_of_movement, 4)
 						
 func _on_TryAgain_pressed():
 # warning-ignore:return_value_discarded
