@@ -58,7 +58,7 @@ func _unhandled_input(event):
 			elif clicked_cell in $TileMap.npc_coord():
 				var piece = $TileMap.npc_coord()[clicked_cell]
 				if piece.tile_position == clicked_cell and piece.color == turn:
-					piece.range_of_movement = $TileMap.find_possible_moves(piece, clicked_cell)
+					piece.range_of_movement = $TileMap.check_check(piece, $TileMap.find_possible_moves(piece, clicked_cell))
 					$TileMap.set_cells ($TileMap.coord_tiles, 1)
 					
 					range_of_movement = piece.range_of_movement
