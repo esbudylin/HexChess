@@ -55,15 +55,19 @@ func _unhandled_input(event):
 				
 				$TileMap.clean_up_jumped_over (turn)
 				
+				if $TileMap.check_checkmate_stalemate(turn):
+					clickable = false
+					$HUD/GameOver.text = turn + ' is ' + $TileMap.check_checkmate_stalemate(turn)
+					$HUD/GameOver.visible = true
+					$HUD/TryAgain.visible = true
+				
 			elif clicked_cell in $TileMap.npc_coord():
 				var piece = $TileMap.npc_coord()[clicked_cell]
 				if piece.tile_position == clicked_cell and piece.color == turn:
-					piece.range_of_movement = $TileMap.check_check(piece, $TileMap.find_possible_moves(piece, clicked_cell))
 					$TileMap.set_cells ($TileMap.coord_tiles, 1)
-					
-					range_of_movement = piece.range_of_movement
+					range_of_movement = $TileMap.check_check(piece, $TileMap.find_possible_moves(piece, clicked_cell))
 					active_piece = piece
-					$TileMap.set_cells (piece.range_of_movement, 10)
+					$TileMap.set_cells (range_of_movement, 10)
 						
 func _on_TryAgain_pressed():
 # warning-ignore:return_value_discarded

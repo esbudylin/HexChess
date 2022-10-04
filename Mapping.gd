@@ -1,6 +1,5 @@
 extends Node
 
-
 var knight_tiles = [Vector2 (-2, -4), Vector2 (2, -4), Vector2 (-2, 4), Vector2 (2, 4)]
 var rook_tiles = [Vector2 (-3, -4), Vector2 (3, -4), Vector2 (-3, 3), Vector2 (3, 3)]
 var king_tiles = [Vector2 (1, 4), Vector2 (1, -5)]

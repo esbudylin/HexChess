@@ -201,7 +201,9 @@ func pawn_attack (pawn, position, check = true):
 	return coord_tiles_local
 	
 func king_movement (king, position):
-	var initial = delete_duplicates(rook_movement(king, position, 2) + bishop_movement(king, position, 1))
+	var initial = delete_duplicates(\
+	rook_movement(king, position, 2) + bishop_movement(king, position, 1))
+	
 	var coord_tiles_local = initial.duplicate()
 	npc_list.erase(king)
 	
@@ -242,14 +244,43 @@ func clean_up_jumped_over (color):
 		if jumped_over_tiles[tile].color == color:
 			jumped_over_tiles.erase(tile)
 
-func check_check (NPC, range_of_movement):
-	var initial_position = NPC.tile_position
-	var king
+func check_checkmate_stalemate (turn):
+	var iteration = 0
 	
-	for piece in npc_list:
-		if 'King' in piece.name and piece.color == NPC.color:
-			king = piece
+	for tile_piece in npc_coord():
+		if npc_coord()[tile_piece].color == turn\
+		and check_check(npc_coord()[tile_piece]) != []:
 			break
+		iteration +=1
+	
+	if iteration == npc_coord().size():
+		if if_king_checked (turn):
+			return 'checkmated'
+		else:
+			return 'stalemated'
+	else:
+		return false
+
+func find_king (color):
+	for piece in npc_list:
+		if 'King' in piece.name and piece.color == color:
+			return piece
+
+func if_king_checked (turn):
+	var king = find_king (turn)
+	var checked = false
+	for piece in npc_list:
+		if king.tile_position in find_possible_moves (piece, piece.tile_position):
+			checked = true
+			break
+	return checked
+
+func check_check (NPC, range_of_movement = null):
+	var initial_position = NPC.tile_position
+	var king = find_king (NPC.color)
+	
+	if range_of_movement == null:
+		range_of_movement = find_possible_moves(NPC, NPC.tile_position)
 			
 	for tile in range_of_movement.duplicate():
 		NPC.tile_position = tile
