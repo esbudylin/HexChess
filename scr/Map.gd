@@ -5,9 +5,9 @@ var active_piece
 var turn = "white"
 
 var clickable = true
+onready var player_colors = get_node('/root/PlayerColors').colors
 
 func _ready():
-	
 	$TileMap.place_pieces ()
 	$TileMap.visible = true
 	
@@ -17,11 +17,11 @@ func _ready():
 		button.connect ('pressed', self, '_on_Promotion_pressed', [button.text])
 	
 func _unhandled_input(event):
-				
+	
 	if event is InputEventMouseButton:
-		if event.pressed and clickable:
+		if event.pressed and clickable and turn in player_colors:
 			var clicked_cell = $TileMap.world_to_map(get_global_mouse_position())
-			print (clicked_cell)
+
 			if clicked_cell in range_of_movement:
 				range_of_movement = []
 				

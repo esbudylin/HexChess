@@ -13,6 +13,10 @@ config_version=4
 config/name="HexChess"
 run/main_scene="res://map.tscn"
 
+[autoload]
+
+PlayerColors="*res://scr/PlayerColors.gd"
+
 [gui]
 
 common/drop_mouse_on_gui_input_disabled=true
@@ -24,6 +28,10 @@ open_map={
 "events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":77,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
  ]
 }
+
+[mono]
+
+project/assembly_name="HexChess"
 
 [physics]
 

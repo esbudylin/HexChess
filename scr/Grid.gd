@@ -82,9 +82,9 @@ func place_pieces ():
 	$Piece/King: $Mapping.king_tiles,\
 	$Piece/Queen: $Mapping.queen_tiles,\
 	$Piece/Rook: $Mapping.rook_tiles,\
-	$Piece/Bishop: $Mapping.bishop_tiles,\
-	$Piece/Knight: $Mapping.knight_tiles,\
-	$Piece/Pawn: initial_pawn_tiles_black + initial_pawn_tiles_white
+#	$Piece/Bishop: $Mapping.bishop_tiles,\
+#	$Piece/Knight: $Mapping.knight_tiles,\
+#	$Piece/Pawn: initial_pawn_tiles_black + initial_pawn_tiles_white
 	}
 	
 	for type in pieces_places:
@@ -324,10 +324,16 @@ func check_check (NPC, range_of_movement = null):
 		range_of_movement = find_possible_moves(NPC, NPC.tile_position)
 			
 	for tile in range_of_movement.duplicate():
+		var npc_list_copy = npc_list.duplicate()
+		
+		if tile in npc_coord():
+			npc_list_copy.erase(npc_coord()[tile])
+			
 		NPC.tile_position = tile
-		for tile_piece in npc_coord():
-			if npc_coord()[tile_piece].color != NPC.color\
-			and king.tile_position in find_possible_moves(npc_coord()[tile_piece], tile_piece):
+		
+		for tile_piece in npc_coord(npc_list_copy):
+			if npc_coord(npc_list_copy)[tile_piece].color != NPC.color\
+			and king.tile_position in find_possible_moves(npc_coord(npc_list_copy)[tile_piece], tile_piece):
 				range_of_movement.erase (tile)
 	
 	NPC.tile_position = initial_position
