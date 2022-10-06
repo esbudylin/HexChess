@@ -82,9 +82,9 @@ func place_pieces ():
 	$Piece/King: $Mapping.king_tiles,\
 	$Piece/Queen: $Mapping.queen_tiles,\
 	$Piece/Rook: $Mapping.rook_tiles,\
-#	$Piece/Bishop: $Mapping.bishop_tiles,\
-#	$Piece/Knight: $Mapping.knight_tiles,\
-#	$Piece/Pawn: initial_pawn_tiles_black + initial_pawn_tiles_white
+	$Piece/Bishop: $Mapping.bishop_tiles,\
+	$Piece/Knight: $Mapping.knight_tiles,\
+	$Piece/Pawn: initial_pawn_tiles_black + initial_pawn_tiles_white
 	}
 	
 	for type in pieces_places:
@@ -290,7 +290,7 @@ func check_checkmate_stalemate (turn):
 	
 	for tile_piece in npc_coord():
 		if npc_coord()[tile_piece].color == turn\
-		and check_check(npc_coord()[tile_piece]) != []:
+		and check_possible_moves(npc_coord()[tile_piece]) != []:
 			break
 		iteration +=1
 	
@@ -316,7 +316,7 @@ func if_king_checked (turn):
 			break
 	return checked
 
-func check_check (NPC, range_of_movement = null):
+func check_possible_moves (NPC, range_of_movement = null):
 	var initial_position = NPC.tile_position
 	var king = find_king (NPC.color)
 	

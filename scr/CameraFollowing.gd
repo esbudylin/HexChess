@@ -9,7 +9,7 @@ func camera_following(target_node):
 		y_sum += tile[1]
 	
 	var x_average = x_sum/target_node.coord_tiles.size()
-	var y_average = y_sum/target_node.coord_tiles.size() - 1
+	var y_average = y_sum/target_node.coord_tiles.size()
 	
 	var world_coord = target_node.map_to_world(Vector2(x_average, y_average+1))
 	world_coord[0] += 50

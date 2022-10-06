@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=2]
+[gd_scene load_steps=29 format=2]
 
 [ext_resource path="res://chess_tileset.tres" type="TileSet" id=1]
 [ext_resource path="res://scr/Grid.gd" type="Script" id=2]
@@ -17,6 +17,7 @@
 [ext_resource path="res://tiles/white_bishop.png" type="Texture" id=15]
 [ext_resource path="res://tiles/white_queen.png" type="Texture" id=16]
 [ext_resource path="res://scr/Piece.gd" type="Script" id=17]
+[ext_resource path="res://menu_buttons.tres" type="StyleBox" id=18]
 [ext_resource path="res://tiles/black_knight.png" type="Texture" id=22]
 [ext_resource path="res://tiles/black_rook.png" type="Texture" id=23]
 [ext_resource path="res://tiles/black_bishop.png" type="Texture" id=26]
@@ -28,12 +29,20 @@ font_data = ExtResource( 10 )
 [sub_resource type="DynamicFont" id=7]
 font_data = ExtResource( 10 )
 
-[sub_resource type="InputEventAction" id=4]
+[sub_resource type="InputEventAction" id=8]
 action = "ui_accept"
-pressed = true
 
 [sub_resource type="ShortCut" id=5]
-shortcut = SubResource( 4 )
+shortcut = SubResource( 8 )
+
+[sub_resource type="InputEventAction" id=9]
+action = "ui_cancel"
+
+[sub_resource type="ShortCut" id=10]
+shortcut = SubResource( 9 )
+
+[sub_resource type="DynamicFont" id=11]
+font_data = ExtResource( 10 )
 
 [node name="World" type="Node2D"]
 position = Vector2( 1, 0 )
@@ -185,38 +194,41 @@ margin_bottom = 14.0
 custom_fonts/font = SubResource( 6 )
 text = "White is checkmated"
 
-[node name="TryAgain" type="Button" parent="HUD"]
+[node name="EndGame" type="VBoxContainer" parent="HUD"]
 visible = false
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -47.0
-margin_top = 43.5
-margin_right = 47.0
-margin_bottom = 68.5
+margin_left = -85.0
+margin_top = 40.0
+margin_right = 85.0
+margin_bottom = 122.0
+
+[node name="TryAgain" type="Button" parent="HUD/EndGame"]
+margin_right = 170.0
+margin_bottom = 19.0
 custom_fonts/font = SubResource( 7 )
+custom_styles/hover = ExtResource( 18 )
+custom_styles/pressed = ExtResource( 18 )
+custom_styles/focus = ExtResource( 18 )
+custom_styles/disabled = ExtResource( 18 )
+custom_styles/normal = ExtResource( 18 )
 shortcut = SubResource( 5 )
 text = "try again?"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="HUD"]
-visible = false
-anchor_left = 0.5
-anchor_right = 0.5
-margin_left = -48.5
-margin_right = 48.5
-margin_bottom = 40.0
-
-[node name="Undo" type="Button" parent="HUD/HBoxContainer"]
-margin_right = 46.0
-margin_bottom = 40.0
-text = "Undo"
-
-[node name="Redo" type="Button" parent="HUD/HBoxContainer"]
-margin_left = 50.0
-margin_right = 94.0
-margin_bottom = 40.0
-text = "Redo"
+[node name="Exit" type="Button" parent="HUD/EndGame"]
+margin_top = 23.0
+margin_right = 170.0
+margin_bottom = 42.0
+custom_fonts/font = SubResource( 7 )
+custom_styles/hover = ExtResource( 18 )
+custom_styles/pressed = ExtResource( 18 )
+custom_styles/focus = ExtResource( 18 )
+custom_styles/disabled = ExtResource( 18 )
+custom_styles/normal = ExtResource( 18 )
+shortcut = SubResource( 10 )
+text = "return to menu"
 
 [node name="PromotionBox" type="HBoxContainer" parent="HUD"]
 visible = false
@@ -224,38 +236,67 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -109.0
+margin_left = -206.0
 margin_top = -20.0
-margin_right = 109.0
+margin_right = 206.0
 margin_bottom = 20.0
 
 [node name="Bishop" type="Button" parent="HUD/PromotionBox"]
-margin_right = 56.0
+margin_right = 100.0
 margin_bottom = 40.0
+rect_min_size = Vector2( 100, 0 )
+custom_fonts/font = SubResource( 11 )
+custom_styles/hover = ExtResource( 18 )
+custom_styles/pressed = ExtResource( 18 )
+custom_styles/focus = ExtResource( 18 )
+custom_styles/disabled = ExtResource( 18 )
+custom_styles/normal = ExtResource( 18 )
 text = "Bishop"
 
 [node name="Knight" type="Button" parent="HUD/PromotionBox"]
-margin_left = 60.0
-margin_right = 112.0
+margin_left = 104.0
+margin_right = 204.0
 margin_bottom = 40.0
+rect_min_size = Vector2( 100, 0 )
+custom_fonts/font = SubResource( 11 )
+custom_styles/hover = ExtResource( 18 )
+custom_styles/pressed = ExtResource( 18 )
+custom_styles/focus = ExtResource( 18 )
+custom_styles/disabled = ExtResource( 18 )
+custom_styles/normal = ExtResource( 18 )
 text = "Knight"
 
 [node name="Rook" type="Button" parent="HUD/PromotionBox"]
-margin_left = 116.0
-margin_right = 159.0
+margin_left = 208.0
+margin_right = 308.0
 margin_bottom = 40.0
+rect_min_size = Vector2( 100, 0 )
+custom_fonts/font = SubResource( 11 )
+custom_styles/hover = ExtResource( 18 )
+custom_styles/pressed = ExtResource( 18 )
+custom_styles/focus = ExtResource( 18 )
+custom_styles/disabled = ExtResource( 18 )
+custom_styles/normal = ExtResource( 18 )
 text = "Rook"
 
 [node name="Queen" type="Button" parent="HUD/PromotionBox"]
-margin_left = 163.0
-margin_right = 218.0
+margin_left = 312.0
+margin_right = 412.0
 margin_bottom = 40.0
+rect_min_size = Vector2( 100, 0 )
+custom_fonts/font = SubResource( 11 )
+custom_styles/hover = ExtResource( 18 )
+custom_styles/pressed = ExtResource( 18 )
+custom_styles/focus = ExtResource( 18 )
+custom_styles/disabled = ExtResource( 18 )
+custom_styles/normal = ExtResource( 18 )
 text = "Queen"
 
 [node name="Camera2D" type="Camera2D" parent="."]
 visible = false
 current = true
-zoom = Vector2( 2, 2 )
+zoom = Vector2( 2.2, 2.2 )
 script = ExtResource( 6 )
 
-[connection signal="pressed" from="HUD/TryAgain" to="." method="_on_TryAgain_pressed"]
+[connection signal="pressed" from="HUD/EndGame/TryAgain" to="." method="_on_TryAgain_pressed"]
+[connection signal="pressed" from="HUD/EndGame/Exit" to="." method="_on_Exit_pressed"]

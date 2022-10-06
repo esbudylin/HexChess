@@ -11,11 +11,20 @@ config_version=4
 [application]
 
 config/name="HexChess"
-run/main_scene="res://map.tscn"
+run/main_scene="res://menu.tscn"
 
 [autoload]
 
-PlayerColors="*res://scr/PlayerColors.gd"
+PlayersData="*res://scr/PlayersData.gd"
+
+[display]
+
+window/stretch/mode="2d"
+window/stretch/aspect="keep"
+
+[global]
+
+main=false
 
 [gui]
 
