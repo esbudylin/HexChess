@@ -2,5 +2,7 @@ extends Node
 
 var colors = ['white', 'black']
 
-var master_color = 'white'
-var puppet_color = 'black'
+var master_color 
+var puppet_color 
+
+var peer

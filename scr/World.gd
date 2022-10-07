@@ -9,6 +9,9 @@ var player_colors
 var active_piece
 var active_piece_path
 
+var timer = Timer.new()
+onready var peer = get_node('/root/PlayersData').peer
+
 func _ready():
 	$TileMap.place_pieces ()
 	$TileMap.visible = true
@@ -20,17 +23,10 @@ func _ready():
 	
 	get_player_colors()
 	multiplayer_configs ()
-
-func multiplayer_configs ():
-	rpc_config("player_turn", 1)
-	rpc_config("change_turns", 1)
-	rpc_config("set_possible_moves", 1)
-	rpc_config("draw_possible_moves", 1)
-	rpc_config("sync_npc_die", 1)
+	initial_anouncment ()
 	
-	rset_config("active_piece_path", 1)
-	rset_config("clickable", 1)
-	rset_config("range_of_movement", 1)
+	get_tree().connect("network_peer_disconnected", self, "_player_disconnected") #не работает
+	get_tree().connect("server_disconnected", self, "end_game") #работает
 	
 func _unhandled_input(event):
 	
@@ -45,15 +41,16 @@ func _unhandled_input(event):
 				
 				if 'Pawn' in active_piece.name and clicked_cell in $TileMap.promotion_tiles:
 					$HUD/PromotionBox.visible = true
+					$HUD/PromotionBox/Queen.grab_focus()
 					clickable = false
 					
 				change_turns()
 				
 				if $TileMap.check_checkmate_stalemate(turn):
-					clickable = false
-					$HUD/GameOver.text = turn + ' is ' + $TileMap.check_checkmate_stalemate(turn)
-					$HUD/GameOver.visible = true
-					$HUD/EndGame.visible = true
+					game_over(turn + ' is ' + $TileMap.check_checkmate_stalemate(turn))
+					
+					if get_tree().has_network_peer ():
+						rpc ('game_over', turn + ' is ' + $TileMap.check_checkmate_stalemate(turn))
 				
 				sync_multiplayer(clicked_cell)
 				
@@ -65,7 +62,6 @@ func _unhandled_input(event):
 					set_possible_moves (str(active_piece.get_path()), clicked_cell)
 						
 func _on_TryAgain_pressed():
-# warning-ignore:return_value_discarded
 	get_tree().reload_current_scene()
 
 func _on_Promotion_pressed(piece):
@@ -73,11 +69,39 @@ func _on_Promotion_pressed(piece):
 	clickable = true
 	$HUD/PromotionBox.visible = false
 	
-	sync_promotion(piece)
+	if get_tree().has_network_peer ():
+		rpc("sync_promotion", piece)
 	
 func _on_Exit_pressed():
-# warning-ignore:return_value_discarded
-	get_tree().change_scene("res://menu.tscn")
+	end_game()
+
+func initial_anouncment():
+	if get_tree().has_network_peer ():
+		$HUD/Announcement.visible = true
+		$HUD/Announcement/Announcement.text = 'you will play as ' + player_colors[0]
+		clickable = false
+		timer.connect("timeout",self,"initial_anouncment_hide")
+		timer.wait_time = 2
+		timer.one_shot = true
+		add_child(timer)
+		timer.start()
+
+func initial_anouncment_hide ():
+	$HUD/Announcement.visible = false
+	clickable = true
+		
+func multiplayer_configs ():
+	rpc_config("player_turn", 1)
+	rpc_config("change_turns", 1)
+	rpc_config("set_possible_moves", 1)
+	rpc_config("draw_possible_moves", 1)
+	rpc_config("sync_npc_die", 1)
+	rpc_config("sync_promotion", 1)
+	rpc_config("game_over", 1)
+	
+	rset_config("active_piece_path", 1)
+	rset_config("clickable", 1)
+	rset_config("range_of_movement", 1)
 
 func get_player_colors():
 	if get_tree().has_network_peer ():
@@ -128,7 +152,9 @@ func change_turns ():
 			$TileMap.clean_up_jumped_over (turn)
 	else:
 		$TileMap.clean_up_jumped_over (turn)
-
+	
+	range_of_movement = []
+	
 func sync_multiplayer (clicked_cell):
 	if get_tree().has_network_peer ():
 		rset ("active_piece_path", str(active_piece.get_path()))
@@ -138,9 +164,11 @@ func sync_multiplayer (clicked_cell):
 		rpc("change_turns")
 		rset ("clickable", clickable)
 
-func sync_promotion (piece):	
-	if get_tree().has_network_peer ():
-		rset ("clickable", clickable)
+func sync_promotion (piece):
+	active_piece_path = str(active_piece.get_path())
+	active_piece = get_node(active_piece_path)
+	$TileMap.promote_pawn(active_piece, piece)
+	clickable = true
 
 func sync_npc_die (piece_path):
 	var piece
@@ -172,3 +200,19 @@ func set_possible_moves (piece_path, clicked_cell, double_call = false):
 func draw_possible_moves ():
 	$TileMap.set_cells (range_of_movement, 4)
 
+func game_over (message):
+	clickable = false
+	$HUD/Announcement/Announcement.text = message
+	$HUD/Announcement.visible = true
+	$HUD/EndGame.visible = true
+
+func end_game ():
+	if get_tree().has_network_peer ():
+		peer.close_connection()
+		get_tree().set_network_peer(null)
+		
+	get_tree().change_scene("res://menu.tscn")
+
+func _player_disconnected (_id):
+	get_tree().set_network_peer(null)
+	get_tree().change_scene("res://menu.tscn")

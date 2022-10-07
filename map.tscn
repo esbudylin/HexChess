@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=2]
+[gd_scene load_steps=30 format=2]
 
 [ext_resource path="res://chess_tileset.tres" type="TileSet" id=1]
 [ext_resource path="res://scr/Grid.gd" type="Script" id=2]
@@ -12,7 +12,7 @@
 [ext_resource path="res://fonts/Russo_One.ttf" type="DynamicFontData" id=10]
 [ext_resource path="res://tiles/white_pawn.png" type="Texture" id=11]
 [ext_resource path="res://tiles/white_knight.png" type="Texture" id=12]
-[ext_resource path="res://scr/Map.gd" type="Script" id=13]
+[ext_resource path="res://scr/World.gd" type="Script" id=13]
 [ext_resource path="res://tiles/white_rook.png" type="Texture" id=14]
 [ext_resource path="res://tiles/white_bishop.png" type="Texture" id=15]
 [ext_resource path="res://tiles/white_queen.png" type="Texture" id=16]
@@ -21,6 +21,8 @@
 [ext_resource path="res://tiles/black_knight.png" type="Texture" id=22]
 [ext_resource path="res://tiles/black_rook.png" type="Texture" id=23]
 [ext_resource path="res://tiles/black_bishop.png" type="Texture" id=26]
+
+[sub_resource type="Theme" id=12]
 
 [sub_resource type="DynamicFont" id=6]
 size = 24
@@ -179,10 +181,21 @@ centered = false
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
-[node name="GameOver" type="Label" parent="HUD"]
+[node name="Announcement" type="Panel" parent="HUD"]
 visible = false
-modulate = Color( 0, 0, 0, 1 )
-self_modulate = Color( 0, 0, 0, 1 )
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -144.0
+margin_top = -35.0
+margin_right = 145.0
+margin_bottom = 27.0
+size_flags_horizontal = 2
+size_flags_vertical = 2
+custom_styles/panel = ExtResource( 18 )
+
+[node name="Announcement" type="Label" parent="HUD/Announcement"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -191,6 +204,7 @@ margin_left = -126.5
 margin_top = -14.0
 margin_right = 126.5
 margin_bottom = 14.0
+theme = SubResource( 12 )
 custom_fonts/font = SubResource( 6 )
 text = "White is checkmated"
 
@@ -229,6 +243,42 @@ custom_styles/disabled = ExtResource( 18 )
 custom_styles/normal = ExtResource( 18 )
 shortcut = SubResource( 10 )
 text = "return to menu"
+
+[node name="DrawOffer" type="VBoxContainer" parent="HUD"]
+visible = false
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -85.0
+margin_top = 40.0
+margin_right = 85.0
+margin_bottom = 122.0
+
+[node name="Accept" type="Button" parent="HUD/DrawOffer"]
+margin_right = 170.0
+margin_bottom = 19.0
+custom_fonts/font = SubResource( 7 )
+custom_styles/hover = ExtResource( 18 )
+custom_styles/pressed = ExtResource( 18 )
+custom_styles/focus = ExtResource( 18 )
+custom_styles/disabled = ExtResource( 18 )
+custom_styles/normal = ExtResource( 18 )
+shortcut = SubResource( 5 )
+text = "accept"
+
+[node name="Decline" type="Button" parent="HUD/DrawOffer"]
+margin_top = 23.0
+margin_right = 170.0
+margin_bottom = 42.0
+custom_fonts/font = SubResource( 7 )
+custom_styles/hover = ExtResource( 18 )
+custom_styles/pressed = ExtResource( 18 )
+custom_styles/focus = ExtResource( 18 )
+custom_styles/disabled = ExtResource( 18 )
+custom_styles/normal = ExtResource( 18 )
+shortcut = SubResource( 10 )
+text = "decline"
 
 [node name="PromotionBox" type="HBoxContainer" parent="HUD"]
 visible = false
@@ -291,6 +341,39 @@ custom_styles/focus = ExtResource( 18 )
 custom_styles/disabled = ExtResource( 18 )
 custom_styles/normal = ExtResource( 18 )
 text = "Queen"
+
+[node name="MenuBox" type="HBoxContainer" parent="HUD"]
+visible = false
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -152.0
+margin_right = 152.0
+margin_bottom = 40.0
+
+[node name="Draw" type="Button" parent="HUD/MenuBox"]
+margin_right = 150.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 150, 0 )
+custom_fonts/font = SubResource( 11 )
+custom_styles/hover = ExtResource( 18 )
+custom_styles/pressed = ExtResource( 18 )
+custom_styles/focus = ExtResource( 18 )
+custom_styles/disabled = ExtResource( 18 )
+custom_styles/normal = ExtResource( 18 )
+text = "Offer a Draw"
+
+[node name="Surrender" type="Button" parent="HUD/MenuBox"]
+margin_left = 154.0
+margin_right = 304.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 150, 0 )
+custom_fonts/font = SubResource( 11 )
+custom_styles/hover = ExtResource( 18 )
+custom_styles/pressed = ExtResource( 18 )
+custom_styles/focus = ExtResource( 18 )
+custom_styles/disabled = ExtResource( 18 )
+custom_styles/normal = ExtResource( 18 )
+text = "Surrender"
 
 [node name="Camera2D" type="Camera2D" parent="."]
 visible = false
