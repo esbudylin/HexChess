@@ -7,6 +7,7 @@ const DEFAULT_PORT = 8910
 var rng = RandomNumberGenerator.new()
 
 onready var address = $Address
+onready var port_forward_label = get_node('/root/Control/PortForward')
 
 onready var status_ok = get_node('/root/Control/TextPanel/StatusOk')
 onready var status_fail = get_node('/root/Control/TextPanel/StatusFail')
@@ -69,6 +70,7 @@ func _on_Join_pressed():
 
 func _on_Host_pressed():
 	text_panel.visible = true
+	port_forward_label.visible = true
 	
 	peer = NetworkedMultiplayerENet.new()
 	get_node('/root/PlayersData').peer = peer

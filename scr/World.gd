@@ -9,11 +9,9 @@ var player_colors
 var active_piece
 var active_piece_path
 
-var timer = Timer.new()
 onready var peer = get_node('/root/PlayersData').peer
 
 func _ready():
-	$TileMap.place_pieces ()
 	$TileMap.visible = true
 	
 	$Camera2D.camera_following($TileMap)
@@ -23,10 +21,26 @@ func _ready():
 	
 	get_player_colors()
 	multiplayer_configs ()
-	initial_anouncment ()
+	announcement ('you will play as ' + player_colors[0])
 	
-	get_tree().connect("network_peer_disconnected", self, "_player_disconnected") #не работает
-	get_tree().connect("server_disconnected", self, "end_game") #работает
+	get_tree().connect("network_peer_disconnected", self, "_player_disconnected")
+	get_tree().connect("server_disconnected", self, "end_game")
+	
+	if get_tree().has_network_peer ():
+		$HUD/MenuBox.visible = true
+		
+		if get_tree().is_network_server():
+			$TileMap.place_pieces ()
+			var name_list = Array()
+			
+			for piece in $TileMap.npc_list:
+				name_list.append (piece.name)
+				piece.name = name_list[-1]
+
+			rpc ('sync_pieces', name_list)
+		
+	else:
+		$TileMap.place_pieces ()
 	
 func _unhandled_input(event):
 	
@@ -43,6 +57,7 @@ func _unhandled_input(event):
 					$HUD/PromotionBox.visible = true
 					$HUD/PromotionBox/Queen.grab_focus()
 					clickable = false
+					$HUD/MenuBox.visible = false
 					
 				change_turns()
 				
@@ -62,33 +77,60 @@ func _unhandled_input(event):
 					set_possible_moves (str(active_piece.get_path()), clicked_cell)
 						
 func _on_TryAgain_pressed():
+	for _i in $TileMap.get_children():
+		print(_i)
 	get_tree().reload_current_scene()
-
+	
 func _on_Promotion_pressed(piece):
 	$TileMap.promote_pawn(active_piece, piece)
 	clickable = true
 	$HUD/PromotionBox.visible = false
 	
 	if get_tree().has_network_peer ():
+		$HUD/MenuBox.visible = true
 		rpc("sync_promotion", piece)
 	
 func _on_Exit_pressed():
 	end_game()
 
-func initial_anouncment():
+func _on_Surrender_pressed():
+	game_over(player_colors[0] + ' surrender')
+	rpc ('game_over', player_colors[0] + ' surrender')
+
+func _on_Draw_pressed():
+	clickable = false
+	$HUD/MenuBox.visible = false
+	rpc ('draw_offer')
+
+func _on_Accept_pressed():
+	$HUD/DrawOffer.visible = false
+	game_over('it is a draw')
+	rpc ('game_over', 'it is a draw')
+
+func _on_Decline_pressed():
+	$HUD/DrawOffer.visible = false
+	$HUD/MenuBox.visible = true
+	$HUD/Announcement.visible = false
+	clickable = true
+	rpc ('announcement', 'offer declined')
+
+func announcement(text):
 	if get_tree().has_network_peer ():
+		var timer = Timer.new()
 		$HUD/Announcement.visible = true
-		$HUD/Announcement/Announcement.text = 'you will play as ' + player_colors[0]
+		$HUD/Announcement/Announcement.text = text
 		clickable = false
-		timer.connect("timeout",self,"initial_anouncment_hide")
+		timer.connect("timeout",self,"anouncment_hide")
 		timer.wait_time = 2
 		timer.one_shot = true
 		add_child(timer)
 		timer.start()
 
-func initial_anouncment_hide ():
+func anouncment_hide ():
 	$HUD/Announcement.visible = false
 	clickable = true
+	if $HUD/Announcement/Announcement.text == 'offer declined':
+			$HUD/MenuBox.visible = true
 		
 func multiplayer_configs ():
 	rpc_config("player_turn", 1)
@@ -97,7 +139,11 @@ func multiplayer_configs ():
 	rpc_config("draw_possible_moves", 1)
 	rpc_config("sync_npc_die", 1)
 	rpc_config("sync_promotion", 1)
+	rpc_config("sync_pieces", 1)
 	rpc_config("game_over", 1)
+	rpc_config("renew_colors", 1)
+	rpc_config("draw_offer", 1)
+	rpc_config("announcement", 1)
 	
 	rset_config("active_piece_path", 1)
 	rset_config("clickable", 1)
@@ -175,7 +221,14 @@ func sync_npc_die (piece_path):
 	piece = get_node(piece_path)
 	
 	$TileMap.npc_die (piece)
-	
+
+func sync_pieces (name_list):
+	$TileMap.place_pieces ()
+	var iteration = 0
+	for piece in $TileMap.npc_list:
+		piece.name = name_list[iteration]
+		iteration+=1
+
 func set_possible_moves (piece_path, clicked_cell, double_call = false):
 	var piece
 	piece = get_node(piece_path)
@@ -199,9 +252,10 @@ func set_possible_moves (piece_path, clicked_cell, double_call = false):
 
 func draw_possible_moves ():
 	$TileMap.set_cells (range_of_movement, 4)
-
+	
 func game_over (message):
 	clickable = false
+	$HUD/MenuBox.visible = false
 	$HUD/Announcement/Announcement.text = message
 	$HUD/Announcement.visible = true
 	$HUD/EndGame.visible = true
@@ -216,3 +270,10 @@ func end_game ():
 func _player_disconnected (_id):
 	get_tree().set_network_peer(null)
 	get_tree().change_scene("res://menu.tscn")
+
+func draw_offer():
+	clickable = false
+	$HUD/MenuBox.visible = false
+	$HUD/DrawOffer.visible = true
+	$HUD/Announcement.visible = true
+	$HUD/Announcement/Announcement.text = 'a draw offered'

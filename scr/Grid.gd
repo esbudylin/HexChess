@@ -364,4 +364,3 @@ func find_possible_moves (NPC, position):
 	
 	range_of_movement.erase (position)
 	return range_of_movement
-

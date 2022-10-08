@@ -187,10 +187,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -144.0
-margin_top = -35.0
-margin_right = 145.0
-margin_bottom = 27.0
+margin_left = -144.5
+margin_top = -31.0
+margin_right = 144.5
+margin_bottom = 31.0
 size_flags_horizontal = 2
 size_flags_vertical = 2
 custom_styles/panel = ExtResource( 18 )
@@ -383,3 +383,7 @@ script = ExtResource( 6 )
 
 [connection signal="pressed" from="HUD/EndGame/TryAgain" to="." method="_on_TryAgain_pressed"]
 [connection signal="pressed" from="HUD/EndGame/Exit" to="." method="_on_Exit_pressed"]
+[connection signal="pressed" from="HUD/DrawOffer/Accept" to="." method="_on_Accept_pressed"]
+[connection signal="pressed" from="HUD/DrawOffer/Decline" to="." method="_on_Decline_pressed"]
+[connection signal="pressed" from="HUD/MenuBox/Draw" to="." method="_on_Draw_pressed"]
+[connection signal="pressed" from="HUD/MenuBox/Surrender" to="." method="_on_Surrender_pressed"]
