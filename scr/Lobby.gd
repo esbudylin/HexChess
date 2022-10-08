@@ -104,5 +104,5 @@ func _on_OkButton_pressed():
 
 	_set_status("Connecting...", true)
 
-func _on_Address_text_entered():
+func _on_Address_text_entered(new_text):
 	_on_OkButton_pressed ()
