@@ -4,10 +4,13 @@ var range_of_movement = Array()
 var turn = "white"
 
 var clickable = true
+
 var player_colors
 
 var active_piece
 var active_piece_path
+
+var new_game_request
 
 onready var peer = get_node('/root/PlayersData').peer
 
@@ -77,8 +80,22 @@ func _unhandled_input(event):
 					set_possible_moves (str(active_piece.get_path()), clicked_cell)
 						
 func _on_TryAgain_pressed():
-	for _i in $TileMap.get_children():
-		print(_i)
+	
+	if new_game_request == true:
+		if get_tree().is_network_server():
+			rpc ('reload_scene')
+			reload_scene()
+			
+		else:
+			reload_scene()
+			rpc ('reload_scene')
+			
+	else:
+		$HUD/Announcement/Announcement.text = 'request sent'
+		rset ('new_game_request', true)
+
+func reload_scene():
+	swap_colors ()
 	get_tree().reload_current_scene()
 	
 func _on_Promotion_pressed(piece):
@@ -144,10 +161,12 @@ func multiplayer_configs ():
 	rpc_config("renew_colors", 1)
 	rpc_config("draw_offer", 1)
 	rpc_config("announcement", 1)
+	rpc_config("reload_scene", 1)
 	
 	rset_config("active_piece_path", 1)
 	rset_config("clickable", 1)
 	rset_config("range_of_movement", 1)
+	rset_config("new_game_request", 1)
 
 func get_player_colors():
 	if get_tree().has_network_peer ():
@@ -158,6 +177,14 @@ func get_player_colors():
 			
 	else:
 		player_colors = get_node('/root/PlayersData').colors
+
+func swap_colors ():
+	if get_node('/root/PlayersData').master_color == 'white':
+		get_node('/root/PlayersData').master_color = 'black'
+		get_node('/root/PlayersData').puppet_color = 'white'
+	else:
+		get_node('/root/PlayersData').master_color = 'white'
+		get_node('/root/PlayersData').puppet_color = 'black'
 
 func player_turn (clicked_cell, sync_mult = false):
 	if sync_mult:
