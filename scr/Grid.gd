@@ -5,6 +5,8 @@ var npc_list = Array()
 var jumped_over_tiles = Dictionary ()
 var passable_tiles = Dictionary ()
 
+var tile_colors = Dictionary ()
+
 onready var initial_pawn_tiles_white = delete_duplicates(\
 $Mapping.draw_diagonal_line(Vector2(0, 1), 4, 1, 1)\
 +$Mapping.draw_diagonal_line(Vector2(0, 1), 4, -1, 1))
@@ -41,6 +43,8 @@ func set_verticals (tile_array):
 		
 		while tile in coord_tiles:
 			set_cell(tile[0], tile[1], tilenumbers[index_while])
+			tile_colors[tile] = tilenumbers[index_while]
+			
 			tile = Vector2(vertical[0], vertical[1]+iteration)
 			iteration+=1
 			
@@ -302,6 +306,48 @@ func check_checkmate_stalemate (turn):
 	else:
 		return false
 
+func if_able_to_checkmate (color):
+	var pieces_dict = {'Knight': 0, 'Bishop': 0}
+	var bishops = Array()
+	
+	for piece in npc_list:
+		if piece.color == color:
+			
+			if 'Pawn' in piece.name or 'Queen' in piece.name or 'Rook' in piece.name:
+				return true
+				
+			elif 'Knight' in piece.name:
+				pieces_dict['Knight'] += 1
+				
+			elif 'Bishop' in piece.name:
+				pieces_dict['Bishop'] += 1
+				bishops.append (piece)
+	
+	if pieces_dict['Knight'] >= 2:
+		return true
+	
+	elif pieces_dict['Knight'] <= 1 and pieces_dict['Bishop'] <=1:
+		return false
+		
+	elif pieces_dict['Knight'] == 0 and pieces_dict['Bishop'] == 2:
+		return false
+		
+	elif pieces_dict['Bishop'] >= 3 and pieces_dict['Knight'] == 0:
+		var colors = Array ()
+		
+		for bishop in bishops:
+			if not tile_colors[bishop.tile_position] in colors:
+				colors.append (tile_colors[bishop.tile_position])
+		
+		if colors.size() == 3:
+			return true
+		
+		else:
+			return false
+	
+	else:
+		return true
+	
 func find_king (color):
 	for piece in npc_list:
 		if 'King' in piece.name and piece.color == color:

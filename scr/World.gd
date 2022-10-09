@@ -66,6 +66,12 @@ func _unhandled_input(event):
 					if get_tree().has_network_peer ():
 						rpc ('game_over', turn + ' is ' + $TileMap.check_checkmate_stalemate(turn))
 				
+				if not $TileMap.if_able_to_checkmate('white') and not $TileMap.if_able_to_checkmate('black'):
+					game_over('it is a draw')
+					
+					if get_tree().has_network_peer ():
+						rpc ('it is  a draw')
+				
 				sync_multiplayer(clicked_cell)
 				
 			elif clicked_cell in $TileMap.npc_coord():
