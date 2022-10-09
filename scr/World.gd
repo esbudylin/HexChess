@@ -15,6 +15,7 @@ var new_game_request
 onready var peer = get_node('/root/PlayersData').peer
 
 func _ready():
+	$TileMap.draw_map ()
 	$TileMap.visible = true
 	
 	$Camera2D.camera_following($TileMap)
@@ -37,7 +38,8 @@ func _ready():
 		
 	else:
 		$TileMap.place_pieces ()
-
+		$HUD/BackPanel.visible = true
+		
 func _player_disconnected(_id):
 	announcement ("opponent disconnected")
 	
@@ -129,6 +131,9 @@ func _on_Decline_pressed():
 	$HUD/Announcement.visible = false
 	clickable = true
 	rpc ('announcement', 'offer declined')
+
+func _on_BackPanel_pressed():
+	get_tree().change_scene("res://menu.tscn")
 
 func announcement(text):
 	if get_tree().has_network_peer ():

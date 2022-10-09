@@ -1,7 +1,7 @@
-[gd_scene load_steps=30 format=2]
+[gd_scene load_steps=32 format=2]
 
 [ext_resource path="res://chess_tileset.tres" type="TileSet" id=1]
-[ext_resource path="res://scr/Grid.gd" type="Script" id=2]
+[ext_resource path="res://scr/Board.gd" type="Script" id=2]
 [ext_resource path="res://tiles/black_king.png" type="Texture" id=3]
 [ext_resource path="res://scr/Mapping.gd" type="Script" id=4]
 [ext_resource path="res://tiles/black_pawn.png" type="Texture" id=5]
@@ -18,6 +18,7 @@
 [ext_resource path="res://tiles/white_queen.png" type="Texture" id=16]
 [ext_resource path="res://scr/Piece.gd" type="Script" id=17]
 [ext_resource path="res://menu_buttons.tres" type="StyleBox" id=18]
+[ext_resource path="res://icons/back.png" type="Texture" id=19]
 [ext_resource path="res://tiles/black_knight.png" type="Texture" id=22]
 [ext_resource path="res://tiles/black_rook.png" type="Texture" id=23]
 [ext_resource path="res://tiles/black_bishop.png" type="Texture" id=26]
@@ -45,6 +46,8 @@ shortcut = SubResource( 9 )
 
 [sub_resource type="DynamicFont" id=11]
 font_data = ExtResource( 10 )
+
+[sub_resource type="Theme" id=13]
 
 [node name="World" type="Node2D"]
 position = Vector2( 1, 0 )
@@ -377,6 +380,33 @@ custom_styles/disabled = ExtResource( 18 )
 custom_styles/normal = ExtResource( 18 )
 text = "Surrender"
 
+[node name="BackPanel" type="Button" parent="HUD"]
+visible = false
+margin_right = 100.0
+margin_bottom = 40.0
+size_flags_horizontal = 2
+size_flags_vertical = 2
+theme = SubResource( 13 )
+custom_styles/hover = ExtResource( 18 )
+custom_styles/pressed = ExtResource( 18 )
+custom_styles/focus = ExtResource( 18 )
+custom_styles/disabled = ExtResource( 18 )
+custom_styles/normal = ExtResource( 18 )
+
+[node name="BackToMenu" type="TextureRect" parent="HUD/BackPanel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -20.0
+margin_top = -20.0
+margin_right = 120.0
+margin_bottom = 121.0
+grow_vertical = 2
+rect_scale = Vector2( 0.3, 0.3 )
+hint_tooltip = "Back to Menu"
+texture = ExtResource( 19 )
+
 [node name="Camera2D" type="Camera2D" parent="."]
 visible = false
 current = true
@@ -389,3 +419,4 @@ script = ExtResource( 6 )
 [connection signal="pressed" from="HUD/DrawOffer/Decline" to="." method="_on_Decline_pressed"]
 [connection signal="pressed" from="HUD/MenuBox/Draw" to="." method="_on_Draw_pressed"]
 [connection signal="pressed" from="HUD/MenuBox/Surrender" to="." method="_on_Surrender_pressed"]
+[connection signal="pressed" from="HUD/BackPanel" to="." method="_on_BackPanel_pressed"]

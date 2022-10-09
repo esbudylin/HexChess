@@ -1,7 +1,5 @@
 extends Control
 
-#signal game_finished()
-
 const DEFAULT_PORT = 8910
 
 var rng = RandomNumberGenerator.new()
@@ -28,7 +26,6 @@ func _ready():
 	rpc_config("set_colors", 1)
 	
 func _player_connected(_id):
-	# Someone connected, start the game!
 	generate_color_index()
 
 func generate_color_index():
@@ -56,7 +53,6 @@ func _connected_fail():
 	join_button.set_disabled(false)
 
 func _set_status(text, isok):
-	# Simple way to show status.
 	if isok:
 		status_ok.set_text(text)
 		status_fail.set_text("")
@@ -85,8 +81,6 @@ func _on_Host_pressed():
 	host_button.set_disabled(true)
 	join_button.set_disabled(true)
 	_set_status("Waiting for player...", true)
-
-	# Only show hosting instructions when relevant.
 
 func _on_OkButton_pressed():
 	text_panel.visible = true
