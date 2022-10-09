@@ -26,8 +26,8 @@ func _ready():
 	multiplayer_configs ()
 	announcement ('you will play as ' + player_colors[0])
 	
-	get_tree().connect("network_peer_disconnected", self, "_player_disconnected")
-	get_tree().connect("server_disconnected", self, "end_game")
+	get_tree().connect("network_peer_disconnected", self, "announcement", ["opponent disconnected"])
+	get_tree().connect("server_disconnected", self, "announcement", ["opponent disconnected"])
 	
 	if get_tree().has_network_peer ():
 		$HUD/MenuBox.visible = true
@@ -136,8 +136,13 @@ func announcement(text):
 func anouncment_hide ():
 	$HUD/Announcement.visible = false
 	clickable = true
+	
 	if $HUD/Announcement/Announcement.text == 'offer declined':
-			$HUD/MenuBox.visible = true
+		$HUD/MenuBox.visible = true
+	
+	if $HUD/Announcement/Announcement.text == 'opponent disconnected':
+		get_tree().set_network_peer(null)
+		get_tree().change_scene("res://menu.tscn")
 		
 func multiplayer_configs ():
 	rpc_config("player_turn", 1)
@@ -294,10 +299,6 @@ func end_game ():
 		peer.close_connection()
 		get_tree().set_network_peer(null)
 		
-	get_tree().change_scene("res://menu.tscn")
-
-func _player_disconnected (_id):
-	get_tree().set_network_peer(null)
 	get_tree().change_scene("res://menu.tscn")
 
 func draw_offer():
