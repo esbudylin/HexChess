@@ -26,7 +26,7 @@ func _ready():
 	multiplayer_configs ()
 	announcement ('you will play as ' + player_colors[0])
 	
-	get_tree().connect("network_peer_disconnected", self, "announcement", ["opponent disconnected"])
+	get_tree().connect("network_peer_disconnected", self, "_player_disconnected")
 	get_tree().connect("server_disconnected", self, "announcement", ["opponent disconnected"])
 	
 	if get_tree().has_network_peer ():
@@ -37,6 +37,9 @@ func _ready():
 		
 	else:
 		$TileMap.place_pieces ()
+
+func _player_disconnected(_id):
+	announcement ("opponent disconnected")
 	
 func _unhandled_input(event):
 	
