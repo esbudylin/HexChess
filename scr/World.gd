@@ -33,14 +33,7 @@ func _ready():
 		$HUD/MenuBox.visible = true
 		
 		if get_tree().is_network_server():
-			$TileMap.place_pieces ()
-			var name_list = Array()
-			
-			for piece in $TileMap.npc_list:
-				name_list.append (piece.name)
-				piece.name = name_list[-1]
-
-			rpc ('sync_pieces', name_list)
+			server_place_pieces()
 		
 	else:
 		$TileMap.place_pieces ()
@@ -80,23 +73,20 @@ func _unhandled_input(event):
 					set_possible_moves (str(active_piece.get_path()), clicked_cell)
 						
 func _on_TryAgain_pressed():
-	
-	if new_game_request == true:
-		if get_tree().is_network_server():
-			rpc ('reload_scene')
-			reload_scene()
-			
-		else:
-			reload_scene()
-			rpc ('reload_scene')
-			
-	else:
-		$HUD/Announcement/Announcement.text = 'request sent'
-		rset ('new_game_request', true)
+	if get_tree().has_network_peer ():
+		if new_game_request:
+			if get_tree().is_network_server():
+				rpc ('reload_client')
 
-func reload_scene():
-	swap_colors ()
-	get_tree().reload_current_scene()
+			elif not get_tree().is_network_server():
+				rpc ('reload_scene')
+				reload_scene()
+
+		else:
+			$HUD/Announcement/Announcement.text = 'request sent'
+			rset ('new_game_request', true)
+	else:
+		get_tree().reload_current_scene()
 	
 func _on_Promotion_pressed(piece):
 	$TileMap.promote_pawn(active_piece, piece)
@@ -162,6 +152,8 @@ func multiplayer_configs ():
 	rpc_config("draw_offer", 1)
 	rpc_config("announcement", 1)
 	rpc_config("reload_scene", 1)
+	rpc_config("server_place_pieces", 1)
+	rpc_config("reload_client", 1)
 	
 	rset_config("active_piece_path", 1)
 	rset_config("clickable", 1)
@@ -256,6 +248,16 @@ func sync_pieces (name_list):
 		piece.name = name_list[iteration]
 		iteration+=1
 
+func server_place_pieces ():
+	$TileMap.place_pieces ()
+	var name_list = Array()
+			
+	for piece in $TileMap.npc_list:
+		name_list.append (piece.name)
+		piece.name = name_list[-1]
+	
+	rpc ('sync_pieces', name_list)
+
 func set_possible_moves (piece_path, clicked_cell, double_call = false):
 	var piece
 	piece = get_node(piece_path)
@@ -304,3 +306,11 @@ func draw_offer():
 	$HUD/DrawOffer.visible = true
 	$HUD/Announcement.visible = true
 	$HUD/Announcement/Announcement.text = 'a draw offered'
+
+func reload_scene():
+	swap_colors ()
+	get_tree().reload_current_scene()
+
+func reload_client():
+	rpc ('reload_scene')
+	reload_scene()
