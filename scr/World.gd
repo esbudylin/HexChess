@@ -74,6 +74,8 @@ func _unhandled_input(event):
 					if get_tree().has_network_peer ():
 						rpc ('it is  a draw')
 				
+				fify_moves_rule()
+				
 				sync_multiplayer(clicked_cell)
 				
 			elif clicked_cell in $TileMap.npc_coord():
@@ -329,3 +331,13 @@ func reload_scene():
 func reload_client():
 	rpc ('reload_scene')
 	reload_scene()
+
+func fify_moves_rule(amount_of_moves = 50):
+	if 'Pawn' in active_piece.name:
+		$TileMap.fifty_moves_counter = 0
+	
+	if turn == 'white':
+		if $TileMap.fifty_moves_counter == amount_of_moves:
+			game_over('it is a draw')
+		else:
+			$TileMap.fifty_moves_counter += 1

@@ -7,6 +7,8 @@ var passable_tiles = Dictionary ()
 
 var tile_colors = Dictionary ()
 
+var fifty_moves_counter = 0
+
 onready var initial_pawn_tiles_white = delete_duplicates(\
 $Mapping.draw_diagonal_line(Vector2(0, 1), 4, 1, 1)\
 +$Mapping.draw_diagonal_line(Vector2(0, 1), 4, -1, 1))
@@ -124,6 +126,7 @@ func check_array (tile_array, additional_check = true, piece = null):
 func npc_die (NPC):
 	NPC.visible = false
 	npc_list.erase(NPC)
+	fifty_moves_counter = 0
 	
 func rook_movement (NPC, position, iterations = 12, check = true):
 	var coord_tiles_local = []
