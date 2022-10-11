@@ -50,12 +50,10 @@ font_data = ExtResource( 10 )
 [sub_resource type="Theme" id=13]
 
 [node name="World" type="Node2D"]
-position = Vector2( 1, 0 )
 z_index = 1
 script = ExtResource( 13 )
 
 [node name="TileMap" type="TileMap" parent="."]
-position = Vector2( 0, 1 )
 tile_set = ExtResource( 1 )
 cell_size = Vector2( 83, 98 )
 cell_half_offset = 1

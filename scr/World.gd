@@ -2,6 +2,7 @@ extends Node2D
 
 var range_of_movement = Array()
 var turn = "white"
+var turn_history = []
 
 var clickable = true
 
@@ -35,13 +36,16 @@ func _ready():
 		
 		if get_tree().is_network_server():
 			server_place_pieces()
+			append_turn_history()
 		
 	else:
 		$TileMap.place_pieces ()
 		$HUD/BackPanel.visible = true
+		append_turn_history()
 		
 func _player_disconnected(_id):
 	announcement ("opponent disconnected")
+	$HUD/EndGame/TryAgain.set_disabled(true)
 	
 func _unhandled_input(event):
 	
@@ -68,13 +72,12 @@ func _unhandled_input(event):
 					if get_tree().has_network_peer ():
 						rpc ('game_over', turn + ' is ' + $TileMap.check_checkmate_stalemate(turn))
 				
-				if not $TileMap.if_able_to_checkmate('white') and not $TileMap.if_able_to_checkmate('black'):
+				if not $TileMap.if_able_to_checkmate('white') and not $TileMap.if_able_to_checkmate('black')\
+				or fify_moves_rule() or threefold_rule ():
 					game_over('it is a draw')
 					
 					if get_tree().has_network_peer ():
-						rpc ('it is  a draw')
-				
-				fify_moves_rule()
+						rpc ('game_over', 'it is  a draw')
 				
 				sync_multiplayer(clicked_cell)
 				
@@ -175,6 +178,7 @@ func multiplayer_configs ():
 	rpc_config("reload_scene", 1)
 	rpc_config("server_place_pieces", 1)
 	rpc_config("reload_client", 1)
+	rpc_config ('threefold_rule', 1)
 	
 	rset_config("active_piece_path", 1)
 	rset_config("clickable", 1)
@@ -228,6 +232,7 @@ func player_turn (clicked_cell, sync_mult = false):
 	$TileMap.passable_tiles = {}
 
 func change_turns ():
+	
 	if turn == 'white':
 		turn = 'black'
 	else:
@@ -236,9 +241,11 @@ func change_turns ():
 	if get_tree().has_network_peer ():
 		if get_tree().is_network_server():
 			$TileMap.clean_up_jumped_over (turn)
+			append_turn_history()
 	else:
 		$TileMap.clean_up_jumped_over (turn)
-	
+		append_turn_history()
+
 	range_of_movement = []
 	
 func sync_multiplayer (clicked_cell):
@@ -335,9 +342,73 @@ func reload_client():
 func fify_moves_rule(amount_of_moves = 50):
 	if 'Pawn' in active_piece.name:
 		$TileMap.fifty_moves_counter = 0
+		return false
 	
 	if turn == 'white':
 		if $TileMap.fifty_moves_counter == amount_of_moves:
-			game_over('it is a draw')
+			return true
 		else:
 			$TileMap.fifty_moves_counter += 1
+			return false
+
+func threefold_rule(amount_of_moves = 3):
+	if not get_tree().has_network_peer () or get_tree().is_network_server ():
+		var repeated_positions = 0
+		var breaked
+		var breaked_pawns
+		
+		for turn_step in turn_history:
+			if turn == turn_step[0]:
+				for key in turn_step[1].keys():
+					
+					breaked = false
+					if turn_history[-1][1].has(key):
+						if turn_step[1][key] != turn_history[-1][1][key]:
+							breaked = true
+							break
+					else:
+						breaked = true
+						break
+				
+				if not breaked\
+				and turn_step[2].size() == turn_history[-1][2].size():
+					
+					breaked_pawns = false
+					
+					for pawn_attack_tile in turn_step[2]:
+						if not pawn_attack_tile in turn_history[-1][2]:
+							breaked_pawns = true
+							break
+					
+					if not breaked_pawns:
+						repeated_positions += 1
+					
+		print (repeated_positions)			
+		if repeated_positions >= amount_of_moves:
+			return true
+	
+	else:
+		rpc ('threefold_rule')
+				
+func regex_alphabet (string):
+	var regex = RegEx.new()
+	var previous_result
+	regex.compile("[^a-zA-Z]")
+	
+	while string != previous_result:
+		previous_result = string
+		string = regex.sub(previous_result, '')
+	
+	return string
+	
+func append_turn_history ():
+	var coord_dictionary = {}
+	var possible_pawn_attacks = []
+	
+	for piece in $TileMap.npc_list:
+		coord_dictionary[piece.tile_position]=[regex_alphabet(piece.name), piece.color]
+
+		if 'Pawn' in piece.name and piece.color == turn:
+			possible_pawn_attacks += $TileMap.check_possible_moves(piece, $TileMap.pawn_attack(piece, piece.tile_position))
+			
+	turn_history.append([turn, coord_dictionary, possible_pawn_attacks])
