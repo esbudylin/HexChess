@@ -1,8 +1,10 @@
 extends Node2D
 
 var range_of_movement = Array()
+
 var turn = "white"
 var turn_history = []
+var current_turn_index = 1
 
 var clickable = true
 
@@ -24,6 +26,9 @@ func _ready():
 	for button in $HUD/PromotionBox.get_children ():
 		button.connect ('pressed', self, '_on_Promotion_pressed', [button.text])
 	
+	$HUD/RewindBox/Undo.connect ('pressed', self, '_on_Rewind_pressed', [-1])
+	$HUD/RewindBox/Redo.connect ('pressed', self, '_on_Rewind_pressed', [1])
+	
 	get_player_colors()
 	multiplayer_configs ()
 	announcement ('you will play as ' + player_colors[0])
@@ -41,6 +46,7 @@ func _ready():
 	else:
 		$TileMap.place_pieces ()
 		$HUD/BackPanel.visible = true
+		$HUD/RewindBox.visible = true
 		append_turn_history()
 		
 func _player_disconnected(_id):
@@ -65,6 +71,8 @@ func _unhandled_input(event):
 					$HUD/MenuBox.visible = false
 					
 				change_turns()
+				adjust_turn_history()
+				set_Undo_button ()
 				
 				if $TileMap.check_checkmate_stalemate(turn):
 					game_over(turn + ' is ' + $TileMap.check_checkmate_stalemate(turn))
@@ -232,7 +240,6 @@ func player_turn (clicked_cell, sync_mult = false):
 	$TileMap.passable_tiles = {}
 
 func change_turns ():
-	
 	if turn == 'white':
 		turn = 'black'
 	else:
@@ -383,7 +390,6 @@ func threefold_rule(amount_of_moves = 3):
 					if not breaked_pawns:
 						repeated_positions += 1
 					
-		print (repeated_positions)			
 		if repeated_positions >= amount_of_moves:
 			return true
 	
@@ -411,4 +417,42 @@ func append_turn_history ():
 		if 'Pawn' in piece.name and piece.color == turn:
 			possible_pawn_attacks += $TileMap.check_possible_moves(piece, $TileMap.pawn_attack(piece, piece.tile_position))
 			
-	turn_history.append([turn, coord_dictionary, possible_pawn_attacks])
+	turn_history.append([turn, coord_dictionary, possible_pawn_attacks, $TileMap.fifty_moves_counter])
+
+func set_Undo_button():
+	if current_turn_index!=0:
+		$HUD/RewindBox/Undo.set_disabled(false)
+	else:
+		$HUD/RewindBox/Undo.set_disabled(true)
+
+func set_Redo_button():
+	if current_turn_index!=turn_history.size()-1:
+		$HUD/RewindBox/Redo.set_disabled(false)
+	else:
+		$HUD/RewindBox/Redo.set_disabled(true)
+
+func _on_Rewind_pressed(index):
+	current_turn_index +=index
+	
+	for piece in $TileMap.npc_list.duplicate():
+		piece.visible = false
+		$TileMap.npc_list.erase(piece)
+	
+	var turn_data = turn_history[current_turn_index]
+	
+	for tile in turn_data[1]:
+		var piece_copy = get_node('TileMap/Piece/'+turn_data[1][tile][0]).duplicate()
+		$TileMap.add_piece(piece_copy, tile, turn_data[1][tile][1])
+	
+	turn = turn_history[current_turn_index][0]
+	$TileMap.draw_map ()
+	$TileMap.fifty_moves_counter = turn_history[current_turn_index][3]
+	$HUD/RewindBox/Redo.set_disabled(false)
+
+	set_Redo_button()
+	set_Undo_button()
+
+func adjust_turn_history():
+	current_turn_index += 1
+	turn_history = turn_history.slice(0, current_turn_index)
+	$HUD/RewindBox/Redo.set_disabled(true)

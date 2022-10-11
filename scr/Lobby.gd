@@ -18,7 +18,6 @@ var peer = null
 var color_index
 
 func _ready():
-	# Connect all the callbacks related to networking.
 	get_tree().connect("network_peer_connected", self, "_player_connected")
 	get_tree().connect("connection_failed", self, "_connected_fail")
 	
@@ -71,9 +70,8 @@ func _on_Host_pressed():
 	peer = NetworkedMultiplayerENet.new()
 	get_node('/root/PlayersData').peer = peer
 	
-	var err = peer.create_server(DEFAULT_PORT, 1) # Maximum of 1 peer, since it's a 2-player game.
+	var err = peer.create_server(DEFAULT_PORT, 1)
 	if err != OK:
-		# Is another server running?
 		_set_status("Can't host, address in use.",false)
 		return
 
@@ -98,5 +96,5 @@ func _on_OkButton_pressed():
 
 	_set_status("Connecting...", true)
 
-func _on_Address_text_entered(new_text):
+func _on_Address_text_entered(_new_text):
 	_on_OkButton_pressed ()
