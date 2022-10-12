@@ -419,7 +419,7 @@ func append_turn_history ():
 	
 	for tile in $TileMap.jumped_over_tiles:
 		jumped_over_copy[tile] = $TileMap.jumped_over_tiles[tile].tile_position
-	
+		
 	turn_history.append([turn, coord_dictionary, jumped_over_copy, $TileMap.fifty_moves_counter])
 	
 func set_Undo_button():
@@ -463,5 +463,9 @@ func _on_Rewind_pressed(index):
 
 func adjust_turn_history():
 	current_turn_index += 1
+	
+	if turn_history.size()-current_turn_index>1:
+		turn_history.remove (turn_history.size()-2)
+	
 	turn_history = turn_history.slice(0, current_turn_index)
 	set_Redo_button()
