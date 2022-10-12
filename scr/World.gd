@@ -4,7 +4,7 @@ var range_of_movement = Array()
 
 var turn = "white"
 var turn_history = []
-var current_turn_index = 1
+var current_turn_index = 0
 
 var clickable = true
 
@@ -71,8 +71,6 @@ func _unhandled_input(event):
 					$HUD/MenuBox.visible = false
 					
 				change_turns()
-				adjust_turn_history()
-				set_Undo_button ()
 				
 				if $TileMap.check_checkmate_stalemate(turn):
 					game_over(turn + ' is ' + $TileMap.check_checkmate_stalemate(turn))
@@ -249,9 +247,13 @@ func change_turns ():
 		if get_tree().is_network_server():
 			$TileMap.clean_up_jumped_over (turn)
 			append_turn_history()
+			adjust_turn_history()
+			
 	else:
 		$TileMap.clean_up_jumped_over (turn)
 		append_turn_history()
+		adjust_turn_history()	
+		set_Undo_button ()
 
 	range_of_movement = []
 	
@@ -409,16 +411,17 @@ func regex_alphabet (string):
 	
 func append_turn_history ():
 	var coord_dictionary = {}
-	var possible_pawn_attacks = []
+	var possible_pawn_attacks = {}
+	var jumped_over_copy = {}
 	
-	for piece in $TileMap.npc_list:
+	for piece in $TileMap.npc_list.duplicate():
 		coord_dictionary[piece.tile_position]=[regex_alphabet(piece.name), piece.color]
-
-		if 'Pawn' in piece.name and piece.color == turn:
-			possible_pawn_attacks += $TileMap.check_possible_moves(piece, $TileMap.pawn_attack(piece, piece.tile_position))
-			
-	turn_history.append([turn, coord_dictionary, possible_pawn_attacks, $TileMap.fifty_moves_counter])
-
+	
+	for tile in $TileMap.jumped_over_tiles:
+		jumped_over_copy[tile] = $TileMap.jumped_over_tiles[tile].tile_position
+	
+	turn_history.append([turn, coord_dictionary, jumped_over_copy, $TileMap.fifty_moves_counter])
+	
 func set_Undo_button():
 	if current_turn_index!=0:
 		$HUD/RewindBox/Undo.set_disabled(false)
@@ -437,22 +440,28 @@ func _on_Rewind_pressed(index):
 	for piece in $TileMap.npc_list.duplicate():
 		piece.visible = false
 		$TileMap.npc_list.erase(piece)
-	
+		
 	var turn_data = turn_history[current_turn_index]
+	
+	turn = turn_data[0]
 	
 	for tile in turn_data[1]:
 		var piece_copy = get_node('TileMap/Piece/'+turn_data[1][tile][0]).duplicate()
-		$TileMap.add_piece(piece_copy, tile, turn_data[1][tile][1])
+		$TileMap.add_piece(piece_copy, tile, turn_data[1][tile][1])	
 	
-	turn = turn_history[current_turn_index][0]
-	$TileMap.draw_map ()
-	$TileMap.fifty_moves_counter = turn_history[current_turn_index][3]
-	$HUD/RewindBox/Redo.set_disabled(false)
+	$TileMap.jumped_over_tiles = {}
+	
+	for tile in turn_data[2]:
+		$TileMap.jumped_over_tiles[tile]=$TileMap.npc_coord()[turn_data[2][tile]]
+	
+	$TileMap.fifty_moves_counter = turn_data[3]
 
+	$TileMap.draw_map ()
+	
 	set_Redo_button()
 	set_Undo_button()
 
 func adjust_turn_history():
 	current_turn_index += 1
 	turn_history = turn_history.slice(0, current_turn_index)
-	$HUD/RewindBox/Redo.set_disabled(true)
+	set_Redo_button()
