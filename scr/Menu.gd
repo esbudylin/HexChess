@@ -1,8 +1,5 @@
 extends Control
 
-onready var glinski = $Options/VBoxContainer/HBoxContainer/Glinski
-onready var mccooey = $Options/VBoxContainer/HBoxContainer2/McCooey
-onready var hexophen = $Options/VBoxContainer/HBoxContainer3/Hexophen
 onready var config = get_node('/root/PlayersData').call_config()
 
 func _ready():
@@ -16,7 +13,7 @@ func _on_Options_pressed():
 	$Menu.visible = false
 	$ColorRect/BackPanel.visible = true
 	$Options.visible = true
-	glinski.grab_focus()
+	$Options/VBoxContainer/HBoxContainer/Glinski.grab_focus()
 	
 	var chess_type = config.get_value('options', 'chess_type')
 	

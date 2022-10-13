@@ -58,7 +58,7 @@ func _unhandled_input(event):
 	if event is InputEventMouseButton:
 		if event.pressed and clickable and turn in player_colors:
 			var clicked_cell = $TileMap.world_to_map(get_global_mouse_position())
-
+			
 			if clicked_cell in range_of_movement:
 				range_of_movement = []
 				

@@ -69,15 +69,6 @@ func draw_vertical_line (position, length, updown = 1):
 
 	return coord_tiles
 	
-func draw_horizontal_line (position, length):
-	var coord_tiles = Array ()
-	coord_tiles.append (position)
-	
-	for iteration in length:
-		coord_tiles.append(Vector2 (position[0]+iteration,position[1]))
-
-	return coord_tiles
-	
 func draw_diagonal_line (position, length, mod, updown):
 	var coord_tiles = Array ()
 	var current_tile = position
@@ -146,4 +137,32 @@ func place_chessmen ():
 		+draw_diagonal_line(Vector2(0, -2), 3, -1, -1)
 	
 	elif chess_type == 'Hexofen':
-		pass
+		var horizontal_4_black = []
+		var horizontal_4_white = []
+		
+		for iteration in 6:
+			black_pawn_tiles += [Vector2(-5+iteration*2, 2)]
+			white_pawn_tiles += [Vector2(-5+iteration*2, -3)]
+			
+		for iteration in 5:
+			black_pawn_tiles += [Vector2(-4+iteration*2, 3)]
+			white_pawn_tiles += [Vector2(-4+iteration*2, -3)]
+			
+		for iteration in 4:
+			horizontal_4_white += [Vector2(-3+iteration*2, 3)]
+			horizontal_4_black += [Vector2(-3+iteration*2, -4)]
+		
+		knight_tiles = horizontal_4_white.slice(0, 2) + horizontal_4_black.slice(1, 3)
+		bishop_tiles = [horizontal_4_white[3], horizontal_4_black[0]]
+		
+		for iteration in 3:
+			var tiles = [Vector2(-2+iteration*2, 4), Vector2(-2+iteration*2, -4)]
+			if iteration == 1:
+				bishop_tiles.append_array(tiles)
+			else:
+				rook_tiles.append_array(tiles)
+				
+		bishop_tiles.append_array([Vector2(1, -5), Vector2(-1, 4)])
+		
+		queen_tiles = [Vector2(-1, -5), Vector2(1, 4)]
+		king_tiles = [Vector2 (0, 5), Vector2 (0, -5)]
