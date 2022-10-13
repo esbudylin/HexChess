@@ -3,7 +3,7 @@ extends Node2D
 var range_of_movement = Array()
 
 var turn = "white"
-var turn_history = []
+var turn_history = {}
 var current_turn_index = 0
 
 var clickable = true
@@ -273,14 +273,17 @@ func change_turns ():
 	if get_tree().has_network_peer ():
 		if get_tree().is_network_server():
 			$TileMap.clean_up_jumped_over (turn)
+			current_turn_index += 1
 			append_turn_history()
 			adjust_turn_history()
 			
 	else:
 		$TileMap.clean_up_jumped_over (turn)
+		current_turn_index += 1
 		append_turn_history()
-		adjust_turn_history()	
+		adjust_turn_history()
 		set_Undo_button ()
+		set_Redo_button()
 
 	range_of_movement = []
 	
@@ -395,13 +398,13 @@ func threefold_rule(amount_of_moves = 3):
 		var breaked
 		var breaked_pawns
 		
-		for turn_step in turn_history:
+		for turn_step in turn_history.values():
 			if turn == turn_step[0]:
 				for key in turn_step[1].keys():
 					
 					breaked = false
-					if turn_history[-1][1].has(key):
-						if turn_step[1][key] != turn_history[-1][1][key]:
+					if turn_history[current_turn_index][1].has(key):
+						if turn_step[1][key] != turn_history[current_turn_index][1][key]:
 							breaked = true
 							break
 					else:
@@ -409,12 +412,12 @@ func threefold_rule(amount_of_moves = 3):
 						break
 				
 				if not breaked\
-				and turn_step[2].size() == turn_history[-1][2].size():
+				and turn_step[2].size() == turn_history[current_turn_index][2].size():
 					
 					breaked_pawns = false
 					
 					for pawn_attack_tile in turn_step[2]:
-						if not pawn_attack_tile in turn_history[-1][2]:
+						if not pawn_attack_tile in turn_history[current_turn_index][2]:
 							breaked_pawns = true
 							break
 					
@@ -449,7 +452,7 @@ func append_turn_history ():
 	for tile in $TileMap.jumped_over_tiles:
 		jumped_over_copy[tile] = $TileMap.jumped_over_tiles[tile].tile_position
 		
-	turn_history.append([turn, coord_dictionary, jumped_over_copy, $TileMap.fifty_moves_counter])
+	turn_history[current_turn_index] = [turn, coord_dictionary, jumped_over_copy, $TileMap.fifty_moves_counter]
 	
 func set_Undo_button():
 	if current_turn_index!=0:
@@ -464,10 +467,7 @@ func set_Redo_button():
 		$HUD/RewindBox/Redo.set_disabled(true)
 
 func adjust_turn_history():
-	current_turn_index += 1
+	var to_clean = turn_history.keys().slice(current_turn_index+1, -1)
 	
-	if turn_history.size()-current_turn_index>1:
-		turn_history.remove (turn_history.size()-2)
-	
-	turn_history = turn_history.slice(0, current_turn_index)
-	set_Redo_button()
+	for key in to_clean:
+		turn_history.erase(key)
