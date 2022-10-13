@@ -110,15 +110,6 @@ func _on_TryAgain_pressed():
 	else:
 		get_tree().reload_current_scene()
 	
-func _on_Promotion_pressed(piece):
-	$TileMap.promote_pawn(active_piece, piece)
-	clickable = true
-	$HUD/PromotionBox.visible = false
-	
-	if get_tree().has_network_peer ():
-		$HUD/MenuBox.visible = true
-		rpc("sync_promotion", piece)
-	
 func _on_Exit_pressed():
 	end_game()
 
@@ -145,6 +136,42 @@ func _on_Decline_pressed():
 
 func _on_BackPanel_pressed():
 	get_tree().change_scene("res://menu.tscn")
+
+func _on_Rewind_pressed(index):
+	current_turn_index +=index
+	
+	for piece in $TileMap.npc_list.duplicate():
+		piece.visible = false
+		$TileMap.npc_list.erase(piece)
+		
+	var turn_data = turn_history[current_turn_index]
+	
+	turn = turn_data[0]
+	
+	for tile in turn_data[1]:
+		var piece_copy = get_node('TileMap/Piece/'+turn_data[1][tile][0]).duplicate()
+		$TileMap.add_piece(piece_copy, tile, turn_data[1][tile][1])	
+	
+	$TileMap.jumped_over_tiles = {}
+	
+	for tile in turn_data[2]:
+		$TileMap.jumped_over_tiles[tile]=$TileMap.npc_coord()[turn_data[2][tile]]
+	
+	$TileMap.fifty_moves_counter = turn_data[3]
+
+	$TileMap.draw_map ()
+	
+	set_Redo_button()
+	set_Undo_button()
+
+func _on_Promotion_pressed(piece):
+	$TileMap.promote_pawn(active_piece, piece)
+	clickable = true
+	$HUD/PromotionBox.visible = false
+	
+	if get_tree().has_network_peer ():
+		$HUD/MenuBox.visible = true
+		rpc("sync_promotion", piece)
 
 func announcement(text):
 	if get_tree().has_network_peer ():
@@ -322,6 +349,8 @@ func draw_possible_moves ():
 func game_over (message):
 	clickable = false
 	$HUD/MenuBox.visible = false
+	$HUD/RewindBox.visible = false
+	$HUD/BackPanel.visible = false
 	$HUD/Announcement/Announcement.text = message
 	$HUD/Announcement.visible = true
 	$HUD/EndGame.visible = true
@@ -433,33 +462,6 @@ func set_Redo_button():
 		$HUD/RewindBox/Redo.set_disabled(false)
 	else:
 		$HUD/RewindBox/Redo.set_disabled(true)
-
-func _on_Rewind_pressed(index):
-	current_turn_index +=index
-	
-	for piece in $TileMap.npc_list.duplicate():
-		piece.visible = false
-		$TileMap.npc_list.erase(piece)
-		
-	var turn_data = turn_history[current_turn_index]
-	
-	turn = turn_data[0]
-	
-	for tile in turn_data[1]:
-		var piece_copy = get_node('TileMap/Piece/'+turn_data[1][tile][0]).duplicate()
-		$TileMap.add_piece(piece_copy, tile, turn_data[1][tile][1])	
-	
-	$TileMap.jumped_over_tiles = {}
-	
-	for tile in turn_data[2]:
-		$TileMap.jumped_over_tiles[tile]=$TileMap.npc_coord()[turn_data[2][tile]]
-	
-	$TileMap.fifty_moves_counter = turn_data[3]
-
-	$TileMap.draw_map ()
-	
-	set_Redo_button()
-	set_Undo_button()
 
 func adjust_turn_history():
 	current_turn_index += 1

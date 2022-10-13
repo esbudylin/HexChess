@@ -4,15 +4,15 @@ const DEFAULT_PORT = 8910
 
 var rng = RandomNumberGenerator.new()
 
-onready var address = $Address
-onready var port_forward_label = get_node('/root/Control/PortForward')
+onready var address = $LobbyPanel/Address
+onready var port_forward_label = $PortForward
 
-onready var status_ok = get_node('/root/Control/TextPanel/StatusOk')
-onready var status_fail = get_node('/root/Control/TextPanel/StatusFail')
-onready var text_panel = get_node('/root/Control/TextPanel')
+onready var status_ok = $TextPanel/StatusOk
+onready var status_fail = $TextPanel/StatusFail
+onready var text_panel = $TextPanel
 
-onready var host_button = get_node('/root/Control/VBoxContainer/Host')
-onready var join_button = get_node('/root/Control/VBoxContainer/Join')
+onready var host_button = $VBoxContainer/Host
+onready var join_button = $VBoxContainer/Join
 
 var peer = null
 var color_index
@@ -60,10 +60,11 @@ func _set_status(text, isok):
 		status_fail.set_text(text)
 
 func _on_Join_pressed():
-	self.visible = true
+	$LobbyPanel.visible = true
 	address.grab_focus()
 
 func _on_Host_pressed():
+	$LobbyPanel.visible = false
 	text_panel.visible = true
 	port_forward_label.visible = true
 	
