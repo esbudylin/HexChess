@@ -1,0 +1,5 @@
+3_background.png is a derivative of an image made for 'The Battle for Wesnoth' game. 
+
+Original work is licence under GNU GPL v2 licence: https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
+
+The original image may be found here: https://github.com/wesnoth/wesnoth/blob/master/data/core/images/terrain/chasm/abyss.png
