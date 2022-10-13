@@ -3,3 +3,5 @@
 Original work is licence under GNU GPL v2 licence: https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html
 
 The original image may be found here: https://github.com/wesnoth/wesnoth/blob/master/data/core/images/terrain/chasm/abyss.png
+
+Chessmen images were made by Cburnett. They are licenced under Creative Commons Attribution-Share Alike 3.0 Unported license: https://creativecommons.org/licenses/by-sa/3.0/deed.en
