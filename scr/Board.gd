@@ -9,13 +9,9 @@ var tile_colors = Dictionary ()
 
 var fifty_moves_counter = 0
 
-onready var initial_pawn_tiles_white = delete_duplicates(\
-$Mapping.draw_diagonal_line(Vector2(0, 1), 4, 1, 1)\
-+$Mapping.draw_diagonal_line(Vector2(0, 1), 4, -1, 1))
+onready var initial_pawn_tiles_white = delete_duplicates($Mapping.black_pawn_tiles)
 
-onready var initial_pawn_tiles_black = delete_duplicates(\
-$Mapping.draw_diagonal_line(Vector2(0, -1), 4, 1, -1)\
-+$Mapping.draw_diagonal_line(Vector2(0, -1), 4, -1, -1))
+onready var initial_pawn_tiles_black = delete_duplicates($Mapping.white_pawn_tiles)
 
 onready var promotion_tiles = delete_duplicates(\
 $Mapping.draw_diagonal_line(Vector2(0, -5), 5, 1, 1)\
@@ -92,6 +88,10 @@ func place_pieces ():
 	
 	for type in pieces_places:
 		place_type_of_pieces (type, pieces_places[type])
+	
+	if $Mapping.chess_type == 'McCooey': #these pawns aren't allowed to double-jump in McCooey version
+		initial_pawn_tiles_black.erase (Vector2(0, -2))
+		initial_pawn_tiles_white.erase (Vector2(0, 2))
 	
 func npc_coord (npc_list_local = npc_list):
 	var npc_coord_list = Dictionary ()
@@ -219,17 +219,25 @@ func pawn_attack (pawn, position, check = true):
 	var closest_tiles = $Mapping.find_closest_tiles(position)
 	var attack_tiles = []
 	
-	if pawn.color == 'white':
+	if pawn.color == 'white' and $Mapping.chess_type == 'Glinski':
 		if int(position[0])%2!=0:
 			attack_tiles += [closest_tiles[3], closest_tiles[1]]
 		else:
 			attack_tiles += [closest_tiles[0], closest_tiles[4]]
 	
-	else:
+	elif pawn.color == 'black' and $Mapping.chess_type == 'Glinski':
 		if int(position[0])%2!=0:
 			attack_tiles += [closest_tiles[0], closest_tiles[4]]
 		else:
 			attack_tiles += [closest_tiles[3], closest_tiles[1]]
+	
+	elif pawn.color == 'black':
+		attack_tiles += $Mapping.bishop_diagonal(position, 2, 1, 1, 1)\
+		+ $Mapping.bishop_diagonal(position, 2, 1, -1, 1)
+	
+	elif pawn.color == 'white':
+		attack_tiles += $Mapping.bishop_diagonal(position, -1, -2, 1, 1)\
+		+ $Mapping.bishop_diagonal(position, -1, -2, -1, 1)
 	
 	if check == true:
 		for tile in attack_tiles:

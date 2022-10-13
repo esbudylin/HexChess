@@ -1,15 +1,19 @@
 extends Node
 
-var knight_tiles = [Vector2 (-2, -4), Vector2 (2, -4), Vector2 (-2, 4), Vector2 (2, 4)]
-var rook_tiles = [Vector2 (-3, -4), Vector2 (3, -4), Vector2 (-3, 3), Vector2 (3, 3)]
-var king_tiles = [Vector2 (1, 4), Vector2 (1, -5)]
-var queen_tiles = [Vector2 (-1, -5), Vector2 (-1, 4)]
+var knight_tiles = Array()
+var rook_tiles = Array()
+var king_tiles = Array()
+var queen_tiles = Array()
 var bishop_tiles = Array()
 
+var black_pawn_tiles = Array ()
+var white_pawn_tiles = Array ()
+
+onready var config = get_node('/root/PlayersData').call_config()
+onready var chess_type = config.get_value('options', 'chess_type')
+
 func _ready():
-	var tiles = [-5, -4, -3, 3, 4, 5]
-	for tile in tiles:
-		bishop_tiles.append(Vector2 (0, tile))
+	place_chessmen ()
 
 func regular_hexagon(center_position_x, center_position_y):
 	var coord_tiles = find_tiles_in_range (Vector2(center_position_x, center_position_y), 5)
@@ -110,3 +114,36 @@ func bishop_diagonal (position, x, y, z = 1, iterations = 5):
 		coord_tiles_local+= [current_tile]
 	
 	return coord_tiles_local
+
+func place_chessmen ():
+	if chess_type == 'Glinski' or chess_type == 'McCooey':
+		var tiles = [-5, -4, -3, 3, 4, 5]
+		
+		for tile in tiles:
+			bishop_tiles.append(Vector2 (0, tile))
+			
+		queen_tiles = [Vector2 (-1, -5), Vector2 (-1, 4)]
+		king_tiles = [Vector2 (1, 4), Vector2 (1, -5)]
+		
+	if chess_type == 'Glinski':
+		rook_tiles = [Vector2 (-3, -4), Vector2 (3, -4), Vector2 (-3, 3), Vector2 (3, 3)]
+		knight_tiles = [Vector2 (-2, -4), Vector2 (2, -4), Vector2 (-2, 4), Vector2 (2, 4)]
+		
+		black_pawn_tiles = draw_diagonal_line(Vector2(0, 1), 4, 1, 1)\
+		+draw_diagonal_line(Vector2(0, 1), 4, -1, 1)
+		
+		white_pawn_tiles = draw_diagonal_line(Vector2(0, -1), 4, 1, -1)\
+		+draw_diagonal_line(Vector2(0, -1), 4, -1, -1)
+		
+	elif chess_type == 'McCooey':
+		rook_tiles = [Vector2 (-2, -4), Vector2 (2, -4), Vector2 (-2, 4), Vector2 (2, 4)]
+		knight_tiles = [Vector2 (-1, -4), Vector2 (1, -4), Vector2 (-1, 3), Vector2 (1, 3)]
+		
+		black_pawn_tiles = draw_diagonal_line(Vector2(0, 2), 3, 1, 1)\
+		+draw_diagonal_line(Vector2(0, 2), 3, -1, 1)
+		
+		white_pawn_tiles = draw_diagonal_line(Vector2(0, -2), 3, 1, -1)\
+		+draw_diagonal_line(Vector2(0, -2), 3, -1, -1)
+	
+	elif chess_type == 'Hexofen':
+		pass
