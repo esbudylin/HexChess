@@ -9,6 +9,7 @@ func _on_Local_pressed():
 	get_node('/root/PlayersData').chess_type = config.get_value('options', 'chess_type')
 
 	get_tree().set_network_peer(null)
+# warning-ignore:return_value_discarded
 	get_tree().change_scene("res://map.tscn")
 
 func _on_Options_pressed():

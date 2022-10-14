@@ -26,14 +26,18 @@ func _ready():
 	for button in $HUD/PromotionBox.get_children ():
 		button.connect ('pressed', self, '_on_Promotion_pressed', [button.text])
 	
+# warning-ignore:return_value_discarded
 	$HUD/RewindBox/Undo.connect ('pressed', self, '_on_Rewind_pressed', [-1])
+# warning-ignore:return_value_discarded
 	$HUD/RewindBox/Redo.connect ('pressed', self, '_on_Rewind_pressed', [1])
 	
 	get_player_colors()
 	multiplayer_configs ()
 	announcement ('you will play as ' + player_colors[0])
 	
+# warning-ignore:return_value_discarded
 	get_tree().connect("network_peer_disconnected", self, "_player_disconnected")
+# warning-ignore:return_value_discarded
 	get_tree().connect("server_disconnected", self, "announcement", ["opponent disconnected"])
 	
 	if get_tree().has_network_peer ():
@@ -108,6 +112,7 @@ func _on_TryAgain_pressed():
 			$HUD/Announcement/Announcement.text = 'request sent'
 			rset ('new_game_request', true)
 	else:
+# warning-ignore:return_value_discarded
 		get_tree().reload_current_scene()
 	
 func _on_Exit_pressed():
@@ -135,6 +140,7 @@ func _on_Decline_pressed():
 	rpc ('announcement', 'offer declined')
 
 func _on_BackPanel_pressed():
+# warning-ignore:return_value_discarded
 	get_tree().change_scene("res://menu.tscn")
 
 func _on_Rewind_pressed(index):
@@ -194,6 +200,7 @@ func anouncment_hide ():
 	
 	if $HUD/Announcement/Announcement.text == 'opponent disconnected':
 		get_tree().set_network_peer(null)
+# warning-ignore:return_value_discarded
 		get_tree().change_scene("res://menu.tscn")
 		
 func multiplayer_configs ():
@@ -363,6 +370,7 @@ func end_game ():
 		peer.close_connection()
 		get_tree().set_network_peer(null)
 		
+# warning-ignore:return_value_discarded
 	get_tree().change_scene("res://menu.tscn")
 
 func draw_offer():
@@ -374,6 +382,7 @@ func draw_offer():
 
 func reload_scene():
 	swap_colors ()
+# warning-ignore:return_value_discarded
 	get_tree().reload_current_scene()
 
 func reload_client():
@@ -443,7 +452,6 @@ func regex_alphabet (string):
 	
 func append_turn_history ():
 	var coord_dictionary = {}
-	var possible_pawn_attacks = {}
 	var jumped_over_copy = {}
 	
 	for piece in $TileMap.npc_list.duplicate():

@@ -18,7 +18,9 @@ var peer = null
 var color_index
 
 func _ready():
+# warning-ignore:return_value_discarded
 	get_tree().connect("network_peer_connected", self, "_player_connected")
+# warning-ignore:return_value_discarded
 	get_tree().connect("connection_failed", self, "_connected_fail")
 	
 	rset_config("color_index", 1)
@@ -55,6 +57,7 @@ func set_chess_types (chess_type = null):
 	else:
 		get_node('/root/PlayersData').chess_type = chess_type
 	
+# warning-ignore:return_value_discarded
 	get_tree().change_scene("res://map.tscn")
 	
 func _connected_fail():
