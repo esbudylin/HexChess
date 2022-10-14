@@ -7,6 +7,8 @@ var puppet_color
 
 var peer
 
+var chess_type
+
 func call_config ():
 	var config = ConfigFile.new()
 	

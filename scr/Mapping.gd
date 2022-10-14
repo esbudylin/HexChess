@@ -8,9 +8,8 @@ var bishop_tiles = Array()
 
 var black_pawn_tiles = Array ()
 var white_pawn_tiles = Array ()
-
-onready var config = get_node('/root/PlayersData').call_config()
-onready var chess_type = config.get_value('options', 'chess_type')
+ 
+onready var chess_type = get_node('/root/PlayersData').chess_type
 
 func _ready():
 	place_chessmen ()

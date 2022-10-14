@@ -6,6 +6,8 @@ func _ready():
 	$Menu/VBoxContainer/Local.grab_focus()
 
 func _on_Local_pressed():
+	get_node('/root/PlayersData').chess_type = config.get_value('options', 'chess_type')
+
 	get_tree().set_network_peer(null)
 	get_tree().change_scene("res://map.tscn")
 

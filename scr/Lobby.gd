@@ -23,6 +23,7 @@ func _ready():
 	
 	rset_config("color_index", 1)
 	rpc_config("set_colors", 1)
+	rpc_config("set_chess_types", 1)
 	
 func _player_connected(_id):
 	generate_color_index()
@@ -41,6 +42,18 @@ func set_colors (color_index_local):
 	else:
 		get_node('/root/PlayersData').master_color = 'black'
 		get_node('/root/PlayersData').puppet_color = 'white'
+	
+	if get_tree().is_network_server():
+		set_chess_types ()
+
+func set_chess_types (chess_type = null):
+	if chess_type == null:
+		var config = get_node('/root/PlayersData').call_config()
+		get_node('/root/PlayersData').chess_type = config.get_value('options', 'chess_type')
+		rpc ('set_chess_types', config.get_value('options', 'chess_type'))
+		
+	else:
+		get_node('/root/PlayersData').chess_type = chess_type
 	
 	get_tree().change_scene("res://map.tscn")
 	
