@@ -231,6 +231,7 @@ custom_styles/pressed = ExtResource( 18 )
 custom_styles/focus = ExtResource( 18 )
 custom_styles/disabled = ExtResource( 18 )
 custom_styles/normal = ExtResource( 18 )
+shortcut_in_tooltip = false
 shortcut = SubResource( 5 )
 text = "try again?"
 
@@ -244,6 +245,7 @@ custom_styles/pressed = ExtResource( 18 )
 custom_styles/focus = ExtResource( 18 )
 custom_styles/disabled = ExtResource( 18 )
 custom_styles/normal = ExtResource( 18 )
+shortcut_in_tooltip = false
 shortcut = SubResource( 10 )
 text = "return to menu"
 
@@ -267,6 +269,7 @@ custom_styles/pressed = ExtResource( 18 )
 custom_styles/focus = ExtResource( 18 )
 custom_styles/disabled = ExtResource( 18 )
 custom_styles/normal = ExtResource( 18 )
+shortcut_in_tooltip = false
 shortcut = SubResource( 5 )
 text = "accept"
 
@@ -280,6 +283,7 @@ custom_styles/pressed = ExtResource( 18 )
 custom_styles/focus = ExtResource( 18 )
 custom_styles/disabled = ExtResource( 18 )
 custom_styles/normal = ExtResource( 18 )
+shortcut_in_tooltip = false
 shortcut = SubResource( 10 )
 text = "decline"
 
