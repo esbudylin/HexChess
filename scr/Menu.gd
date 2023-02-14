@@ -10,7 +10,7 @@ func _on_Local_pressed():
 
 	get_tree().set_network_peer(null)
 # warning-ignore:return_value_discarded
-	get_tree().change_scene("res://map.tscn")
+	get_tree().change_scene("res://scenes/board.tscn")
 
 func _on_Options_pressed():
 	$Menu.visible = false

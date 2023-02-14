@@ -6,20 +6,20 @@ var king_tiles = Array()
 var queen_tiles = Array()
 var bishop_tiles = Array()
 
-var black_pawn_tiles = Array ()
-var white_pawn_tiles = Array ()
+var black_pawn_tiles = Array()
+var white_pawn_tiles = Array()
  
 onready var chess_type = get_node('/root/PlayersData').chess_type
 
 func _ready():
-	place_chessmen ()
+	place_chessmen()
 
 func regular_hexagon(center_position_x, center_position_y):
-	var coord_tiles = find_tiles_in_range (Vector2(center_position_x, center_position_y), 5)
+	var coord_tiles = find_tiles_in_range(Vector2(center_position_x, center_position_y), 5)
 				
 	return coord_tiles
 
-func find_closest_tiles (position):
+func find_closest_tiles(position):
 	var closest_tiles = Array()
 	
 	if int(position[0])%2!=0:
@@ -40,7 +40,7 @@ func find_closest_tiles (position):
 	
 	return closest_tiles
 
-func in_range_utility (position, tiles_in_range):
+func in_range_utility(position, tiles_in_range):
 	for tile in find_closest_tiles (position):
 		
 		if not tile in tiles_in_range:
@@ -48,28 +48,28 @@ func in_range_utility (position, tiles_in_range):
 			
 	return tiles_in_range
 
-func find_tiles_in_range (position, in_range):
+func find_tiles_in_range(position, in_range):
 	var tiles_in_range = Array()
 	
 	tiles_in_range = in_range_utility(position, tiles_in_range) 
 	
-	for _i in range (in_range-1):
+	for _i in range(in_range-1):
 		for tile in tiles_in_range.duplicate():
 			tiles_in_range = in_range_utility(tile, tiles_in_range) 
 	
 	return tiles_in_range
 	
-func draw_vertical_line (position, length, updown = 1):
-	var coord_tiles = Array ()
-	coord_tiles.append (position)
+func draw_vertical_line(position, length, updown = 1):
+	var coord_tiles = Array()
+	coord_tiles.append(position)
 	
 	for iteration in length:
-		coord_tiles.append(Vector2 (position[0],position[1]+iteration*updown))
+		coord_tiles.append(Vector2(position[0],position[1]+iteration*updown))
 
 	return coord_tiles
 	
-func draw_diagonal_line (position, length, mod, updown):
-	var coord_tiles = Array ()
+func draw_diagonal_line(position, length, mod, updown):
+	var coord_tiles = Array()
 	var current_tile = position
 	coord_tiles.append(position)
 	
@@ -78,11 +78,11 @@ func draw_diagonal_line (position, length, mod, updown):
 
 	for iteration in length:
 		if int(current_tile[0])%2!=0:
-			current_tile = Vector2 (current_tile[0]+mod,current_tile[1])
+			current_tile = Vector2(current_tile[0]+mod,current_tile[1])
 			if updown == 1:
 				current_tile[1]+=updown
 		else:
-			current_tile = Vector2 (current_tile[0]+mod,current_tile[1])
+			current_tile = Vector2(current_tile[0]+mod,current_tile[1])
 			if updown == -1:
 				current_tile[1]+=updown
 				
@@ -90,7 +90,7 @@ func draw_diagonal_line (position, length, mod, updown):
 
 	return coord_tiles
 
-func bishop_diagonal (position, x, y, z = 1, iterations = 5):
+func bishop_diagonal(position, x, y, z = 1, iterations = 5):
 	var coord_tiles_local = []
 	var current_tile = position
 	
@@ -105,19 +105,19 @@ func bishop_diagonal (position, x, y, z = 1, iterations = 5):
 	
 	return coord_tiles_local
 
-func place_chessmen ():
+func place_chessmen():
 	if chess_type == 'Glinski' or chess_type == 'McCooey':
 		var tiles = [-5, -4, -3, 3, 4, 5]
 		
 		for tile in tiles:
-			bishop_tiles.append(Vector2 (0, tile))
+			bishop_tiles.append(Vector2(0, tile))
 			
-		queen_tiles = [Vector2 (-1, -5), Vector2 (-1, 4)]
-		king_tiles = [Vector2 (1, 4), Vector2 (1, -5)]
+		queen_tiles = [Vector2(-1, -5), Vector2(-1, 4)]
+		king_tiles = [Vector2(1, 4), Vector2(1, -5)]
 		
 	if chess_type == 'Glinski':
-		rook_tiles = [Vector2 (-3, -4), Vector2 (3, -4), Vector2 (-3, 3), Vector2 (3, 3)]
-		knight_tiles = [Vector2 (-2, -4), Vector2 (2, -4), Vector2 (-2, 4), Vector2 (2, 4)]
+		rook_tiles = [Vector2(-3, -4), Vector2(3, -4), Vector2(-3, 3), Vector2(3, 3)]
+		knight_tiles = [Vector2(-2, -4), Vector2(2, -4), Vector2(-2, 4), Vector2(2, 4)]
 		
 		black_pawn_tiles = draw_diagonal_line(Vector2(0, 1), 4, 1, 1)\
 		+draw_diagonal_line(Vector2(0, 1), 4, -1, 1)
@@ -126,8 +126,8 @@ func place_chessmen ():
 		+draw_diagonal_line(Vector2(0, -1), 4, -1, -1)
 		
 	elif chess_type == 'McCooey':
-		rook_tiles = [Vector2 (-2, -4), Vector2 (2, -4), Vector2 (-2, 4), Vector2 (2, 4)]
-		knight_tiles = [Vector2 (-1, -4), Vector2 (1, -4), Vector2 (-1, 3), Vector2 (1, 3)]
+		rook_tiles = [Vector2(-2, -4), Vector2(2, -4), Vector2(-2, 4), Vector2(2, 4)]
+		knight_tiles = [Vector2(-1, -4), Vector2(1, -4), Vector2(-1, 3), Vector2(1, 3)]
 		
 		black_pawn_tiles = draw_diagonal_line(Vector2(0, 2), 3, 1, 1)\
 		+draw_diagonal_line(Vector2(0, 2), 3, -1, 1)
@@ -164,4 +164,4 @@ func place_chessmen ():
 		bishop_tiles.append_array([Vector2(1, -5), Vector2(-1, 4)])
 		
 		queen_tiles = [Vector2(-1, -5), Vector2(1, 4)]
-		king_tiles = [Vector2 (0, 5), Vector2 (0, -5)]
+		king_tiles = [Vector2(0, 5), Vector2(0, -5)]

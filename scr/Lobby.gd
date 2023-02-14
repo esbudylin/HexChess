@@ -33,11 +33,11 @@ func _player_connected(_id):
 func generate_color_index():
 	if get_tree().is_network_server():
 		rng.randomize()
-		color_index = rng.randi_range (0, 1)
-		rpc ('set_colors', color_index)
+		color_index = rng.randi_range(0, 1)
+		rpc('set_colors', color_index)
 		set_colors(color_index)
 		
-func set_colors (color_index_local):
+func set_colors(color_index_local):
 	if color_index_local == 0:
 		get_node('/root/PlayersData').master_color = 'white'
 		get_node('/root/PlayersData').puppet_color = 'black'
@@ -46,19 +46,19 @@ func set_colors (color_index_local):
 		get_node('/root/PlayersData').puppet_color = 'white'
 	
 	if get_tree().is_network_server():
-		set_chess_types ()
+		set_chess_types()
 
-func set_chess_types (chess_type = null):
+func set_chess_types(chess_type = null):
 	if chess_type == null:
 		var config = get_node('/root/PlayersData').call_config()
 		get_node('/root/PlayersData').chess_type = config.get_value('options', 'chess_type')
-		rpc ('set_chess_types', config.get_value('options', 'chess_type'))
+		rpc('set_chess_types', config.get_value('options', 'chess_type'))
 		
 	else:
 		get_node('/root/PlayersData').chess_type = chess_type
 	
 # warning-ignore:return_value_discarded
-	get_tree().change_scene("res://map.tscn")
+	get_tree().change_scene("res://scenes/board.tscn")
 	
 func _connected_fail():
 	_set_status("Couldn't connect", false)
@@ -114,4 +114,4 @@ func _on_OkButton_pressed():
 	_set_status("Connecting...", true)
 
 func _on_Address_text_entered(_new_text):
-	_on_OkButton_pressed ()
+	_on_OkButton_pressed()
