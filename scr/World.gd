@@ -260,20 +260,20 @@ func player_turn(clicked_cell, sync_mult = false):
 		for piece in $TileMap.chessmen_list:
 			if piece.tile_position == clicked_cell and piece !=active_piece:
 				$TileMap.kill_piece(piece)
-	
-	if 'Pawn' in active_piece.name and clicked_cell in $TileMap.jumped_over_tiles\
+				break
+				
+	elif 'Pawn' in active_piece.name and clicked_cell in $TileMap.jumped_over_tiles\
 	and clicked_cell in $TileMap.pawn_attack(active_piece, active_piece.tile_position, false):
 		$TileMap.kill_piece($TileMap.jumped_over_tiles[clicked_cell])
 		
-		if get_tree().has_network_peer() and get_tree().is_network_server():
-			var dead_npc_path
-			dead_npc_path = str($TileMap.jumped_over_tiles[clicked_cell].get_path())
+		if get_tree().is_network_server():
+			var dead_npc_path = str($TileMap.jumped_over_tiles[clicked_cell].get_path())
 			rpc("sync_kill_piece", dead_npc_path)
 
 	$TileMap.chessmen_coords.erase(active_piece.tile_position)			
 	active_piece.position = $TileMap.map_to_world(clicked_cell)
 	active_piece.tile_position = clicked_cell
-	$TileMap.chessmen_coords[active_piece.tile_position] = active_piece
+	$TileMap.chessmen_coords[clicked_cell] = active_piece
 	$TileMap.draw_map()
 	
 	for tile in $TileMap.passable_tiles:
