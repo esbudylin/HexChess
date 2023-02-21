@@ -17,6 +17,8 @@ var new_game_request
 
 onready var peer = get_node('/root/PlayersData').peer
 
+signal promotion_done
+
 func _ready():
 	$TileMap.draw_map()
 	$TileMap.visible = true
@@ -66,14 +68,21 @@ func _unhandled_input(event):
 				range_of_movement = []
 				
 				player_turn(clicked_cell)
-
+				
+				var promotion_piece
 				if 'Pawn' in active_piece.name and clicked_cell in $TileMap.promotion_tiles:
 					$HUD/PromotionBox.visible = true
 					$HUD/PromotionBox/Queen.grab_focus()
 					clickable = false
 					$HUD/MenuBox.visible = false
+					promotion_piece = yield(self, "promotion_done")
 					
 				change_turns()
+				
+				sync_multiplayer(clicked_cell)
+					
+				if promotion_piece and get_tree().has_network_peer():
+					rpc("sync_promotion", promotion_piece)
 				
 				if $TileMap.check_checkmate_stalemate(turn):
 					game_over(turn + ' is ' + $TileMap.check_checkmate_stalemate(turn))
@@ -87,8 +96,6 @@ func _unhandled_input(event):
 					
 					if get_tree().has_network_peer():
 						rpc('game_over', 'it is  a draw')
-				
-				sync_multiplayer(clicked_cell)
 				
 			elif clicked_cell in $TileMap.chessmen_coords():
 				var piece = $TileMap.chessmen_coords()[clicked_cell]
@@ -176,7 +183,8 @@ func _on_Promotion_pressed(piece):
 	
 	if get_tree().has_network_peer():
 		$HUD/MenuBox.visible = true
-		rpc("sync_promotion", piece)
+		
+	emit_signal("promotion_done", piece)
 
 func announcement(text):
 	if get_tree().has_network_peer():
@@ -303,7 +311,6 @@ func sync_multiplayer(clicked_cell):
 		rset("clickable", clickable)
 
 func sync_promotion(piece):
-	active_piece_path = str(active_piece.get_path())
 	active_piece = get_node(active_piece_path)
 	$TileMap.promote_pawn(active_piece, piece)
 	clickable = true
