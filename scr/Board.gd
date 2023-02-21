@@ -55,11 +55,12 @@ func set_cells(set_tiles, tile_number):
 	for tile in set_tiles:
 		set_cell(tile[0], tile[1], tile_number)
 
-func add_piece(piece, tile_position, color = null):
+func add_piece(piece, tile_position, type, color = null):
 	add_child(piece)
 		
 	piece.tile_position = tile_position
 	piece.position = map_to_world(piece.tile_position)
+	piece.type = type
 	piece.visible = true
 	
 	if color == 'black' or color == null and tile_position[1] < 0:
@@ -74,7 +75,7 @@ func add_piece(piece, tile_position, color = null):
 func place_type_of_pieces(type, tiles):
 	for tile in tiles:
 		var piece_copy = type.duplicate()
-		add_piece(piece_copy, tile)
+		add_piece(piece_copy, tile, type.name)
 
 func place_pieces():
 	var pieces_places = {
@@ -282,7 +283,7 @@ func king_movement(king, position):
 func promote_pawn(pawn, promotion):
 	kill_piece(pawn)
 	var new_piece = get_node("Piece/"+promotion).duplicate()
-	add_piece(new_piece, pawn.tile_position, pawn.color)
+	add_piece(new_piece, pawn.tile_position, promotion, pawn.color)
 	
 func delete_duplicates(array):
 	var unique_elements = []
@@ -298,21 +299,15 @@ func clean_up_jumped_over(color):
 			jumped_over_tiles.erase(tile)
 
 func check_checkmate_stalemate(turn):
-	var iteration = 0
-	
 	for tile_piece in chessmen_coords():
 		if chessmen_coords()[tile_piece].color == turn\
 		and check_possible_moves(chessmen_coords()[tile_piece]) != []:
-			break
-		iteration +=1
+			return false
 	
-	if iteration == chessmen_coords().size():
-		if if_king_checked(turn):
-			return 'checkmated'
-		else:
-			return 'stalemated'
+	if if_king_checked(turn):
+		return 'checkmated'
 	else:
-		return false
+		return 'stalemated'
 
 func if_able_to_checkmate(color):
 	var pieces_dict = {'Knight': 0, 'Bishop': 0}
@@ -363,12 +358,12 @@ func find_king(color):
 
 func if_king_checked(turn):
 	var king = find_king(turn)
-	var checked = false
+
 	for piece in chessmen_list:
 		if king.tile_position in find_possible_moves(piece, piece.tile_position):
-			checked = true
-			break
-	return checked
+			return true
+			
+	return false
 
 func check_possible_moves(NPC, range_of_movement = null):
 	var initial_position = NPC.tile_position

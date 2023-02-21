@@ -58,7 +58,6 @@ func _player_disconnected(_id):
 	$HUD/EndGame/TryAgain.set_disabled(true)
 	
 func _unhandled_input(event):
-	
 	if event is InputEventMouseButton:
 		if event.pressed and clickable and turn in player_colors:
 			var clicked_cell = $TileMap.world_to_map(get_global_mouse_position())
@@ -156,7 +155,7 @@ func _on_Rewind_pressed(index):
 	
 	for tile in turn_data[1]:
 		var piece_copy = get_node('TileMap/Piece/'+turn_data[1][tile][0]).duplicate()
-		$TileMap.add_piece(piece_copy, tile, turn_data[1][tile][1])	
+		$TileMap.add_piece(piece_copy, tile, turn_data[1][tile][0], turn_data[1][tile][1])	
 	
 	$TileMap.jumped_over_tiles = {}
 	
@@ -252,7 +251,8 @@ func player_turn(clicked_cell, sync_mult = false):
 			if piece.tile_position == clicked_cell and piece !=active_piece:
 				$TileMap.kill_piece(piece)
 	
-	if 'Pawn' in active_piece.name and clicked_cell in $TileMap.jumped_over_tiles:
+	if 'Pawn' in active_piece.name and clicked_cell in $TileMap.jumped_over_tiles\
+	and clicked_cell in $TileMap.pawn_attack(active_piece, active_piece.tile_position, false):
 		$TileMap.kill_piece($TileMap.jumped_over_tiles[clicked_cell])
 		
 		if get_tree().has_network_peer() and get_tree().is_network_server():
@@ -437,24 +437,13 @@ func threefold_rule(amount_of_moves = 3):
 	
 	else:
 		rpc('threefold_rule')
-				
-func regex_alphabet(string):
-	var regex = RegEx.new()
-	var previous_result
-	regex.compile("[^a-zA-Z]")
-	
-	while string != previous_result:
-		previous_result = string
-		string = regex.sub(previous_result, '')
-	
-	return string
 	
 func append_turn_history():
 	var coord_dictionary = {}
 	var jumped_over_copy = {}
 	
 	for piece in $TileMap.chessmen_list.duplicate():
-		coord_dictionary[piece.tile_position]=[regex_alphabet(piece.name), piece.color]
+		coord_dictionary[piece.tile_position]=[piece.type, piece.color]
 	
 	for tile in $TileMap.jumped_over_tiles:
 		jumped_over_copy[tile] = $TileMap.jumped_over_tiles[tile].tile_position
