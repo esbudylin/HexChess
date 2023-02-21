@@ -1,6 +1,7 @@
 extends TileMap
 
 var chessmen_list = Array()
+var chessmen_coords = Dictionary()
 
 var jumped_over_tiles = Dictionary()
 var passable_tiles = Dictionary()
@@ -71,6 +72,7 @@ func add_piece(piece, tile_position, type, color = null):
 		piece.color = 'white'
 		
 	chessmen_list.append(piece)
+	chessmen_coords[tile_position] = piece
 
 func place_type_of_pieces(type, tiles):
 	for tile in tiles:
@@ -94,16 +96,8 @@ func place_pieces():
 		initial_pawn_tiles_black.erase(Vector2(0, -2))
 		initial_pawn_tiles_white.erase(Vector2(0, 2))
 	
-func chessmen_coords(chessmen_list_local = chessmen_list):
-	var coords_dict = Dictionary()
-	
-	for NPC in chessmen_list_local:
-		coords_dict[NPC.tile_position] = NPC
-		
-	return coords_dict
-	
 func check_movement(new_position):
-	if new_position in coord_tiles and not new_position in chessmen_coords():
+	if new_position in coord_tiles and not new_position in chessmen_coords:
 		return true
 	else:
 		return false
@@ -115,7 +109,7 @@ func check_array(tile_array, additional_check = true, piece = null):
 		if check_movement(tile) or tile == tile_array[0] and additional_check:
 			coord_tiles_local.append(tile)
 			
-		elif piece != null and tile in chessmen_coords() and piece.color != chessmen_coords()[tile].color:
+		elif piece != null and tile in chessmen_coords and piece.color != chessmen_coords[tile].color:
 			coord_tiles_local.append(tile)
 			break
 			
@@ -127,6 +121,7 @@ func check_array(tile_array, additional_check = true, piece = null):
 func kill_piece(NPC):
 	NPC.visible = false
 	chessmen_list.erase(NPC)
+	chessmen_coords.erase(NPC.tile_position)
 	fifty_moves_counter = 0
 	
 func rook_movement(NPC, position, iterations = 12, check = true):
@@ -190,7 +185,7 @@ func knight_movement(piece, position):
 		
 	for move in moves:
 		var tile =(Vector2(position[0]-move[0], position[1]-move[1]))
-		if check_movement(tile) or tile in chessmen_coords() and chessmen_coords()[tile].color != piece.color:
+		if check_movement(tile) or tile in chessmen_coords and chessmen_coords[tile].color != piece.color:
 			coord_tiles_local.append(tile)
 	
 	return coord_tiles_local
@@ -242,8 +237,8 @@ func pawn_attack(pawn, position, check = true):
 	
 	if check == true:
 		for tile in attack_tiles:
-			if tile in chessmen_coords():
-				var piece = chessmen_coords()[tile]
+			if tile in chessmen_coords:
+				var piece = chessmen_coords[tile]
 				if piece.color != pawn.color:
 					coord_tiles_local.append(tile)
 					
@@ -299,9 +294,9 @@ func clean_up_jumped_over(color):
 			jumped_over_tiles.erase(tile)
 
 func check_checkmate_stalemate(turn):
-	for tile_piece in chessmen_coords():
-		if chessmen_coords()[tile_piece].color == turn\
-		and check_possible_moves(chessmen_coords()[tile_piece]) != []:
+	for tile_piece in chessmen_coords:
+		if chessmen_coords[tile_piece].color == turn\
+		and check_possible_moves(chessmen_coords[tile_piece]) != []:
 			return false
 	
 	if if_king_checked(turn):
@@ -365,28 +360,37 @@ func if_king_checked(turn):
 			
 	return false
 
+func find_chessmen_coords(chessmen_list_local = chessmen_list):
+	var coords_dict = Dictionary()
+	
+	for NPC in chessmen_list_local:
+		coords_dict[NPC.tile_position] = NPC
+		
+	return coords_dict
+
 func check_possible_moves(NPC, range_of_movement = null):
 	var initial_position = NPC.tile_position
 	var king = find_king(NPC.color)
+	var chessmen_coords_copy = chessmen_coords.duplicate()
 	
 	if range_of_movement == null:
 		range_of_movement = find_possible_moves(NPC, NPC.tile_position)
 			
 	for tile in range_of_movement.duplicate():
 		var chessmen_list_copy = chessmen_list.duplicate()
+
+		if tile in chessmen_coords:
+			chessmen_list_copy.erase(chessmen_coords[tile])
 		
-		if tile in chessmen_coords():
-			chessmen_list_copy.erase(chessmen_coords()[tile])
-			
 		NPC.tile_position = tile
+		chessmen_coords = find_chessmen_coords(chessmen_list_copy)
 		
-		var chessmen_coords_copy = chessmen_coords(chessmen_list_copy)
-		
-		for tile_piece in chessmen_coords_copy:
-			if chessmen_coords_copy[tile_piece].color != NPC.color\
-			and king.tile_position in find_possible_moves(chessmen_coords_copy[tile_piece], tile_piece):
+		for tile_piece in chessmen_coords:
+			if chessmen_coords[tile_piece].color != NPC.color\
+			and king.tile_position in find_possible_moves(chessmen_coords[tile_piece], tile_piece):
 				range_of_movement.erase(tile)
-	
+				
+	chessmen_coords = chessmen_coords_copy		
 	NPC.tile_position = initial_position
 	
 	return range_of_movement

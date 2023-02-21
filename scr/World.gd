@@ -97,8 +97,8 @@ func _unhandled_input(event):
 					if get_tree().has_network_peer():
 						rpc('game_over', 'it is  a draw')
 				
-			elif clicked_cell in $TileMap.chessmen_coords():
-				var piece = $TileMap.chessmen_coords()[clicked_cell]
+			elif clicked_cell in $TileMap.chessmen_coords:
+				var piece = $TileMap.chessmen_coords[clicked_cell]
 				if piece.tile_position == clicked_cell and piece.color == turn:
 					$TileMap.draw_map()
 					active_piece = piece
@@ -151,10 +151,12 @@ func _on_BackPanel_pressed():
 
 func _on_Rewind_pressed(index):
 	current_turn_index +=index
+	range_of_movement = []
 	
 	for piece in $TileMap.chessmen_list.duplicate():
 		piece.visible = false
 		$TileMap.chessmen_list.erase(piece)
+		$TileMap.chessmen_coords.erase(piece.tile_position)
 		
 	var turn_data = turn_history[current_turn_index]
 	
@@ -167,7 +169,7 @@ func _on_Rewind_pressed(index):
 	$TileMap.jumped_over_tiles = {}
 	
 	for tile in turn_data[2]:
-		$TileMap.jumped_over_tiles[tile]=$TileMap.chessmen_coords()[turn_data[2][tile]]
+		$TileMap.jumped_over_tiles[tile]=$TileMap.chessmen_coords[turn_data[2][tile]]
 	
 	$TileMap.fifty_moves_counter = turn_data[3]
 
@@ -254,7 +256,7 @@ func player_turn(clicked_cell, sync_mult = false):
 	if sync_mult:
 		active_piece = get_node(active_piece_path)
 		
-	if clicked_cell in $TileMap.chessmen_coords():
+	if clicked_cell in $TileMap.chessmen_coords:
 		for piece in $TileMap.chessmen_list:
 			if piece.tile_position == clicked_cell and piece !=active_piece:
 				$TileMap.kill_piece(piece)
@@ -267,9 +269,11 @@ func player_turn(clicked_cell, sync_mult = false):
 			var dead_npc_path
 			dead_npc_path = str($TileMap.jumped_over_tiles[clicked_cell].get_path())
 			rpc("sync_kill_piece", dead_npc_path)
-			
+
+	$TileMap.chessmen_coords.erase(active_piece.tile_position)			
 	active_piece.position = $TileMap.map_to_world(clicked_cell)
 	active_piece.tile_position = clicked_cell
+	$TileMap.chessmen_coords[active_piece.tile_position] = active_piece
 	$TileMap.draw_map()
 	
 	for tile in $TileMap.passable_tiles:
