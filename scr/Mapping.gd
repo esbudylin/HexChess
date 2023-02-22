@@ -23,7 +23,7 @@ func find_closest_tiles(position):
 	var closest_tiles = Array()
 	
 	if int(position[0])%2!=0:
-		closest_tiles += [Vector2(position[0]+1, position[1]+1), \
+		closest_tiles = [Vector2(position[0]+1, position[1]+1), \
 		Vector2(position[0]+1, position[1]), \
 		Vector2(position[0], position[1]-1), \
 		Vector2(position[0]-1, position[1]), \
@@ -31,7 +31,7 @@ func find_closest_tiles(position):
 		Vector2(position[0], position[1]+1)]
 
 	else:
-		closest_tiles += [Vector2(position[0]+1, position[1]-1), \
+		closest_tiles = [Vector2(position[0]+1, position[1]-1), \
 		Vector2(position[0]+1, position[1]), \
 		Vector2(position[0], position[1]-1), \
 		Vector2(position[0]-1, position[1]), \
@@ -41,8 +41,7 @@ func find_closest_tiles(position):
 	return closest_tiles
 
 func in_range_utility(position, tiles_in_range):
-	for tile in find_closest_tiles (position):
-		
+	for tile in find_closest_tiles(position):
 		if not tile in tiles_in_range:
 			tiles_in_range.append(tile)
 			
@@ -101,7 +100,7 @@ func bishop_diagonal(position, x, y, z = 1, iterations = 5):
 			current_tile[1] +=y
 			
 		current_tile[0] += z
-		coord_tiles_local+= [current_tile]
+		coord_tiles_local.append(current_tile)
 	
 	return coord_tiles_local
 
