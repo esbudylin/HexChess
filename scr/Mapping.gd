@@ -23,19 +23,19 @@ func find_closest_tiles(position):
 	var closest_tiles = Array()
 	
 	if int(position[0])%2!=0:
-		closest_tiles = [Vector2(position[0]+1, position[1]+1), \
-		Vector2(position[0]+1, position[1]), \
-		Vector2(position[0], position[1]-1), \
-		Vector2(position[0]-1, position[1]), \
-		Vector2(position[0]-1, position[1]+1), \
+		closest_tiles = [Vector2(position[0]+1, position[1]+1),
+		Vector2(position[0]+1, position[1]),
+		Vector2(position[0], position[1]-1),
+		Vector2(position[0]-1, position[1]),
+		Vector2(position[0]-1, position[1]+1),
 		Vector2(position[0], position[1]+1)]
 
 	else:
-		closest_tiles = [Vector2(position[0]+1, position[1]-1), \
-		Vector2(position[0]+1, position[1]), \
-		Vector2(position[0], position[1]-1), \
-		Vector2(position[0]-1, position[1]), \
-		Vector2(position[0]-1, position[1]-1), \
+		closest_tiles = [Vector2(position[0]+1, position[1]-1),
+		Vector2(position[0]+1, position[1]),
+		Vector2(position[0], position[1]-1),
+		Vector2(position[0]-1, position[1]),
+		Vector2(position[0]-1, position[1]-1),
 		Vector2(position[0], position[1]+1)]	
 	
 	return closest_tiles
@@ -139,16 +139,16 @@ func place_chessmen():
 		var horizontal_4_white = []
 		
 		for iteration in 6:
-			black_pawn_tiles += [Vector2(-5+iteration*2, 2)]
-			white_pawn_tiles += [Vector2(-5+iteration*2, -3)]
+			black_pawn_tiles.append(Vector2(-5+iteration*2, 2))
+			white_pawn_tiles.append(Vector2(-5+iteration*2, -3))
 			
 		for iteration in 5:
-			black_pawn_tiles += [Vector2(-4+iteration*2, 3)]
-			white_pawn_tiles += [Vector2(-4+iteration*2, -3)]
+			black_pawn_tiles.append(Vector2(-4+iteration*2, 3))
+			white_pawn_tiles.append(Vector2(-4+iteration*2, -3))
 			
 		for iteration in 4:
-			horizontal_4_white += [Vector2(-3+iteration*2, 3)]
-			horizontal_4_black += [Vector2(-3+iteration*2, -4)]
+			horizontal_4_white.append(Vector2(-3+iteration*2, 3))
+			horizontal_4_black.append(Vector2(-3+iteration*2, -4))
 		
 		knight_tiles = horizontal_4_white.slice(0, 2) + horizontal_4_black.slice(1, 3)
 		bishop_tiles = [horizontal_4_white[3], horizontal_4_black[0]]
