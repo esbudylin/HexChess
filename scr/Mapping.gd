@@ -48,9 +48,7 @@ func in_range_utility(position, tiles_in_range):
 	return tiles_in_range
 
 func find_tiles_in_range(position, in_range):
-	var tiles_in_range = Array()
-	
-	tiles_in_range = in_range_utility(position, tiles_in_range) 
+	var tiles_in_range = find_closest_tiles(position)
 	
 	for _i in range(in_range-1):
 		for tile in tiles_in_range.duplicate():
