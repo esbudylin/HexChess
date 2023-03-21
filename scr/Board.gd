@@ -264,19 +264,20 @@ func king_movement(king, position):
 	for tile in initial:
 		for piece in chessmen_list:
 			
-			if piece.color != king.color and not 'Pawn' in piece.name and not 'King' in piece.name:
-				if tile in find_possible_moves(piece, piece.tile_position):
-					coord_tiles_local.erase(tile)
+			if piece.color != king.color:
+				if not 'Pawn' in piece.name and not 'King' in piece.name:
+					if tile in find_possible_moves(piece, piece.tile_position):
+						coord_tiles_local.erase(tile)
 					
-			elif piece.color != king.color and 'King' in piece.name:
-				if tile in delete_duplicates(
-					rook_movement(piece, piece.tile_position, 2, false) 
-					+ bishop_movement(piece, piece.tile_position, 1, false)):
-					coord_tiles_local.erase(tile)
-					
-			elif piece.color != king.color and 'Pawn' in piece.name:
-				if tile in pawn_attack(piece, piece.tile_position, false):
-					coord_tiles_local.erase(tile)
+				elif 'King' in piece.name:
+					if tile in delete_duplicates(
+						rook_movement(piece, piece.tile_position, 2, false) 
+						+ bishop_movement(piece, piece.tile_position, 1, false)):
+						coord_tiles_local.erase(tile)
+						
+				elif 'Pawn' in piece.name:
+					if tile in pawn_attack(piece, piece.tile_position, false):
+						coord_tiles_local.erase(tile)
 	
 	chessmen_list.append(king)
 	return coord_tiles_local
