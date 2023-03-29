@@ -8,12 +8,19 @@ var passable_tiles = Dictionary()
 
 var kings = Dictionary()
 
-onready var Mapping = get_node("/root/World/Game/TileMap/Mapping")
+var Mapping setget setMapping
 
-onready var initial_pawn_tiles_white = delete_duplicates(Mapping.black_pawn_tiles)
-onready var initial_pawn_tiles_black = delete_duplicates(Mapping.white_pawn_tiles)
+var initial_pawn_tiles_white
+var initial_pawn_tiles_black
 
-onready var coord_tiles = Mapping.regular_hexagon(0, 0)
+var coord_tiles
+
+func setMapping(mapping_node):
+	Mapping = mapping_node
+	initial_pawn_tiles_white = delete_duplicates(Mapping.black_pawn_tiles)
+	initial_pawn_tiles_black = delete_duplicates(Mapping.white_pawn_tiles)
+
+	coord_tiles = Mapping.regular_hexagon(0, 0)
 
 func check_possible_moves(NPC):
 	var initial_position = NPC.tile_position

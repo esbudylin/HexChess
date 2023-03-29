@@ -1,6 +1,5 @@
-[gd_scene load_steps=33 format=2]
+[gd_scene load_steps=32 format=2]
 
-[ext_resource path="res://scr/Movement.gd" type="Script" id=1]
 [ext_resource path="res://scr/Piece.gd" type="Script" id=2]
 [ext_resource path="res://tiles/black_queen.png" type="Texture" id=3]
 [ext_resource path="res://icons/back.png" type="Texture" id=4]
@@ -72,11 +71,6 @@ script = ExtResource( 20 )
 
 [node name="Mapping" type="Node" parent="Game/TileMap"]
 script = ExtResource( 21 )
-
-[node name="Movement" type="TileMap" parent="Game/TileMap"]
-visible = false
-format = 1
-script = ExtResource( 1 )
 
 [node name="Piece" type="Node2D" parent="Game/TileMap"]
 visible = false
