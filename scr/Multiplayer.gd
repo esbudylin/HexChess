@@ -6,6 +6,7 @@ var active_piece_path
 onready var gs = $"../Game"
 onready var peer = get_node('/root/PlayersData').peer
 onready var tilemap = $"../Game/TileMap"
+onready var movement = $"../Game/TileMap/Movement"
 
 func multiplayer_configs():
 	gs.rpc_config("player_turn", 1)
@@ -48,7 +49,7 @@ func set_possible_moves(piece_path, double_call = false):
 	var piece = get_node(piece_path)
 	
 	if get_tree().is_network_server():
-		gs.range_of_movement = tilemap.check_possible_moves(piece)
+		gs.range_of_movement = movement.check_possible_moves(piece)
 			
 		if double_call:
 			gs.rset("range_of_movement", gs.range_of_movement)
@@ -77,7 +78,7 @@ func server_place_pieces():
 	tilemap.place_pieces()
 	var name_list = Array()
 			
-	for piece in tilemap.chessmen_list:
+	for piece in movement.chessmen_list:
 		name_list.append(piece.name)
 		piece.name = name_list[-1]
 	
@@ -106,7 +107,7 @@ func sync_kill_piece(piece_path):
 func sync_pieces(name_list):
 	tilemap.place_pieces()
 	var iteration = 0
-	for piece in tilemap.chessmen_list:
+	for piece in movement.chessmen_list:
 		piece.name = name_list[iteration]
 		iteration+=1
 		
