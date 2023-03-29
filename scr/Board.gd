@@ -375,13 +375,12 @@ func find_chessmen_coords(chessmen_list_local = chessmen_list):
 		
 	return coords_dict
 
-func check_possible_moves(NPC, range_of_movement = null):
+func check_possible_moves(NPC):
 	var initial_position = NPC.tile_position
 	var king = find_king(NPC.color)
 	var chessmen_coords_copy = chessmen_coords.duplicate()
 	
-	if range_of_movement == null:
-		range_of_movement = find_possible_moves(NPC, NPC.tile_position)
+	var range_of_movement = find_possible_moves(NPC, NPC.tile_position)
 			
 	for tile in range_of_movement.duplicate():
 		var chessmen_list_copy = chessmen_list.duplicate()

@@ -105,7 +105,7 @@ func _unhandled_input(event):
 				if piece.tile_position == clicked_cell and piece.color == turn:
 					$TileMap.draw_map()
 					active_piece = piece
-					set_possible_moves(clicked_cell)
+					set_possible_moves()
 
 func player_turn(clicked_cell, sync_mult = false):
 	if sync_mult:
@@ -218,13 +218,12 @@ func change_turns():
 		game_type_node.set_Undo_button()
 		game_type_node.set_Redo_button()
 
-func set_possible_moves(clicked_cell):
+func set_possible_moves():
 	if is_multiplayer:
-		game_type_node.set_possible_moves(str(active_piece.get_path()), clicked_cell)
+		game_type_node.set_possible_moves(str(active_piece.get_path()))
 			
 	else:
-		range_of_movement = $TileMap.check_possible_moves(
-			active_piece, $TileMap.find_possible_moves(active_piece, clicked_cell))
+		range_of_movement = $TileMap.check_possible_moves(active_piece)
 		draw_possible_moves()
 		
 func draw_possible_moves():

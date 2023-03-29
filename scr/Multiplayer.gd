@@ -44,12 +44,11 @@ func prepare_game():
 		server_place_pieces()
 		gs.append_turn_history()
 		
-func set_possible_moves(piece_path, clicked_cell, double_call = false):
+func set_possible_moves(piece_path, double_call = false):
 	var piece = get_node(piece_path)
 	
 	if get_tree().is_network_server():
-		gs.range_of_movement = tilemap.check_possible_moves(
-			piece, tilemap.find_possible_moves(piece, clicked_cell))
+		gs.range_of_movement = tilemap.check_possible_moves(piece)
 			
 		if double_call:
 			gs.rset("range_of_movement", gs.range_of_movement)
@@ -58,7 +57,7 @@ func set_possible_moves(piece_path, clicked_cell, double_call = false):
 			gs.draw_possible_moves()
 			
 	else:
-		rpc("set_possible_moves", piece_path, clicked_cell, true)
+		rpc("set_possible_moves", piece_path, true)
 
 func change_turns():
 	gs.swap_turn()
