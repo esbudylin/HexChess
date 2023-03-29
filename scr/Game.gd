@@ -17,8 +17,6 @@ var is_multiplayer
 
 signal promotion_done
 
-onready var movement = $TileMap/Movement
-
 func _ready():
 	$TileMap.draw_map()
 	$TileMap.visible = true
@@ -46,11 +44,11 @@ func append_turn_history():
 	var coord_dictionary = {}
 	var jumped_over_copy = {}
 	
-	for piece in movement.chessmen_list.duplicate():
+	for piece in $TileMap.chessmen_list.duplicate():
 		coord_dictionary[piece.tile_position]=[piece.type, piece.color]
 	
-	for tile in movement.jumped_over_tiles:
-		jumped_over_copy[tile] = movement.jumped_over_tiles[tile].tile_position
+	for tile in $TileMap.jumped_over_tiles:
+		jumped_over_copy[tile] = $TileMap.jumped_over_tiles[tile].tile_position
 		
 	turn_history[current_turn_index] = [turn, coord_dictionary, jumped_over_copy, $TileMap.fifty_moves_counter]
 
@@ -102,8 +100,8 @@ func _unhandled_input(event):
 				or fify_moves_rule() or threefold_rule():
 					game_over('it is a draw')
 				
-			elif clicked_cell in movement.chessmen_coords:
-				var piece = movement.chessmen_coords[clicked_cell]
+			elif clicked_cell in $TileMap.chessmen_coords:
+				var piece = $TileMap.chessmen_coords[clicked_cell]
 				if piece.tile_position == clicked_cell and piece.color == turn:
 					$TileMap.draw_map()
 					active_piece = piece
@@ -113,23 +111,23 @@ func player_turn(clicked_cell, sync_mult = false):
 	if sync_mult:
 		active_piece = get_node(game_type_node.active_piece_path)
 		
-	if clicked_cell in movement.chessmen_coords:
-		for piece in movement.chessmen_list:
+	if clicked_cell in $TileMap.chessmen_coords:
+		for piece in $TileMap.chessmen_list:
 			if piece.tile_position == clicked_cell and piece !=active_piece:
 				$TileMap.kill_piece(piece)
 				break
 				
-	elif 'Pawn' in active_piece.name and clicked_cell in movement.jumped_over_tiles\
-	and clicked_cell in movement.pawn_attack(active_piece, active_piece.tile_position, false):
-		$TileMap.kill_piece(movement.jumped_over_tiles[clicked_cell])
+	elif 'Pawn' in active_piece.name and clicked_cell in $TileMap.jumped_over_tiles\
+	and clicked_cell in $TileMap.pawn_attack(active_piece, active_piece.tile_position, false):
+		$TileMap.kill_piece($TileMap.jumped_over_tiles[clicked_cell])
 		
 		if get_tree().is_network_server():
-			var dead_npc_path = str(movement.jumped_over_tiles[clicked_cell].get_path())
+			var dead_npc_path = str($TileMap.jumped_over_tiles[clicked_cell].get_path())
 			game_type_node.rpc("sync_kill_piece", dead_npc_path)
 
 	$TileMap.move_piece(active_piece, clicked_cell)
 	$TileMap.draw_map()
-	movement.update_jumped_over_tiles(active_piece)
+	$TileMap.update_jumped_over_tiles(active_piece)
 	
 func _on_Promotion_pressed(piece):
 	$TileMap.promote_pawn(active_piece, piece)
@@ -198,7 +196,7 @@ func swap_turn():
 		turn = 'white'
 
 func update_turn():
-	movement.clean_up_jumped_over(turn)
+	$TileMap.clean_up_jumped_over(turn)
 	current_turn_index += 1
 	append_turn_history()
 	adjust_turn_history()
@@ -217,7 +215,7 @@ func set_possible_moves():
 		game_type_node.set_possible_moves(str(active_piece.get_path()))
 			
 	else:
-		range_of_movement = movement.check_possible_moves(active_piece)
+		range_of_movement = $TileMap.check_possible_moves(active_piece)
 		draw_possible_moves()
 		
 func draw_possible_moves():

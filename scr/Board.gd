@@ -1,19 +1,17 @@
-extends TileMap
+extends "res://scr/Movement.gd"
 
 var tile_colors = Dictionary()
 
 var fifty_moves_counter = 0
 
-onready var mapping = $Movement/Mapping
+onready var promotion_tiles = delete_duplicates(
+	$Mapping.draw_diagonal_line(Vector2(0, -5), 5, 1, 1)
+	+ $Mapping.draw_diagonal_line(Vector2(0, -5), 5, -1, 1)
+	+ $Mapping.draw_diagonal_line(Vector2(0, 5), 5, 1, -1)
+	+ $Mapping.draw_diagonal_line(Vector2(0, 5), 5, -1, -1)) 
 
-onready var promotion_tiles = $Movement.delete_duplicates(
-	mapping.draw_diagonal_line(Vector2(0, -5), 5, 1, 1)
-	+ mapping.draw_diagonal_line(Vector2(0, -5), 5, -1, 1)
-	+ mapping.draw_diagonal_line(Vector2(0, 5), 5, 1, -1)
-	+ mapping.draw_diagonal_line(Vector2(0, 5), 5, -1, -1)) 
-
-onready var verticals_1 = mapping.draw_diagonal_line(Vector2(-5, -3), 5, 1, -1)
-onready var verticals_2 = mapping.draw_diagonal_line(Vector2(5, -3), 4, -1, -1)
+onready var verticals_1 = $Mapping.draw_diagonal_line(Vector2(-5, -3), 5, 1, -1)
+onready var verticals_2 = $Mapping.draw_diagonal_line(Vector2(5, -3), 4, -1, -1)
 
 func draw_map():
 	set_verticals(verticals_1)
@@ -27,7 +25,7 @@ func set_verticals(tile_array):
 		var i = 0
 		var index_while = index
 		
-		while tile in $Movement.coord_tiles:
+		while tile in coord_tiles:
 			set_cell(tile[0], tile[1], tilenumbers[index_while])
 			tile_colors[tile] = tilenumbers[index_while]
 			
@@ -62,10 +60,10 @@ func add_piece(piece, tile_position, type, color = null):
 		piece.color = 'white'
 	
 	if piece.type == 'King':
-		$Movement.kings[piece.color] = piece
+		kings[piece.color] = piece
 	
-	$Movement.chessmen_list.append(piece)
-	$Movement.chessmen_coords[tile_position] = piece
+	chessmen_list.append(piece)
+	chessmen_coords[tile_position] = piece
 
 func place_type_of_pieces(type, tiles):
 	for tile in tiles:
@@ -74,32 +72,32 @@ func place_type_of_pieces(type, tiles):
 
 func place_pieces():
 	var pieces_places = {
-	$Piece/King: mapping.king_tiles,
-	$Piece/Queen: mapping.queen_tiles,
-	$Piece/Rook: mapping.rook_tiles,
-	$Piece/Bishop: mapping.bishop_tiles,
-	$Piece/Knight: mapping.knight_tiles,
-	$Piece/Pawn: $Movement.initial_pawn_tiles_black + $Movement.initial_pawn_tiles_white
+	$Piece/King: $Mapping.king_tiles,
+	$Piece/Queen: $Mapping.queen_tiles,
+	$Piece/Rook: $Mapping.rook_tiles,
+	$Piece/Bishop: $Mapping.bishop_tiles,
+	$Piece/Knight: $Mapping.knight_tiles,
+	$Piece/Pawn: initial_pawn_tiles_black + initial_pawn_tiles_white
 	}
 	
 	for type in pieces_places:
 		place_type_of_pieces(type, pieces_places[type])
 	
-	if mapping.chess_type == 'McCooey': #these pawns aren't allowed to double-jump in McCooey version
-		$Movement.initial_pawn_tiles_black.erase(Vector2(0, -2))
-		$Movement.initial_pawn_tiles_white.erase(Vector2(0, 2))
+	if $Mapping.chess_type == 'McCooey': #these pawns aren't allowed to double-jump in McCooey version
+		initial_pawn_tiles_black.erase(Vector2(0, -2))
+		initial_pawn_tiles_white.erase(Vector2(0, 2))
 
 func kill_piece(NPC):
 	NPC.visible = false
-	$Movement.chessmen_list.erase(NPC)
-	$Movement.chessmen_coords.erase(NPC.tile_position)
+	chessmen_list.erase(NPC)
+	chessmen_coords.erase(NPC.tile_position)
 	fifty_moves_counter = 0
 
 func move_piece(piece, new_position):
-	$Movement.chessmen_coords.erase(piece.tile_position)			
+	chessmen_coords.erase(piece.tile_position)			
 	piece.position = map_to_world(new_position)
 	piece.tile_position = new_position
-	$Movement.chessmen_coords[new_position] = piece
+	chessmen_coords[new_position] = piece
 
 func promote_pawn(pawn, promotion):
 	kill_piece(pawn)
@@ -107,9 +105,9 @@ func promote_pawn(pawn, promotion):
 	add_piece(new_piece, pawn.tile_position, promotion, pawn.color)
 
 func check_checkmate_stalemate(turn):
-	for tile_piece in $Movement.chessmen_coords:
-		if $Movement.chessmen_coords[tile_piece].color == turn\
-		and $Movement.check_possible_moves($Movement.chessmen_coords[tile_piece]) != []:
+	for tile_piece in chessmen_coords:
+		if chessmen_coords[tile_piece].color == turn\
+		and check_possible_moves(chessmen_coords[tile_piece]) != []:
 			return false
 	
 	if if_king_checked(turn):
@@ -121,7 +119,7 @@ func if_able_to_checkmate(color):
 	var pieces_dict = {'Knight': 0, 'Bishop': 0}
 	var bishops = Array()
 	
-	for piece in $Movement.chessmen_list:
+	for piece in chessmen_list:
 		if piece.color == color:
 			
 			if 'Pawn' in piece.name or 'Queen' in piece.name or 'Rook' in piece.name:
@@ -160,10 +158,23 @@ func if_able_to_checkmate(color):
 		return true
 
 func if_king_checked(turn):
-	var king = $Movement.kings[turn]
+	var king = kings[turn]
 
-	for piece in $Movement.chessmen_list:
-		if king.tile_position in $Movement.find_possible_moves(piece, piece.tile_position):
+	for piece in chessmen_list:
+		if king.tile_position in find_possible_moves(piece, piece.tile_position):
 			return true
 			
 	return false
+
+func clean_up_jumped_over(color):
+	for tile in jumped_over_tiles.keys():
+		if jumped_over_tiles[tile].color == color:
+			jumped_over_tiles.erase(tile)
+
+func update_jumped_over_tiles(moved_piece):
+	if moved_piece.type == "Pawn":
+		for tile in passable_tiles:
+			if passable_tiles[tile] == moved_piece:
+				jumped_over_tiles[tile] = moved_piece
+
+	passable_tiles = {}

@@ -2,7 +2,6 @@ extends Node
 
 onready var gs = $"../Game"
 onready var tilemap = $"../Game/TileMap"
-onready var movement = $"../Game/TileMap/Movement"
 
 func prepare_game():
 	tilemap.place_pieces()
@@ -32,10 +31,10 @@ func _on_Rewind_pressed(index):
 	gs.current_turn_index +=index
 	gs.range_of_movement = []
 	
-	for piece in movement.chessmen_list.duplicate():
+	for piece in tilemap.chessmen_list.duplicate():
 		piece.visible = false
-		movement.chessmen_list.erase(piece)
-		movement.chessmen_coords.erase(piece.tile_position)
+		tilemap.chessmen_list.erase(piece)
+		tilemap.chessmen_coords.erase(piece.tile_position)
 		
 	var turn_data = gs.turn_history[gs.current_turn_index]
 	
@@ -45,10 +44,10 @@ func _on_Rewind_pressed(index):
 		var piece_copy = get_parent().get_node('Game/TileMap/Piece/'+turn_data[1][tile][0]).duplicate()
 		tilemap.add_piece(piece_copy, tile, turn_data[1][tile][0], turn_data[1][tile][1])	
 	
-	movement.jumped_over_tiles = {}
+	tilemap.jumped_over_tiles = {}
 	
 	for tile in turn_data[2]:
-		movement.jumped_over_tiles[tile]=movement.chessmen_coords[turn_data[2][tile]]
+		tilemap.jumped_over_tiles[tile]=tilemap.chessmen_coords[turn_data[2][tile]]
 	
 	tilemap.fifty_moves_counter = turn_data[3]
 
