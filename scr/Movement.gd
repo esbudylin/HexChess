@@ -51,23 +51,23 @@ func find_chessmen_coords(chessmen_list_local = chessmen_list):
 func find_possible_moves(NPC, position):
 	var range_of_movement = Array()
 	
-	if "Pawn" in NPC.name:
+	if "Pawn" == NPC.type:
 		range_of_movement = pawn_movement(NPC, position)
 		
-	elif "Knight" in NPC.name:
+	elif "Knight" == NPC.type:
 		range_of_movement = knight_movement(NPC, position)
 		
-	elif "Bishop" in NPC.name:
+	elif "Bishop" == NPC.type:
 		range_of_movement = bishop_movement(NPC, position)
 	
-	elif "Rook" in NPC.name:
+	elif "Rook" == NPC.type:
 		range_of_movement = rook_movement(NPC, position)
 		
-	elif "Queen" in NPC.name:
+	elif "Queen" == NPC.type:
 		range_of_movement = delete_duplicates(
 			bishop_movement(NPC, position) + rook_movement(NPC, position))
 	
-	elif "King" in NPC.name:
+	elif "King" == NPC.type:
 		range_of_movement = king_movement(NPC, position)
 	
 	range_of_movement.erase(position)
@@ -103,9 +103,9 @@ func bishop_movement(NPC, position, iterations = 5, check = true):
 	var horizontal1 = []
 	var horizontal2 = []
 	
-	for iteration in iterations+1:
-		horizontal1.append(Vector2(position[0]+iteration*2, position[1]))
-		horizontal2.append(Vector2(position[0]-iteration*2, position[1]))
+	for i in iterations+1:
+		horizontal1.append(Vector2(position[0]+i*2, position[1]))
+		horizontal2.append(Vector2(position[0]-i*2, position[1]))
 	
 	if check:
 		coord_tiles_local.append_array(
@@ -243,7 +243,7 @@ func check_array(tile_array, additional_check = true, piece = null):
 	var coord_tiles_local = Array()
 	
 	for tile in tile_array:
-		if check_movement(tile) or tile == tile_array[0] and additional_check:
+		if tile == tile_array[0] and additional_check or check_movement(tile):
 			coord_tiles_local.append(tile)
 			
 		elif piece and tile in chessmen_coords and piece.color != chessmen_coords[tile].color:

@@ -24,15 +24,15 @@ func set_verticals(tile_array):
 	var index = 0
 	for vertical in tile_array:
 		var tile = vertical
-		var iteration = 0
+		var i = 0
 		var index_while = index
 		
 		while tile in $Movement.coord_tiles:
 			set_cell(tile[0], tile[1], tilenumbers[index_while])
 			tile_colors[tile] = tilenumbers[index_while]
 			
-			tile = Vector2(vertical[0], vertical[1]+iteration)
-			iteration+=1
+			tile = Vector2(vertical[0], vertical[1]+i)
+			i+=1
 			
 			index_while+=1
 			if index_while == tilenumbers.size():

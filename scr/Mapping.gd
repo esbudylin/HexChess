@@ -91,7 +91,7 @@ func bishop_diagonal(position, x, y, z = 1, iterations = 5):
 	var coord_tiles_local = []
 	var current_tile = position
 	
-	for iteration in iterations:
+	for _i in iterations:
 		if int(current_tile[0])%2!=0:
 			current_tile[1] +=x
 		else:
@@ -136,24 +136,24 @@ func place_chessmen():
 		var horizontal_4_black = []
 		var horizontal_4_white = []
 		
-		for iteration in 6:
-			black_pawn_tiles.append(Vector2(-5+iteration*2, 2))
-			white_pawn_tiles.append(Vector2(-5+iteration*2, -3))
+		for i in 6:
+			black_pawn_tiles.append(Vector2(-5+i*2, 2))
+			white_pawn_tiles.append(Vector2(-5+i*2, -3))
 			
-		for iteration in 5:
-			black_pawn_tiles.append(Vector2(-4+iteration*2, 3))
-			white_pawn_tiles.append(Vector2(-4+iteration*2, -3))
+		for i in 5:
+			black_pawn_tiles.append(Vector2(-4+i*2, 3))
+			white_pawn_tiles.append(Vector2(-4+i*2, -3))
 			
-		for iteration in 4:
-			horizontal_4_white.append(Vector2(-3+iteration*2, 3))
-			horizontal_4_black.append(Vector2(-3+iteration*2, -4))
+		for i in 4:
+			horizontal_4_white.append(Vector2(-3+i*2, 3))
+			horizontal_4_black.append(Vector2(-3+i*2, -4))
 		
 		knight_tiles = horizontal_4_white.slice(0, 2) + horizontal_4_black.slice(1, 3)
 		bishop_tiles = [horizontal_4_white[3], horizontal_4_black[0]]
 		
-		for iteration in 3:
-			var tiles = [Vector2(-2+iteration*2, 4), Vector2(-2+iteration*2, -4)]
-			if iteration == 1:
+		for i in 3:
+			var tiles = [Vector2(-2+i*2, 4), Vector2(-2+i*2, -4)]
+			if i == 1:
 				bishop_tiles.append_array(tiles)
 			else:
 				rook_tiles.append_array(tiles)
