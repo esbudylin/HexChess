@@ -108,7 +108,7 @@ func promote_pawn(pawn, promotion):
 	add_piece(new_piece, pawn.tile_position, promotion, pawn.color)
 
 func check_checkmate_stalemate(turn):
-	for tile_piece in chessmen_coords:
+	for tile_piece in chessmen_coords.duplicate():
 		if chessmen_coords[tile_piece].color == turn\
 		and check_possible_moves(chessmen_coords[tile_piece]) != []:
 			return false

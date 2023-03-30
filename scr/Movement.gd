@@ -27,26 +27,45 @@ func check_possible_moves(NPC):
 	var king = kings[NPC.color]
 	var chessmen_coords_copy = chessmen_coords.duplicate()
 	
-	var range_of_movement = find_possible_moves(NPC, NPC.tile_position)
-			
-	for tile in range_of_movement.duplicate():
-		var chessmen_list_copy = chessmen_list.duplicate()
-
-		if tile in chessmen_coords:
-			chessmen_list_copy.erase(chessmen_coords[tile])
-		
-		NPC.tile_position = tile
-		chessmen_coords = find_chessmen_coords(chessmen_list_copy)
-		
-		for tile_piece in chessmen_coords:
-			if chessmen_coords[tile_piece].color != NPC.color\
-			and king.tile_position in find_possible_moves(chessmen_coords[tile_piece], tile_piece):
-				range_of_movement.erase(tile)
-				
-	chessmen_coords = chessmen_coords_copy		
-	NPC.tile_position = initial_position
+	var king_threatening_pieces = Array()
 	
-	return range_of_movement
+	if NPC != king:
+		chessmen_coords.erase(NPC.tile_position)
+	
+	for tile_piece in chessmen_coords:
+		if chessmen_coords[tile_piece].color != NPC.color\
+		and king.tile_position in find_possible_moves(chessmen_coords[tile_piece], tile_piece):
+			king_threatening_pieces.append(chessmen_coords[tile_piece])
+			if NPC == king: break
+			if len(king_threatening_pieces)==2: break
+
+	chessmen_coords = chessmen_coords_copy
+	var range_of_movement = find_possible_moves(NPC, NPC.tile_position)
+
+	if not king_threatening_pieces:
+		return range_of_movement
+		
+	else:
+		for tile in range_of_movement.duplicate():
+			var chessmen_list_copy = chessmen_list.duplicate()
+			var erased_piece
+			
+			if tile in chessmen_coords:
+				chessmen_list_copy.erase(chessmen_coords[tile])
+				erased_piece = chessmen_coords[tile]
+			
+			NPC.tile_position = tile
+			chessmen_coords = find_chessmen_coords(chessmen_list_copy)
+			
+			for tp in king_threatening_pieces:
+				if tp!=erased_piece\
+				and king.tile_position in find_possible_moves(tp, tp.tile_position):
+					range_of_movement.erase(tile)
+					
+		chessmen_coords = chessmen_coords_copy
+		NPC.tile_position = initial_position
+
+		return range_of_movement
 
 func find_chessmen_coords(chessmen_list_local = chessmen_list):
 	var coords_dict = Dictionary()
@@ -79,6 +98,7 @@ func find_possible_moves(NPC, position):
 		range_of_movement = king_movement(NPC, position)
 	
 	range_of_movement.erase(position)
+	
 	return range_of_movement
 
 func rook_movement(NPC, position, iterations = 12, check = true):
