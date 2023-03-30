@@ -14,7 +14,7 @@ onready var verticals_1 = $Mapping.draw_diagonal_line(Vector2(-5, -3), 5, 1, -1)
 onready var verticals_2 = $Mapping.draw_diagonal_line(Vector2(5, -3), 4, -1, -1)
 
 func _ready():
-	setMapping($Mapping)
+	self.Mapping = $Mapping
 
 func draw_map():
 	set_verticals(verticals_1)
