@@ -125,13 +125,13 @@ func if_able_to_checkmate(color):
 	for piece in chessmen_list:
 		if piece.color == color:
 			
-			if 'Pawn' in piece.name or 'Queen' in piece.name or 'Rook' in piece.name:
+			if 'Pawn' == piece.type or 'Queen' == piece.type or 'Rook' == piece.type:
 				return true
 				
-			elif 'Knight' in piece.name:
+			elif 'Knight' == piece.type:
 				pieces_dict['Knight'] += 1
 				
-			elif 'Bishop' in piece.name:
+			elif 'Bishop' == piece.type:
 				pieces_dict['Bishop'] += 1
 				bishops.append(piece)
 	
@@ -164,7 +164,7 @@ func if_king_checked(turn):
 	var king = kings[turn]
 
 	for piece in chessmen_list:
-		if king.tile_position in find_possible_moves(piece, piece.tile_position):
+		if king.tile_position in find_possible_moves(piece):
 			return true
 			
 	return false

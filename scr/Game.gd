@@ -78,7 +78,7 @@ func _unhandled_input(event):
 				player_turn(clicked_cell)
 				
 				var promotion_piece
-				if 'Pawn' in active_piece.name and clicked_cell in $TileMap.promotion_tiles:
+				if 'Pawn' == active_piece.type and clicked_cell in $TileMap.promotion_tiles:
 					$HUD/PromotionBox.visible = true
 					$HUD/PromotionBox/Queen.grab_focus()
 					clickable = false
@@ -93,12 +93,7 @@ func _unhandled_input(event):
 					if promotion_piece:
 						game_type_node.rpc("sync_promotion", promotion_piece)
 				
-				if $TileMap.check_checkmate_stalemate(turn):
-					game_over(turn + ' is ' + $TileMap.check_checkmate_stalemate(turn))
-				
-				elif not $TileMap.if_able_to_checkmate('white') and not $TileMap.if_able_to_checkmate('black')\
-				or fify_moves_rule() or threefold_rule():
-					game_over('it is a draw')
+				check_for_game_over()
 				
 			elif clicked_cell in $TileMap.chessmen_coords:
 				var piece = $TileMap.chessmen_coords[clicked_cell]
@@ -112,12 +107,9 @@ func player_turn(clicked_cell, sync_mult = false):
 		active_piece = get_node(game_type_node.active_piece_path)
 		
 	if clicked_cell in $TileMap.chessmen_coords:
-		for piece in $TileMap.chessmen_list:
-			if piece.tile_position == clicked_cell and piece !=active_piece:
-				$TileMap.kill_piece(piece)
-				break
+		$TileMap.kill_piece($TileMap.chessmen_coords[clicked_cell])
 				
-	elif 'Pawn' in active_piece.name and clicked_cell in $TileMap.jumped_over_tiles\
+	elif 'Pawn' == active_piece.type and clicked_cell in $TileMap.jumped_over_tiles\
 	and clicked_cell in $TileMap.pawn_attack(active_piece, active_piece.tile_position, false):
 		$TileMap.kill_piece($TileMap.jumped_over_tiles[clicked_cell])
 		
@@ -139,8 +131,18 @@ func _on_Promotion_pressed(piece):
 		
 	emit_signal("promotion_done", piece)
 
+func check_for_game_over():
+	var checkmate_stalemate = $TileMap.check_checkmate_stalemate(turn)
+	
+	if checkmate_stalemate:
+		game_over(turn + ' is ' + checkmate_stalemate)
+	
+	elif not $TileMap.if_able_to_checkmate('white') and not $TileMap.if_able_to_checkmate('black')\
+	or fify_moves_rule() or threefold_rule():
+		game_over('it is a draw')
+
 func fify_moves_rule(amount_of_moves = 50):
-	if 'Pawn' in active_piece.name:
+	if 'Pawn' == active_piece.type:
 		$TileMap.fifty_moves_counter = 0
 		return false
 	

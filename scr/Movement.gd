@@ -34,13 +34,13 @@ func check_possible_moves(NPC):
 	
 	for tile_piece in chessmen_coords:
 		if chessmen_coords[tile_piece].color != NPC.color\
-		and king.tile_position in find_possible_moves(chessmen_coords[tile_piece], tile_piece):
+		and king.tile_position in find_possible_moves(chessmen_coords[tile_piece]):
 			king_threatening_pieces.append(chessmen_coords[tile_piece])
 			if NPC == king: break
 			if len(king_threatening_pieces)==2: break
 
 	chessmen_coords = chessmen_coords_copy
-	var range_of_movement = find_possible_moves(NPC, NPC.tile_position)
+	var range_of_movement = find_possible_moves(NPC)
 
 	if not king_threatening_pieces:
 		return range_of_movement
@@ -59,7 +59,7 @@ func check_possible_moves(NPC):
 			
 			for tp in king_threatening_pieces:
 				if tp!=erased_piece\
-				and king.tile_position in find_possible_moves(tp, tp.tile_position):
+				and king.tile_position in find_possible_moves(tp):
 					range_of_movement.erase(tile)
 					
 		chessmen_coords = chessmen_coords_copy
@@ -75,8 +75,9 @@ func find_chessmen_coords(chessmen_list_local = chessmen_list):
 		
 	return coords_dict
 
-func find_possible_moves(NPC, position):
+func find_possible_moves(NPC):
 	var range_of_movement = Array()
+	var position = NPC.tile_position
 	
 	if "Pawn" == NPC.type:
 		range_of_movement = pawn_movement(NPC, position)
@@ -187,10 +188,12 @@ func pawn_movement(pawn, position):
 	else:
 		coord_tiles_local.append_array(check_array(Mapping.draw_vertical_line(position, 2, -1)))
 	
-	if delete_duplicates(coord_tiles_local).size() == 3:
-		passable_tiles[delete_duplicates(coord_tiles_local)[1]] = pawn
+	var result = delete_duplicates(coord_tiles_local)
 	
-	return delete_duplicates(coord_tiles_local) + pawn_attack(pawn, position)
+	if result.size() == 3:
+		passable_tiles[result[1]] = pawn
+	
+	return result + pawn_attack(pawn, position)
 
 func pawn_attack(pawn, position, check = true):
 	var coord_tiles_local = []
@@ -242,17 +245,17 @@ func king_movement(king, position):
 		for piece in chessmen_list:
 			
 			if piece.color != king.color:
-				if not 'Pawn' in piece.name and not 'King' in piece.name:
-					if tile in find_possible_moves(piece, piece.tile_position):
+				if not 'Pawn' == piece.type and not 'King' == piece.type:
+					if tile in find_possible_moves(piece):
 						coord_tiles_local.erase(tile)
 					
-				elif 'King' in piece.name:
+				elif 'King' == piece.type:
 					if tile in delete_duplicates(
 						rook_movement(piece, piece.tile_position, 2, false) 
 						+ bishop_movement(piece, piece.tile_position, 1, false)):
 						coord_tiles_local.erase(tile)
 						
-				elif 'Pawn' in piece.name:
+				elif 'Pawn' == piece.type:
 					if tile in pawn_attack(piece, piece.tile_position, false):
 						coord_tiles_local.erase(tile)
 	
