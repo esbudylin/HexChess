@@ -31,15 +31,19 @@ func check_possible_moves(NPC):
 	
 	if NPC != king:
 		chessmen_coords.erase(NPC.tile_position)
-	
+
 	for tile_piece in chessmen_coords:
 		if chessmen_coords[tile_piece].color != NPC.color\
 		and king.tile_position in find_possible_moves(chessmen_coords[tile_piece]):
+			
 			king_threatening_pieces.append(chessmen_coords[tile_piece])
-			if NPC == king: break
-			if len(king_threatening_pieces)==2: break
+			
+			if len(king_threatening_pieces)==2 and NPC!=king: 
+				chessmen_coords = chessmen_coords_copy
+				return []
 
 	chessmen_coords = chessmen_coords_copy
+		
 	var range_of_movement = find_possible_moves(NPC)
 
 	if not king_threatening_pieces and NPC != king:
@@ -64,7 +68,7 @@ func check_possible_moves(NPC):
 					and king.tile_position in find_possible_moves(chessmen_coords[tile_piece]):
 						range_of_movement.erase(tile)
 			
-			elif NPC != king:
+			else:
 				for tp in king_threatening_pieces:
 					if tp!=erased_piece\
 					and king.tile_position in find_possible_moves(tp):
