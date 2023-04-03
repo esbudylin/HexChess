@@ -140,10 +140,10 @@ func check_for_game_over():
 		game_over(turn + ' is ' + checkmate_stalemate)
 	
 	elif not $TileMap.if_able_to_checkmate('white') and not $TileMap.if_able_to_checkmate('black')\
-	or fify_moves_rule() or threefold_rule():
+	or fifty_moves_rule() or threefold_rule():
 		game_over('it is a draw')
 
-func fify_moves_rule(amount_of_moves = 50):
+func fifty_moves_rule(amount_of_moves = 50):
 	if 'Pawn' == active_piece.type:
 		$TileMap.fifty_moves_counter = 0
 		return false
