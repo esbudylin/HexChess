@@ -12,9 +12,12 @@ func multiplayer_configs():
 	gs.rpc_config("draw_possible_moves", 1)
 	gs.rpc_config('threefold_rule', 1)
 	gs.rpc_config("game_over", 1)
+	gs.rpc_config("handle_notation", 1)
 	
 	gs.rset_config("clickable", 1)
 	gs.rset_config("range_of_movement", 1)
+	
+	$"../NotationOutput".rpc_config("update_notation", 1)
 	
 	rset_config("new_game_request", 1)
 	rset_config("active_piece_path", 1)

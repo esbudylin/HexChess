@@ -21,8 +21,6 @@ func _ready():
 	$TileMap.draw_map()
 	$TileMap.visible = true
 	
-	$Camera2D.set_global_position(Vector2(50, 0))
-	
 	if get_tree().has_network_peer ():
 		game_type_node = $"../Multiplayer"
 		is_multiplayer = true
@@ -74,7 +72,7 @@ func _unhandled_input(event):
 			
 			if clicked_cell in range_of_movement:
 				range_of_movement = []
-				
+					
 				player_turn(clicked_cell)
 				
 				var promotion_piece
@@ -95,6 +93,8 @@ func _unhandled_input(event):
 				
 				check_for_game_over()
 				
+				handle_notation()
+					
 			elif clicked_cell in $TileMap.chessmen_coords:
 				var piece = $TileMap.chessmen_coords[clicked_cell]
 				if piece.tile_position == clicked_cell and piece.color == turn:
@@ -105,7 +105,9 @@ func _unhandled_input(event):
 func player_turn(clicked_cell, sync_mult = false):
 	if sync_mult:
 		active_piece = get_node(game_type_node.active_piece_path)
-		
+	
+	$Notation.current_move = $Notation.Move.new(active_piece, clicked_cell)
+	
 	if clicked_cell in $TileMap.chessmen_coords:
 		$TileMap.kill_piece($TileMap.chessmen_coords[clicked_cell])
 				
@@ -132,7 +134,7 @@ func _on_Promotion_pressed(piece):
 	emit_signal("promotion_done", piece)
 
 func check_for_game_over():
-	var checkmate_stalemate = $TileMap.check_checkmate_stalemate(turn)
+	var checkmate_stalemate = $TileMap.check_checkmate_stalemate(turn, active_piece)
 	
 	if checkmate_stalemate:
 		game_over(turn + ' is ' + checkmate_stalemate)
@@ -219,7 +221,21 @@ func set_possible_moves():
 	else:
 		range_of_movement = $TileMap.check_possible_moves(active_piece)
 		draw_possible_moves()
-		
+
+func handle_notation():
+	var notation_output = $"../NotationOutput"
+	
+	if not is_multiplayer:
+		notation_output.adjust_notation()
+		notation_output.update_notation(current_turn_index-1)
+
+	elif get_tree().is_network_server():
+		notation_output.update_notation(current_turn_index-1)
+		notation_output.rpc("update_notation", current_turn_index-1, $Notation.notate())
+	
+	else:
+		rpc("handle_notation")
+	
 func draw_possible_moves():
 	$TileMap.set_cells(range_of_movement, 4)
 

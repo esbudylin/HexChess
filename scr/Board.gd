@@ -1,8 +1,11 @@
 extends "res://scr/Movement.gd"
 
 var tile_colors = Dictionary()
+var chessmen_by_color_by_type = {'white' : {}, 'black' : {}}
 
 var fifty_moves_counter = 0
+
+onready var Notation = $"../Notation"
 
 onready var promotion_tiles = delete_duplicates(
 	$Mapping.draw_diagonal_line(Vector2(0, -5), 5, 1, 1)
@@ -17,8 +20,7 @@ func _ready():
 	self.Mapping = $Mapping
 
 func draw_map():
-	set_verticals(verticals_1)
-	set_verticals(verticals_2)
+	set_verticals(verticals_1+verticals_2)
 
 func set_verticals(tile_array):
 	var tilenumbers = [0, 1, 2]
@@ -67,6 +69,11 @@ func add_piece(piece, tile_position, type, color = null):
 	
 	chessmen_list.append(piece)
 	chessmen_coords[tile_position] = piece
+	
+	if piece.type in chessmen_by_color_by_type[piece.color]:
+		chessmen_by_color_by_type[piece.color][piece.type].append(piece)
+	else:
+		chessmen_by_color_by_type[piece.color][piece.type]=[piece]
 
 func place_type_of_pieces(type, tiles):
 	for tile in tiles:
@@ -90,30 +97,38 @@ func place_pieces():
 		initial_pawn_tiles_black.erase(Vector2(0, -2))
 		initial_pawn_tiles_white.erase(Vector2(0, 2))
 
-func kill_piece(NPC):
+func kill_piece(NPC, notate = true):
 	NPC.visible = false
 	chessmen_list.erase(NPC)
 	chessmen_coords.erase(NPC.tile_position)
-	fifty_moves_counter = 0
-
+	chessmen_by_color_by_type[NPC.color][NPC.type].erase(NPC)
+	
+	if notate:
+		Notation.current_move.capture = true
+		fifty_moves_counter = 0
+		
 func move_piece(piece, new_position):
+	Notation.check_ambiguity()
 	chessmen_coords.erase(piece.tile_position)			
 	piece.position = map_to_world(new_position)
 	piece.tile_position = new_position
 	chessmen_coords[new_position] = piece
 
 func promote_pawn(pawn, promotion):
-	kill_piece(pawn)
+	kill_piece(pawn, false)
 	var new_piece = get_node("Piece/"+promotion).duplicate()
 	add_piece(new_piece, pawn.tile_position, promotion, pawn.color)
+	
+	Notation.current_move.promotion = promotion
 
-func check_checkmate_stalemate(turn):
+func check_checkmate_stalemate(turn, moved_piece):
 	for tile_piece in chessmen_coords.duplicate():
 		if chessmen_coords[tile_piece].color == turn\
 		and check_possible_moves(chessmen_coords[tile_piece]) != []:
 			return false
 	
-	if if_king_checked(turn):
+	if if_king_checked(turn, moved_piece):
+		Notation.current_move.checkmated = true
 		return 'checkmated'
 	else:
 		return 'stalemated'
@@ -160,12 +175,17 @@ func if_able_to_checkmate(color):
 	else:
 		return true
 
-func if_king_checked(turn):
+func if_king_checked(turn, moved_piece):
 	var king = kings[turn]
 
-	for piece in chessmen_list:
-		if king.tile_position in find_possible_moves(piece):
-			return true
+	if king.tile_position in find_possible_moves(moved_piece):
+		return true
+		
+	else:
+		for piece in chessmen_list:
+			if piece != moved_piece and piece.type != "King":
+				if king.tile_position in find_possible_moves(piece):
+					return true
 			
 	return false
 

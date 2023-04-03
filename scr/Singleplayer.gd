@@ -28,13 +28,14 @@ func _on_BackPanel_pressed():
 	get_tree().change_scene("res://scenes/menu.tscn")
 
 func _on_Rewind_pressed(index):
-	gs.current_turn_index +=index
+	rewind_game(gs.current_turn_index + index)
+
+func rewind_game(turn_index):
+	gs.current_turn_index = turn_index	
 	gs.range_of_movement = []
 	
 	for piece in tilemap.chessmen_list.duplicate():
-		piece.visible = false
-		tilemap.chessmen_list.erase(piece)
-		tilemap.chessmen_coords.erase(piece.tile_position)
+		tilemap.kill_piece(piece, false)
 		
 	var turn_data = gs.turn_history[gs.current_turn_index]
 	
