@@ -145,14 +145,15 @@ script = ExtResource( 2 )
 
 [node name="Black" type="Sprite" parent="Game/TileMap/Piece/Pawn"]
 visible = false
-position = Vector2( -13, -13 )
-scale = Vector2( 0.85, 0.85 )
+position = Vector2( -10, -10 )
+scale = Vector2( 0.8, 0.8 )
 texture = ExtResource( 5 )
 centered = false
 
 [node name="White" type="Sprite" parent="Game/TileMap/Piece/Pawn"]
 visible = false
-scale = Vector2( 0.85, 0.85 )
+position = Vector2( -10, -10 )
+scale = Vector2( 0.8, 0.8 )
 texture = ExtResource( 14 )
 centered = false
 
