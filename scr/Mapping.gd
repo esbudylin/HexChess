@@ -58,7 +58,6 @@ func find_tiles_in_range(position, in_range):
 	
 func draw_vertical_line(position, length, updown = 1):
 	var coord_tiles = Array()
-	coord_tiles.append(position)
 	
 	for iteration in length:
 		coord_tiles.append(Vector2(position[0],position[1]+iteration*updown))
