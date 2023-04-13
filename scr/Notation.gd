@@ -90,10 +90,13 @@ func check_ambiguity():
 	
 	var same_letter
 	var same_number
+	var ambiguity
 	
 	for piece in Board.chessmen_by_color_by_type[current_move.moved_piece.color][current_move.moved_piece.type]:
 		if piece != current_move.moved_piece:
 			if current_move.new_position in Board.find_possible_moves(piece):
+				ambiguity = true
+				
 				if not same_letter:
 					same_letter = mapped_tiles[piece.tile_position][0] == mapped_tiles[current_move.old_position][0]
 				if not same_number:
@@ -101,12 +104,12 @@ func check_ambiguity():
 				
 				if same_letter and same_number:
 					break
-	
-	if same_letter and same_number:
-		current_move.ambiguity = 3
+				
+	if not ambiguity:
+		current_move.ambiguity = 0		
+	elif same_letter and same_number:
+		current_move.ambiguity = 3		
 	elif same_letter:
 		current_move.ambiguity = 2
-	elif same_number:
-		current_move.ambiguity = 1
 	else:
-		current_move.ambiguity = 0
+		current_move.ambiguity = 1
