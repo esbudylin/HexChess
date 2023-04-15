@@ -9,7 +9,7 @@ func copy_board(board):
 	board.place_pieces()
 	board.append_turn_history()
 
-func make_turn(board, piece, new_position, promotion = null):
+func make_move(board, piece, new_position, promotion = null):
 	if new_position in board.chessmen_coords:
 		board.kill_piece(board.chessmen_coords[new_position])
 				

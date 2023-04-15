@@ -48,16 +48,16 @@ func load_turns(moves_data, board):
 		var target_square = move[3]
 		var promotion = move[4]
 		
-		var turn_made
+		var move_made
 
 		for piece in board.chessmen_by_color_by_type[board.turn][piece_type]:
 			if check_origin_square(coords_to_notation[piece.tile_position], move[1], move[2]) and\
 			notation_to_coords[target_square] in board.check_possible_moves(piece):
-				make_turn(board, piece, notation_to_coords[target_square], promotion)
-				turn_made = true
+				make_move(board, piece, notation_to_coords[target_square], promotion)
+				move_made = true
 				break
 		
-		if not turn_made:
+		if not move_made:
 			board.queue_free()
 			loading_error('Illegal move detected')
 			return false
