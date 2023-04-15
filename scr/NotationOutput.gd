@@ -19,7 +19,7 @@ func update_notation(half_turn, new_record = null):
 	var child_idx
 	
 	if not new_record:
-		new_record = $"../Game/Notation".notate()
+		new_record = $"../Notation".notate()
 
 	if not half_turn%2:
 		current_output = initial_output.duplicate()
@@ -39,13 +39,16 @@ func update_notation(half_turn, new_record = null):
 	
 	game_notation[half_turn] = new_record
 	
+func clean_output(): 
+	for i in output_container.get_children(): i.queue_free()
+
 func adjust_notation():
-	var half_turn = $"../Game".current_turn_index - 1
+	var half_turn = $'../Game'.Board.current_turn_index - 1
 	var clean_up = len(game_notation)-half_turn
 
 	if not clean_up: return
-
-	for i in output_container.get_children(): i.queue_free()
+	
+	clean_output()
 	
 	for key in game_notation.keys().slice(half_turn, -1):
 		game_notation.erase(key)

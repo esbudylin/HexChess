@@ -9,7 +9,7 @@ var bishop_tiles = Array()
 var black_pawn_tiles = Array()
 var white_pawn_tiles = Array()
  
-onready var chess_type = get_node('/root/PlayersData').chess_type
+onready var chess_type = get_node('/root/PlayersData').chess_type.to_lower()
 
 func _ready():
 	place_chessmen()
@@ -102,7 +102,7 @@ func bishop_diagonal(position, x, y, z = 1, iterations = 5):
 	return coord_tiles_local
 
 func place_chessmen():
-	if chess_type == 'Glinski' or chess_type == 'McCooey':
+	if chess_type == 'glinski' or chess_type == 'mccooey':
 		var tiles = [-5, -4, -3, 3, 4, 5]
 		
 		for tile in tiles:
@@ -111,7 +111,7 @@ func place_chessmen():
 		queen_tiles = [Vector2(-1, -5), Vector2(-1, 4)]
 		king_tiles = [Vector2(1, 4), Vector2(1, -5)]
 		
-	if chess_type == 'Glinski':
+	if chess_type == 'glinski':
 		rook_tiles = [Vector2(-3, -4), Vector2(3, -4), Vector2(-3, 3), Vector2(3, 3)]
 		knight_tiles = [Vector2(-2, -4), Vector2(2, -4), Vector2(-2, 4), Vector2(2, 4)]
 		
@@ -121,7 +121,7 @@ func place_chessmen():
 		white_pawn_tiles = draw_diagonal_line(Vector2(0, -1), 4, 1, -1)\
 		+draw_diagonal_line(Vector2(0, -1), 4, -1, -1)
 		
-	elif chess_type == 'McCooey':
+	elif chess_type == 'mccooey':
 		rook_tiles = [Vector2(-2, -4), Vector2(2, -4), Vector2(-2, 4), Vector2(2, 4)]
 		knight_tiles = [Vector2(-1, -4), Vector2(1, -4), Vector2(-1, 3), Vector2(1, 3)]
 		
@@ -131,7 +131,7 @@ func place_chessmen():
 		white_pawn_tiles = draw_diagonal_line(Vector2(0, -2), 3, 1, -1)\
 		+draw_diagonal_line(Vector2(0, -2), 3, -1, -1)
 	
-	elif chess_type == 'Hexofen':
+	elif chess_type == 'hexofen':
 		var horizontal_4_black = []
 		var horizontal_4_white = []
 		

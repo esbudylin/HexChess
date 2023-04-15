@@ -2,28 +2,29 @@ extends Node2D
 
 var range_of_movement = Array()
 
-var turn = "white"
-var turn_history = {}
-var current_turn_index = 0
-
-var clickable = true
+var clickable = true setget set_clickable
 
 var active_piece
 
 var player_colors
 
 var game_type_node
+
 var is_multiplayer
+var is_server
 
 signal promotion_done
 
+onready var Board = $TileMap
+
 func _ready():
-	$TileMap.draw_map()
-	$TileMap.visible = true
-	
-	if get_tree().has_network_peer ():
+	if get_tree().has_network_peer():
 		game_type_node = $"../Multiplayer"
 		is_multiplayer = true
+		
+		if get_tree().is_network_server():
+			is_server = true
+			
 	else:
 		game_type_node = $"../Singleplayer"
 	
@@ -38,27 +39,9 @@ func _ready():
 	for button in $HUD/PromotionBox.get_children():
 		button.connect('pressed', self, '_on_Promotion_pressed', [button.text])
 
-func append_turn_history():
-	var coord_dictionary = {}
-	var jumped_over_copy = {}
-	
-	for piece in $TileMap.chessmen_list.duplicate():
-		coord_dictionary[piece.tile_position]=[piece.type, piece.color]
-	
-	for tile in $TileMap.jumped_over_tiles:
-		jumped_over_copy[tile] = $TileMap.jumped_over_tiles[tile].tile_position
-		
-	turn_history[current_turn_index] = [turn, coord_dictionary, jumped_over_copy, $TileMap.fifty_moves_counter]
-
-func adjust_turn_history():
-	var to_clean = turn_history.keys().slice(current_turn_index+1, -1)
-	
-	for key in to_clean:
-		turn_history.erase(key)
-
 func set_player_colors():
 	if is_multiplayer:
-		if get_tree().is_network_server():
+		if is_server:
 			player_colors = [get_node('/root/PlayersData').master_color]
 		else:
 			player_colors = [get_node('/root/PlayersData').puppet_color]
@@ -67,8 +50,8 @@ func set_player_colors():
 	
 func _unhandled_input(event):
 	if event is InputEventMouseButton:
-		if event.pressed and clickable and turn in player_colors:
-			var clicked_cell = $TileMap.world_to_map(get_global_mouse_position())
+		if event.pressed and clickable and Board.turn in player_colors:
+			var clicked_cell = Board.world_to_map(get_global_mouse_position())
 			
 			if clicked_cell in range_of_movement:
 				range_of_movement = []
@@ -76,11 +59,10 @@ func _unhandled_input(event):
 				player_turn(clicked_cell)
 				
 				var promotion_piece
-				if 'Pawn' == active_piece.type and clicked_cell in $TileMap.promotion_tiles:
+				if 'Pawn' == active_piece.type and clicked_cell in Board.promotion_tiles:
 					$HUD/PromotionBox.visible = true
 					$HUD/PromotionBox/Queen.grab_focus()
-					clickable = false
-					$HUD/MenuBox.visible = false
+					self.clickable = false
 					promotion_piece = yield(self, "promotion_done")
 					
 				change_turns()
@@ -95,10 +77,10 @@ func _unhandled_input(event):
 				
 				handle_notation()
 					
-			elif clicked_cell in $TileMap.chessmen_coords:
-				var piece = $TileMap.chessmen_coords[clicked_cell]
-				if piece.tile_position == clicked_cell and piece.color == turn:
-					$TileMap.draw_map()
+			elif clicked_cell in Board.chessmen_coords:
+				var piece = Board.chessmen_coords[clicked_cell]
+				if piece.tile_position == clicked_cell and piece.color == Board.turn:
+					Board.draw_map()
 					active_piece = piece
 					set_possible_moves()
 
@@ -106,111 +88,65 @@ func player_turn(clicked_cell, sync_mult = false):
 	if sync_mult:
 		active_piece = get_node(game_type_node.active_piece_path)
 	
-	$Notation.current_move = $Notation.Move.new(active_piece, clicked_cell)
+	$"../Notation".current_move = $"../Notation".Move.new(active_piece, clicked_cell)
 	
-	if clicked_cell in $TileMap.chessmen_coords:
-		$TileMap.kill_piece($TileMap.chessmen_coords[clicked_cell])
+	if clicked_cell in Board.chessmen_coords:
+		$"../Notation".current_move.capture = true
+		Board.kill_piece(Board.chessmen_coords[clicked_cell])
 				
-	elif 'Pawn' == active_piece.type and clicked_cell in $TileMap.jumped_over_tiles\
-	and clicked_cell in $TileMap.pawn_attack(active_piece, active_piece.tile_position, false):
-		$TileMap.kill_piece($TileMap.jumped_over_tiles[clicked_cell])
+	elif 'Pawn' == active_piece.type and clicked_cell in Board.jumped_over_tiles\
+	and clicked_cell in Board.pawn_attack(active_piece, active_piece.tile_position, false):
+		$"../Notation".current_move.capture = true		
+		Board.kill_piece(Board.jumped_over_tiles[clicked_cell])
 		
-		if get_tree().is_network_server():
-			var dead_npc_path = str($TileMap.jumped_over_tiles[clicked_cell].get_path())
+		if is_server:
+			var dead_npc_path = str(Board.jumped_over_tiles[clicked_cell].get_path())
 			game_type_node.rpc("sync_kill_piece", dead_npc_path)
-
-	$TileMap.move_piece(active_piece, clicked_cell)
-	$TileMap.draw_map()
-	$TileMap.update_jumped_over_tiles(active_piece)
+	
+	if not is_multiplayer or is_server:
+		$"../Notation".check_ambiguity()
+		
+	Board.move_piece(active_piece, clicked_cell)
+	Board.draw_map()
+	Board.update_jumped_over_tiles(active_piece)
 	
 func _on_Promotion_pressed(piece):
-	$TileMap.promote_pawn(active_piece, piece)
-	clickable = true
+	promote_pawn(piece)
+	self.clickable = true
 	$HUD/PromotionBox.visible = false
-	
-	if is_multiplayer:
-		$HUD/MenuBox.visible = true
 		
 	emit_signal("promotion_done", piece)
 
+func promote_pawn(promotion):
+	$"../Notation".current_move.promotion = promotion
+	Board.promote_pawn(active_piece, promotion)
+
 func check_for_game_over():
-	var checkmate_stalemate = $TileMap.check_checkmate_stalemate(turn, active_piece)
+	var checkmate_stalemate = Board.check_checkmate_stalemate(active_piece)
 	
 	if checkmate_stalemate:
-		game_over(turn + ' is ' + checkmate_stalemate)
+		game_over(Board.turn + ' is ' + checkmate_stalemate)
+		
+		if checkmate_stalemate == 'checkmated':
+			$"../Notation".current_move.checkmated = true
 	
-	elif not $TileMap.if_able_to_checkmate('white') and not $TileMap.if_able_to_checkmate('black')\
-	or fifty_moves_rule() or threefold_rule():
+	elif not Board.if_able_to_checkmate('white') and not Board.if_able_to_checkmate('black')\
+	or Board.fifty_moves_rule() or threefold_rule():
 		game_over('it is a draw')
 
-func fifty_moves_rule(amount_of_moves = 50):
-	if 'Pawn' == active_piece.type:
-		$TileMap.fifty_moves_counter = 0
-		return false
-	
-	if turn == 'white':
-		if $TileMap.fifty_moves_counter == amount_of_moves:
-			return true
-		else:
-			$TileMap.fifty_moves_counter += 1
-			return false
-
-func threefold_rule(amount_of_moves = 3):
-	if not get_tree().has_network_peer() or get_tree().is_network_server():
-		var repeated_positions = 0
-		var breaked
-		var breaked_pawns
-		
-		for turn_step in turn_history.values():
-			if turn == turn_step[0]:
-				for key in turn_step[1].keys():
-					
-					breaked = false
-					if turn_history[current_turn_index][1].has(key):
-						if turn_step[1][key] != turn_history[current_turn_index][1][key]:
-							breaked = true
-							break
-					else:
-						breaked = true
-						break
-				
-				if not breaked\
-				and turn_step[2].size() == turn_history[current_turn_index][2].size():
-					
-					breaked_pawns = false
-					
-					for pawn_attack_tile in turn_step[2]:
-						if not pawn_attack_tile in turn_history[current_turn_index][2]:
-							breaked_pawns = true
-							break
-					
-					if not breaked_pawns:
-						repeated_positions += 1
-					
-		if repeated_positions >= amount_of_moves:
-			return true
+func threefold_rule():
+	if not is_multiplayer or is_server:
+		Board.threefold_rule()
 	
 	else:
 		rpc('threefold_rule')
-
-func swap_turn():
-	if turn == 'white':
-		turn = 'black'
-	else:
-		turn = 'white'
-
-func update_turn():
-	$TileMap.clean_up_jumped_over(turn)
-	current_turn_index += 1
-	append_turn_history()
-	adjust_turn_history()
 
 func change_turns():
 	if is_multiplayer:
 		game_type_node.change_turns()
 	else:
-		swap_turn()
-		update_turn()
+		Board.swap_turn()
+		Board.update_turn()
 		game_type_node.set_Undo_button()
 		game_type_node.set_Redo_button()
 
@@ -219,7 +155,7 @@ func set_possible_moves():
 		game_type_node.set_possible_moves(str(active_piece.get_path()))
 			
 	else:
-		range_of_movement = $TileMap.check_possible_moves(active_piece)
+		range_of_movement = Board.check_possible_moves(active_piece)
 		draw_possible_moves()
 
 func handle_notation():
@@ -227,23 +163,30 @@ func handle_notation():
 	
 	if not is_multiplayer:
 		notation_output.adjust_notation()
-		notation_output.update_notation(current_turn_index-1)
+		notation_output.update_notation(Board.current_turn_index-1)
 
-	elif get_tree().is_network_server():
-		notation_output.update_notation(current_turn_index-1)
-		notation_output.rpc("update_notation", current_turn_index-1, $Notation.notate())
+	elif is_server:
+		notation_output.update_notation(Board.current_turn_index-1)
+		notation_output.rpc("update_notation", Board.current_turn_index-1, $"../Notation".notate())
 	
 	else:
 		rpc("handle_notation")
+
+func set_clickable(value):
+	clickable = value
+	$HUD/NotationPanel/SaveLoad.visible = clickable
 	
+	if is_multiplayer:
+		$HUD/MenuBox.visible = clickable
+	else:
+		$HUD/RewindBox.visible = clickable
+		$HUD/BackPanel.visible = clickable
+		
 func draw_possible_moves():
-	$TileMap.set_cells(range_of_movement, 4)
+	Board.set_cells(range_of_movement, 4)
 
 func game_over(message, double_call = false):
-	clickable = false
-	$HUD/MenuBox.visible = false
-	$HUD/RewindBox.visible = false
-	$HUD/BackPanel.visible = false
+	self.clickable = false
 	$HUD/Announcement/Announcement.text = message
 	$HUD/Announcement.visible = true
 	$HUD/EndGame.visible = true

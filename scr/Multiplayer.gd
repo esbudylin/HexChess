@@ -5,7 +5,6 @@ var active_piece_path
 
 onready var gs = $"../Game"
 onready var peer = get_node('/root/PlayersData').peer
-onready var tilemap = $"../Game/TileMap"
 
 func multiplayer_configs():
 	gs.rpc_config("player_turn", 1)
@@ -17,8 +16,8 @@ func multiplayer_configs():
 	gs.rset_config("clickable", 1)
 	gs.rset_config("range_of_movement", 1)
 	
-	$"../NotationOutput".rpc_config("update_notation", 1)
-	
+	$"../Save".rset_config("chess_type", 1)
+		
 	rset_config("new_game_request", 1)
 	rset_config("active_piece_path", 1)
 	
@@ -32,6 +31,8 @@ func multiplayer_configs():
 	rpc_config("set_possible_moves", 1)
 	rpc_config("change_turns", 1)
 	
+	$"../NotationOutput".rpc_config("update_notation", 1)
+	
 func prepare_game():
 	multiplayer_configs()
 	announcement('you will play as ' + gs.player_colors[0])
@@ -39,19 +40,21 @@ func prepare_game():
 # warning-ignore:return_value_discarded
 	get_tree().connect("network_peer_disconnected", self, "_player_disconnected")
 # warning-ignore:return_value_discarded
-	get_tree().connect("server_disconnected", self, "announcement", ["opponent disconnected"])
+	get_tree().connect("server_disconnected", self, "_player_disconnected", ["_"])
 		
 	$'../Game/HUD/MenuBox'.visible = true
+	$'../Game/HUD/NotationPanel/SaveLoad/LoadGame'.visible = false
 		
 	if get_tree().is_network_server():
 		server_place_pieces()
-		gs.append_turn_history()
+		gs.Board.append_turn_history()
+		$"../Save".rset("chess_type", get_node('/root/PlayersData').chess_type)
 		
 func set_possible_moves(piece_path, double_call = false):
 	var piece = get_node(piece_path)
 	
 	if get_tree().is_network_server():
-		gs.range_of_movement = tilemap.check_possible_moves(piece)
+		gs.range_of_movement = gs.Board.check_possible_moves(piece)
 			
 		if double_call:
 			gs.rset("range_of_movement", gs.range_of_movement)
@@ -63,24 +66,24 @@ func set_possible_moves(piece_path, double_call = false):
 		rpc("set_possible_moves", piece_path, true)
 
 func change_turns():
-	gs.swap_turn()
+	gs.Board.swap_turn()
 		
 	if get_tree().is_network_server():
-		gs.update_turn()
+		gs.Board.update_turn()
 					
 func _player_disconnected(_id):
-	announcement("opponent disconnected")
-	$'../Game/HUD/EndGame/TryAgain'.set_disabled(true)
+	gs.game_over("opponent disconnected")
+	gs.get_node('HUD/EndGame/TryAgain').visible = false
 
 func reload_client():
 	rpc('reload_scene')
 	reload_scene()
 
 func server_place_pieces():
-	tilemap.place_pieces()
+	gs.Board.place_pieces()
 	var name_list = Array()
 			
-	for piece in tilemap.chessmen_list:
+	for piece in gs.Board.chessmen_list:
 		name_list.append(piece.name)
 		piece.name = name_list[-1]
 	
@@ -98,18 +101,20 @@ func sync_multiplayer(clicked_cell):
 
 func sync_promotion(piece):
 	gs.active_piece = get_node(active_piece_path)
-	tilemap.promote_pawn(gs.active_piece, piece)
+	gs.promote_pawn(piece)
 	gs.clickable = true
+	
+	$"../Game/Notation".current_move.promotion = piece
 
 func sync_kill_piece(piece_path):
 	var piece = get_node(piece_path)
 	
-	tilemap.kill_piece(piece)
+	gs.Board.kill_piece(piece)
 
 func sync_pieces(name_list):
-	tilemap.place_pieces()
+	gs.Board.place_pieces()
 	var iteration = 0
-	for piece in tilemap.chessmen_list:
+	for piece in gs.Board.chessmen_list:
 		piece.name = name_list[iteration]
 		iteration+=1
 		
@@ -127,18 +132,9 @@ func announcement(text):
 func anouncment_hide():
 	$'../Game/HUD/Announcement'.visible = false
 	gs.clickable = true
-	
-	if $'../Game/HUD/Announcement/Announcement'.text == 'offer declined':
-		$'../Game/HUD/MenuBox'.visible = true
-	
-	if $'../Game/HUD/Announcement/Announcement'.text == 'opponent disconnected':
-		get_tree().set_network_peer(null)
-# warning-ignore:return_value_discarded
-		get_tree().change_scene("res://scenes/menu.tscn")
 		
 func draw_offer():
 	gs.clickable = false
-	$'../Game/HUD/MenuBox'.visible = false
 	$'../Game/HUD/DrawOffer'.visible = true
 	$'../Game/HUD/Announcement'.visible = true
 	$'../Game/HUD/Announcement/Announcement'.text = 'a draw offered'
@@ -162,7 +158,6 @@ func _on_Surrender_pressed():
 
 func _on_Draw_pressed():
 	gs.clickable = false
-	$'../Game/HUD/MenuBox'.visible = false
 	rpc('draw_offer')
 
 func _on_Accept_pressed():
@@ -172,7 +167,6 @@ func _on_Accept_pressed():
 
 func _on_Decline_pressed():
 	$'../Game/HUD/DrawOffer'.visible = false
-	$'../Game/HUD/MenuBox'.visible = true
 	$'../Game/HUD/Announcement'.visible = false
 	gs.clickable = true
 	rpc('announcement', 'offer declined')

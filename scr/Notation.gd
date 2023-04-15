@@ -1,7 +1,4 @@
-extends Node
-
-onready var Mapping = $"../TileMap/Mapping"
-onready var Board = $"../TileMap"
+extends "res://scr/Mapping.gd"
 
 var mapped_tiles = Dictionary()
 var current_move
@@ -29,8 +26,8 @@ func _ready():
 func map_tiles():
 	var letters = 'abcdefghijk'
 	
-	var verticals = Mapping.draw_diagonal_line(Vector2(-5, 2), 4, 1, 1)\
-	+ Mapping.draw_diagonal_line(Vector2(0, 5), 5, 1, -1)
+	var verticals = draw_diagonal_line(Vector2(-5, 2), 4, 1, 1)\
+	+ draw_diagonal_line(Vector2(0, 5), 5, 1, -1)
 	
 	var length = 6
 	var peaked = false
@@ -41,7 +38,7 @@ func map_tiles():
 		var letter = letters[i]
 		
 		var i_vertical = 1
-		for tile in Mapping.draw_vertical_line(vertical, length, -1):
+		for tile in draw_vertical_line(vertical, length, -1):
 			mapped_tiles[tile] = letter + str(i_vertical)
 			i_vertical += 1
 		
@@ -73,7 +70,7 @@ func notate():
 		result += "#"
 		return result
 		
-	if Board.if_king_checked(get_parent().turn, current_move.moved_piece):
+	if $"../Game".Board.if_king_checked(current_move.moved_piece):
 		result += "+"
 	
 	return result
@@ -92,9 +89,9 @@ func check_ambiguity():
 	var same_number
 	var ambiguity
 	
-	for piece in Board.chessmen_by_color_by_type[current_move.moved_piece.color][current_move.moved_piece.type]:
+	for piece in $"../Game".Board.chessmen_by_color_by_type[current_move.moved_piece.color][current_move.moved_piece.type]:
 		if piece != current_move.moved_piece:
-			if current_move.new_position in Board.find_possible_moves(piece):
+			if current_move.new_position in $"../Game".Board.find_possible_moves(piece):
 				ambiguity = true
 				
 				if not same_letter:

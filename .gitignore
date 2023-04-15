@@ -1,4 +1,6 @@
 .import/
+.vs/
+saves/
 *.import
 *.cfg
 

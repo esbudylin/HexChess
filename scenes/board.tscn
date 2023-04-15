@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=2]
+[gd_scene load_steps=41 format=2]
 
 [ext_resource path="res://scr/Notation.gd" type="Script" id=1]
 [ext_resource path="res://scr/Piece.gd" type="Script" id=2]
@@ -25,6 +25,9 @@
 [ext_resource path="res://scr/Game.gd" type="Script" id=23]
 [ext_resource path="res://fonts/NixieOne.ttf" type="DynamicFontData" id=24]
 [ext_resource path="res://scr/NotationOutput.gd" type="Script" id=25]
+[ext_resource path="res://scr/Save.gd" type="Script" id=26]
+[ext_resource path="res://scr/Load.gd" type="Script" id=27]
+[ext_resource path="res://res/load_theme.tres" type="Theme" id=28]
 
 [sub_resource type="Theme" id=12]
 
@@ -77,14 +80,20 @@ script = ExtResource( 22 )
 [node name="Multiplayer" type="Node" parent="."]
 script = ExtResource( 19 )
 
+[node name="Notation" type="Node" parent="."]
+script = ExtResource( 1 )
+
 [node name="NotationOutput" type="Node" parent="."]
 script = ExtResource( 25 )
 
+[node name="Save" type="Node" parent="."]
+script = ExtResource( 26 )
+
+[node name="Load" type="Node" parent="."]
+script = ExtResource( 27 )
+
 [node name="Game" type="Node2D" parent="."]
 script = ExtResource( 23 )
-
-[node name="Notation" type="Node" parent="Game"]
-script = ExtResource( 1 )
 
 [node name="TileMap" type="TileMap" parent="Game"]
 tile_set = ExtResource( 18 )
@@ -246,14 +255,14 @@ valign = 1
 margin_left = 800.0
 margin_top = 80.0
 margin_right = 990.0
-margin_bottom = 560.0
+margin_bottom = 520.0
 custom_styles/panel = ExtResource( 17 )
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Game/HUD/NotationPanel"]
 margin_left = 5.0
 margin_top = 15.0
 margin_right = 175.0
-margin_bottom = 465.0
+margin_bottom = 440.0
 scroll_horizontal_enabled = false
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Game/HUD/NotationPanel/ScrollContainer"]
@@ -277,6 +286,7 @@ margin_right = 94.0
 margin_bottom = 25.0
 rect_min_size = Vector2( 70, 0 )
 custom_fonts/normal_font = SubResource( 15 )
+bbcode_enabled = true
 
 [node name="black" type="RichTextLabel" parent="Game/HUD/NotationPanel/ScrollContainer/VBoxContainer/TurnContainer"]
 margin_left = 98.0
@@ -284,6 +294,39 @@ margin_right = 168.0
 margin_bottom = 25.0
 rect_min_size = Vector2( 70, 0 )
 custom_fonts/normal_font = SubResource( 16 )
+bbcode_enabled = true
+
+[node name="SaveLoad" type="VBoxContainer" parent="Game/HUD/NotationPanel"]
+margin_top = 445.0
+margin_right = 190.0
+margin_bottom = 489.0
+
+[node name="SaveGame" type="Button" parent="Game/HUD/NotationPanel/SaveLoad"]
+margin_right = 190.0
+margin_bottom = 19.0
+custom_fonts/font = SubResource( 7 )
+custom_styles/hover = ExtResource( 17 )
+custom_styles/pressed = ExtResource( 17 )
+custom_styles/focus = ExtResource( 17 )
+custom_styles/disabled = ExtResource( 17 )
+custom_styles/normal = ExtResource( 17 )
+shortcut_in_tooltip = false
+shortcut = SubResource( 5 )
+text = "save game"
+
+[node name="LoadGame" type="Button" parent="Game/HUD/NotationPanel/SaveLoad"]
+margin_top = 23.0
+margin_right = 190.0
+margin_bottom = 42.0
+custom_fonts/font = SubResource( 7 )
+custom_styles/hover = ExtResource( 17 )
+custom_styles/pressed = ExtResource( 17 )
+custom_styles/focus = ExtResource( 17 )
+custom_styles/disabled = ExtResource( 17 )
+custom_styles/normal = ExtResource( 17 )
+shortcut_in_tooltip = false
+shortcut = SubResource( 5 )
+text = "load game"
 
 [node name="EndGame" type="VBoxContainer" parent="Game/HUD"]
 visible = false
@@ -309,10 +352,24 @@ shortcut_in_tooltip = false
 shortcut = SubResource( 5 )
 text = "try again?"
 
-[node name="Exit" type="Button" parent="Game/HUD/EndGame"]
+[node name="SaveGame" type="Button" parent="Game/HUD/EndGame"]
 margin_top = 23.0
 margin_right = 170.0
 margin_bottom = 42.0
+custom_fonts/font = SubResource( 7 )
+custom_styles/hover = ExtResource( 17 )
+custom_styles/pressed = ExtResource( 17 )
+custom_styles/focus = ExtResource( 17 )
+custom_styles/disabled = ExtResource( 17 )
+custom_styles/normal = ExtResource( 17 )
+shortcut_in_tooltip = false
+shortcut = SubResource( 5 )
+text = "save game"
+
+[node name="Exit" type="Button" parent="Game/HUD/EndGame"]
+margin_top = 46.0
+margin_right = 170.0
+margin_bottom = 65.0
 custom_fonts/font = SubResource( 7 )
 custom_styles/hover = ExtResource( 17 )
 custom_styles/pressed = ExtResource( 17 )
@@ -518,13 +575,36 @@ rect_scale = Vector2( 0.3, 0.3 )
 hint_tooltip = "Back to Menu"
 texture = ExtResource( 4 )
 
+[node name="FileDialog" type="FileDialog" parent="Game/HUD"]
+margin_left = 60.0
+margin_top = 80.0
+margin_right = 760.0
+margin_bottom = 570.0
+theme = ExtResource( 28 )
+custom_colors/file_icon_modulate = Color( 0.909804, 0.670588, 0.435294, 1 )
+window_title = "Open a File"
+mode = 0
+access = 2
+
+[node name="LoadError" type="AcceptDialog" parent="Game/HUD"]
+margin_left = 435.0
+margin_top = 280.0
+margin_right = 585.0
+margin_bottom = 345.0
+theme = ExtResource( 28 )
+window_title = "Loading Error"
+
 [node name="Camera2D" type="Camera2D" parent="."]
 offset = Vector2( 40, 0 )
 current = true
 zoom = Vector2( 2.2, 2.2 )
 
+[connection signal="pressed" from="Game/HUD/NotationPanel/SaveLoad/SaveGame" to="Save" method="_on_SaveGame_pressed"]
+[connection signal="pressed" from="Game/HUD/NotationPanel/SaveLoad/LoadGame" to="Load" method="_on_LoadGame_pressed"]
+[connection signal="pressed" from="Game/HUD/EndGame/SaveGame" to="Save" method="_on_SaveGame_pressed"]
 [connection signal="pressed" from="Game/HUD/DrawOffer/Accept" to="Multiplayer" method="_on_Accept_pressed"]
 [connection signal="pressed" from="Game/HUD/DrawOffer/Decline" to="Multiplayer" method="_on_Decline_pressed"]
 [connection signal="pressed" from="Game/HUD/MenuBox/Draw" to="Multiplayer" method="_on_Draw_pressed"]
 [connection signal="pressed" from="Game/HUD/MenuBox/Surrender" to="Multiplayer" method="_on_Surrender_pressed"]
 [connection signal="pressed" from="Game/HUD/BackPanel" to="Singleplayer" method="_on_BackPanel_pressed"]
+[connection signal="file_selected" from="Game/HUD/FileDialog" to="Load" method="_on_FileDialog_file_selected"]

@@ -213,13 +213,13 @@ func pawn_attack(pawn, position, check = true):
 	var closest_tiles = Mapping.find_closest_tiles(position)
 	var attack_tiles = []
 	
-	if pawn.color == 'white' and Mapping.chess_type == 'Glinski':
+	if pawn.color == 'white' and Mapping.chess_type == 'glinski':
 		if int(position[0])%2!=0:
 			attack_tiles.append_array([closest_tiles[3], closest_tiles[1]])
 		else:
 			attack_tiles.append_array([closest_tiles[0], closest_tiles[4]])
 	
-	elif pawn.color == 'black' and Mapping.chess_type == 'Glinski':
+	elif pawn.color == 'black' and Mapping.chess_type == 'glinski':
 		if int(position[0])%2!=0:
 			attack_tiles.append_array([closest_tiles[0], closest_tiles[4]])
 		else:
@@ -263,9 +263,8 @@ func king_movement(king, position):
 						coord_tiles_local.erase(tile)
 					
 				elif 'King' == piece.type:
-					if tile in delete_duplicates(
-						rook_movement(piece, piece.tile_position, 2, false) 
-						+ bishop_movement(piece, piece.tile_position, 1, false)):
+					if tile in rook_movement(piece, piece.tile_position, 2, false)\
+						+ bishop_movement(piece, piece.tile_position, 1, false):
 						coord_tiles_local.erase(tile)
 						
 				elif 'Pawn' == piece.type:
