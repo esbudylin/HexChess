@@ -4,8 +4,8 @@
 [ext_resource path="res://icons/back.png" type="Texture" id=2]
 [ext_resource path="res://fonts/Russo_One.ttf" type="DynamicFontData" id=3]
 [ext_resource path="res://res/menu_buttons.tres" type="StyleBox" id=4]
-[ext_resource path="res://scr/Lobby.gd" type="Script" id=5]
-[ext_resource path="res://scr/Menu.gd" type="Script" id=6]
+[ext_resource path="res://src/Lobby.gd" type="Script" id=5]
+[ext_resource path="res://src/Menu.gd" type="Script" id=6]
 
 [sub_resource type="Theme" id=13]
 

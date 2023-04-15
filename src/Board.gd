@@ -1,4 +1,4 @@
-extends "res://scr/Movement.gd"
+extends "res://src/Movement.gd"
 
 var tile_colors = Dictionary()
 var chessmen_by_color_by_type = {'white' : {}, 'black' : {}}

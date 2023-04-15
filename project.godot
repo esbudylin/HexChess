@@ -16,7 +16,7 @@ config/icon="res://icons/icon.png"
 
 [autoload]
 
-PlayersData="*res://scr/PlayersData.gd"
+PlayersData="*res://src/PlayersData.gd"
 
 [display]
 

@@ -1,7 +1,7 @@
-extends "res://scr/ManipulateBoard.gd"
+extends "res://src/ManipulateBoard.gd"
 
-onready var LoadFile = preload("res://scr/LoadFile.cs")
-onready var LoadGame = preload("res://scr/LoadGame.cs")
+onready var LoadFile = preload("res://src/LoadFile.cs")
+onready var LoadGame = preload("res://src/LoadGame.cs")
 
 onready var Board = $'../Game/TileMap'.duplicate()
 

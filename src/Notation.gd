@@ -1,4 +1,4 @@
-extends "res://scr/Mapping.gd"
+extends "res://src/Mapping.gd"
 
 var mapped_tiles = Dictionary()
 var current_move
