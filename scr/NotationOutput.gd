@@ -8,7 +8,12 @@ onready var turn_output = $"../Game/HUD/NotationPanel/ScrollContainer/VBoxContai
 onready var initial_output = turn_output.duplicate()
 
 var current_output
+
 var game_notation = Dictionary()
+
+var record_nodes = Dictionary()
+var highlighted_node_idx
+
 var scroll_locked
 
 func _ready():
@@ -31,13 +36,26 @@ func update_notation(half_turn, new_record = null):
 	else:
 		child_idx = 2
 		scroll_container.scroll_vertical  = scrollbar.max_value
-		
-	current_output.get_child(child_idx).text = new_record
+	
+	var record_node = current_output.get_child(child_idx)
+	record_node.bbcode_text = new_record
 	
 	if not $"../Game".is_multiplayer:
-		current_output.get_child(child_idx).connect('gui_input', self, '_on_Turn_gui_input', [half_turn+1])
-	
+		record_node.connect('gui_input', self, '_on_Turn_gui_input', [half_turn+1])
+		record_node.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		record_nodes[half_turn] = record_node
+		
 	game_notation[half_turn] = new_record
+
+func highlight_current_move(move_idx):
+	if move_idx != -1:
+		var record_node = record_nodes[move_idx]
+		record_node.bbcode_text = "[u]%s[/u]" % record_node.bbcode_text
+
+	if highlighted_node_idx in record_nodes and highlighted_node_idx != move_idx:
+		record_nodes[highlighted_node_idx].bbcode_text = game_notation[highlighted_node_idx]
+		
+	highlighted_node_idx = move_idx
 	
 func clean_output(): 
 	for i in output_container.get_children(): i.queue_free()

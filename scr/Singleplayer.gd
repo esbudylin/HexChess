@@ -56,6 +56,8 @@ func rewind_game(turn_index):
 	set_Redo_button()
 	set_Undo_button()
 	
+	$'../NotationOutput'.highlight_current_move(turn_index-1)
+	
 func set_Undo_button():
 	if gs.Board.current_turn_index!=0:
 		$'../Game/HUD/RewindBox/Undo'.set_disabled(false)

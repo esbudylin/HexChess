@@ -164,6 +164,7 @@ func handle_notation():
 	if not is_multiplayer:
 		notation_output.adjust_notation()
 		notation_output.update_notation(Board.current_turn_index-1)
+		notation_output.highlight_current_move(Board.current_turn_index-1)
 
 	elif is_server:
 		notation_output.update_notation(Board.current_turn_index-1)
