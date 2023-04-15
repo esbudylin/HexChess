@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FParsec" Version="1.0.4-RC3" />
+    <PackageReference Include="NLog" Version="4.6.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../pgn.Data/pgn.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Bootstrap.fs" />
+    <Compile Include="BasicParsers.fs" />
+    <Compile Include="BasicChessParsers.fs" />
+    <Compile Include="PgnTags.fs" />
+    <Compile Include="DateTagParser.fs" />
+    <Compile Include="FenTagParser.fs" />
+    <Compile Include="TagParsers.fs" />
+    <Compile Include="MoveParsers.fs" />
+    <Compile Include="MoveSeriesParsers.fs" />
+    <Compile Include="GameParsers.fs" />
+    <Compile Include="Parser.fs" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,10 @@
+# Build output files
+**/bin/
+**/obj/
+
+# VS Code user settings
+.vscode/
+
+# VS user settings
+.vscode/
+*.sln
