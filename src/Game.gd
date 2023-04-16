@@ -90,18 +90,14 @@ func player_turn(clicked_cell, sync_mult = false):
 	
 	$"../Notation".current_move = $"../Notation".Move.new(active_piece, clicked_cell)
 	
-	if clicked_cell in Board.chessmen_coords:
+	var capture = Board.capture_on_position(active_piece, clicked_cell)
+	
+	if capture.captured:
 		$"../Notation".current_move.capture = true
-		Board.kill_piece(Board.chessmen_coords[clicked_cell])
-				
-	elif 'Pawn' == active_piece.type and clicked_cell in Board.jumped_over_tiles\
-	and clicked_cell in Board.pawn_attack(active_piece, active_piece.tile_position, false):
-		$"../Notation".current_move.capture = true		
-		Board.kill_piece(Board.jumped_over_tiles[clicked_cell])
 		
-		if is_server:
-			var dead_npc_path = str(Board.jumped_over_tiles[clicked_cell].get_path())
-			game_type_node.rpc("sync_kill_piece", dead_npc_path)
+	if is_server and capture.en_passant:
+		var dead_npc_path = str(Board.jumped_over_tiles[clicked_cell].get_path())
+		game_type_node.rpc("sync_kill_piece", dead_npc_path)
 	
 	if not is_multiplayer or is_server:
 		$"../Notation".check_ambiguity()

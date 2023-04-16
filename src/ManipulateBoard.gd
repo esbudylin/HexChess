@@ -10,12 +10,7 @@ func copy_board(board):
 	board.append_turn_history()
 
 func make_move(board, piece, new_position, promotion = null):
-	if new_position in board.chessmen_coords:
-		board.kill_piece(board.chessmen_coords[new_position])
-				
-	elif 'Pawn' == piece.type and new_position in board.jumped_over_tiles\
-	and new_position in board.pawn_attack(piece, piece.tile_position, false):
-		board.kill_piece(board.jumped_over_tiles[new_position])
+	board.capture_on_position(piece, new_position)
 		
 	board.move_piece(piece, new_position)
 	board.update_jumped_over_tiles(piece)

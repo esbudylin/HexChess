@@ -118,6 +118,23 @@ func move_piece(piece, new_position):
 	if piece.type == 'Pawn':
 		fifty_moves_counter = 0
 
+func capture_on_position(piece, new_position):
+	var result = {'captured': false, 'en_passant': false}
+	
+	if new_position in chessmen_coords:
+		kill_piece(chessmen_coords[new_position])
+		
+		result.captured = true
+				
+	elif 'Pawn' == piece.type and new_position in jumped_over_tiles\
+	and new_position in pawn_attack(piece, piece.tile_position, false):
+		kill_piece(jumped_over_tiles[new_position])
+		
+		result.captured = true
+		result.en_passant = true
+		
+	return result
+
 func promote_pawn(pawn, promotion):
 	kill_piece(pawn, false)
 	var new_piece = get_node("Piece/"+promotion).duplicate()
