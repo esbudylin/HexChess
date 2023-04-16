@@ -1,12 +1,7 @@
 extends Node
 
-var chess_type
-
 func save_game():
 	var game_notation = notation_to_string()
-	
-	if not chess_type:
-		chess_type = get_node('/root/PlayersData').chess_type
 		
 	var date = Time.get_date_string_from_system()
 	var time = Time.get_time_string_from_system()
@@ -19,7 +14,7 @@ func save_game():
 	var save_path = path + '/' + date + "_" + time.replace(":", "-") + ".pgn"
 	
 	var save_string = String()
-	save_string += make_tag("Variant", chess_type) 
+	save_string += make_tag("Variant", $'../Game'.Board.Mapping.chess_type) 
 	save_string += "\n" + game_notation
 
 	var file = File.new()

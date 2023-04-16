@@ -15,8 +15,6 @@ func multiplayer_configs():
 	
 	gs.rset_config("clickable", 1)
 	gs.rset_config("range_of_movement", 1)
-	
-	$"../Save".rset_config("chess_type", 1)
 		
 	rset_config("new_game_request", 1)
 	rset_config("active_piece_path", 1)
@@ -48,7 +46,6 @@ func prepare_game():
 	if get_tree().is_network_server():
 		server_place_pieces()
 		gs.Board.append_turn_history()
-		$"../Save".rset("chess_type", get_node('/root/PlayersData').chess_type)
 		
 func set_possible_moves(piece_path, double_call = false):
 	var piece = get_node(piece_path)
