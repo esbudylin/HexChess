@@ -17,9 +17,11 @@ func make_move(board, piece, new_position, promotion = null):
 	
 	if promotion:
 		board.promote_pawn(piece, promotion)
-		
+	
 	board.swap_turn()
 	board.update_turn()
+	
+	board.fifty_moves_rule()
 
 func swap_boards(board):
 	board.visible = true
