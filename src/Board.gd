@@ -162,22 +162,22 @@ func if_able_to_checkmate(color):
 				return true
 				
 			elif 'Knight' == piece.type:
-				pieces_dict['Knight'] += 1
+				pieces_dict.Knight += 1
 				
 			elif 'Bishop' == piece.type:
-				pieces_dict['Bishop'] += 1
+				pieces_dict.Bishop += 1
 				bishops.append(piece)
 	
-	if pieces_dict['Knight'] >= 2:
+	if pieces_dict.Knight >= 2:
 		return true
 	
-	elif pieces_dict['Knight'] <= 1 and pieces_dict['Bishop'] <=1:
+	elif pieces_dict.Knight <= 1 and pieces_dict.Bishop <=1:
 		return false
 		
-	elif pieces_dict['Knight'] == 0 and pieces_dict['Bishop'] == 2:
+	elif pieces_dict.Knight == 0 and pieces_dict.Bishop == 2:
 		return false
 		
-	elif pieces_dict['Bishop'] >= 3 and pieces_dict['Knight'] == 0:
+	elif pieces_dict.Knight >= 3 and pieces_dict.Bishop == 0:
 		var colors = Array()
 		
 		for bishop in bishops:
