@@ -500,7 +500,7 @@ custom_styles/disabled = ExtResource( 17 )
 custom_styles/normal = ExtResource( 17 )
 text = "Offer a Draw"
 
-[node name="Surrender" type="Button" parent="Game/HUD/MenuBox"]
+[node name="Resign" type="Button" parent="Game/HUD/MenuBox"]
 margin_left = 154.0
 margin_right = 304.0
 margin_bottom = 40.0
@@ -511,7 +511,7 @@ custom_styles/pressed = ExtResource( 17 )
 custom_styles/focus = ExtResource( 17 )
 custom_styles/disabled = ExtResource( 17 )
 custom_styles/normal = ExtResource( 17 )
-text = "Surrender"
+text = "Resign"
 
 [node name="RewindBox" type="HBoxContainer" parent="Game/HUD"]
 visible = false
@@ -605,6 +605,6 @@ zoom = Vector2( 2.2, 2.2 )
 [connection signal="pressed" from="Game/HUD/DrawOffer/Accept" to="Multiplayer" method="_on_Accept_pressed"]
 [connection signal="pressed" from="Game/HUD/DrawOffer/Decline" to="Multiplayer" method="_on_Decline_pressed"]
 [connection signal="pressed" from="Game/HUD/MenuBox/Draw" to="Multiplayer" method="_on_Draw_pressed"]
-[connection signal="pressed" from="Game/HUD/MenuBox/Surrender" to="Multiplayer" method="_on_Surrender_pressed"]
+[connection signal="pressed" from="Game/HUD/MenuBox/Resign" to="Multiplayer" method="_on_Resign_pressed"]
 [connection signal="pressed" from="Game/HUD/BackPanel" to="Singleplayer" method="_on_BackPanel_pressed"]
 [connection signal="file_selected" from="Game/HUD/FileDialog" to="Load" method="_on_FileDialog_file_selected"]

@@ -149,9 +149,9 @@ func reload_scene():
 # warning-ignore:return_value_discarded
 	get_tree().reload_current_scene()
 	
-func _on_Surrender_pressed():
-	gs.game_over(gs.player_colors[0] + ' surrender')
-	gs.rpc('game_over', gs.player_colors[0] + ' surrender')
+func _on_Resign_pressed():
+	gs.game_over(gs.player_colors[0] + ' resign')
+	gs.rpc('game_over', gs.player_colors[0] + ' resign')
 
 func _on_Draw_pressed():
 	gs.clickable = false
