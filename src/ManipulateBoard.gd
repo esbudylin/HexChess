@@ -11,7 +11,7 @@ func copy_board(board):
 
 func make_move(board, piece, new_position, promotion = null):
 	board.capture_on_position(piece, new_position)
-		
+	
 	board.move_piece(piece, new_position)
 	board.update_jumped_over_tiles(piece)
 	
@@ -21,7 +21,7 @@ func make_move(board, piece, new_position, promotion = null):
 	board.swap_turn()
 	board.update_turn()
 	
-	board.fifty_moves_rule()
+	board.update_fifty_moves_counter()
 
 func swap_boards(board):
 	board.visible = true

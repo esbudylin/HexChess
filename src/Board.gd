@@ -7,7 +7,7 @@ var turn = "white"
 var turn_history = {}
 var current_turn_index = 0
 
-var fifty_moves_counter = 0
+var fifty_moves_counter = 1
 
 onready var promotion_tiles = delete_duplicates(
 	$Mapping.draw_diagonal_line(Vector2(0, -5), 5, 1, 1)
@@ -220,13 +220,16 @@ func update_jumped_over_tiles(moved_piece):
 
 	passable_tiles = {}
 
-func fifty_moves_rule(amount_of_moves = 50):
+func check_fifty_moves_counter(amount_of_moves = 50):
 	if turn == 'white':
 		if fifty_moves_counter == amount_of_moves:
 			return true
 		else:
-			fifty_moves_counter += 1
-			return false
+			return false	
+
+func update_fifty_moves_counter():
+	if turn == 'white':
+		fifty_moves_counter += 1
 
 func threefold_rule(amount_of_moves = 3):
 	var repeated_positions = 0

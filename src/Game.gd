@@ -76,7 +76,8 @@ func _unhandled_input(event):
 				check_for_game_over()
 				
 				handle_notation()
-					
+				Board.update_fifty_moves_counter()
+				
 			elif clicked_cell in Board.chessmen_coords:
 				var piece = Board.chessmen_coords[clicked_cell]
 				if piece.tile_position == clicked_cell and piece.color == Board.turn:
@@ -127,7 +128,7 @@ func check_for_game_over():
 			$"../Notation".current_move.checkmated = true
 	
 	elif not Board.if_able_to_checkmate('white') and not Board.if_able_to_checkmate('black')\
-	or Board.fifty_moves_rule() or threefold_rule():
+	or Board.check_fifty_moves_counter() or threefold_rule():
 		game_over('it is a draw')
 
 func threefold_rule():
