@@ -96,7 +96,7 @@ func place_pieces():
 	for type in pieces_places:
 		place_type_of_pieces(type, pieces_places[type])
 	
-	if $Mapping.chess_type == 'McCooey': #these pawns aren't allowed to double-jump in McCooey version
+	if $Mapping.chess_type == 'mccooey': #these pawns aren't allowed to double-jump in McCooey version
 		initial_pawn_tiles_black.erase(Vector2(0, -2))
 		initial_pawn_tiles_white.erase(Vector2(0, 2))
 
