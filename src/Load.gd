@@ -37,6 +37,7 @@ func load_game(save_path):
 		swap_boards(board)
 		
 		set_notation(loaded_game.GameNotation)
+		handle_result(loaded_game.Result)
 		$'../NotationOutput'.highlight_current_move(board.current_turn_index-1)
 				
 		$'../Singleplayer'.set_Undo_button()
@@ -72,6 +73,17 @@ func loading_error(message):
 	var errormessage = Game.get_node('HUD/LoadError')
 	errormessage.popup()
 	errormessage.dialog_text = message
+
+func handle_result(loaded_result):
+	var result
+	
+	match loaded_result:
+		"Black": result = '0-1'
+		"White": result = '1-0'
+		"Draw": result = '1/2-1/2'
+		_: result = null
+		
+	if result: $'../NotationOutput'.display_game_result(result)
 
 func set_notation(game_notation):
 	$'../NotationOutput'.clean_output()

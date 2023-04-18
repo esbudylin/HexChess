@@ -122,14 +122,17 @@ func check_for_game_over():
 	var checkmate_stalemate = Board.check_checkmate_stalemate(active_piece)
 	
 	if checkmate_stalemate:
-		game_over(Board.turn + ' is ' + checkmate_stalemate)
+		var message = Board.turn + ' is ' + checkmate_stalemate
 		
 		if checkmate_stalemate == 'checkmated':
+			game_over(message, Board.turn)
 			$"../Notation".current_move.checkmated = true
+		else:
+			game_over(message, 'draw')
 	
 	elif not Board.if_able_to_checkmate('white') and not Board.if_able_to_checkmate('black')\
 	or Board.check_fifty_moves_counter() or threefold_rule():
-		game_over('it is a draw')
+		game_over('it is a draw', 'draw')
 
 func threefold_rule():
 	if not is_multiplayer or is_server:
@@ -169,6 +172,8 @@ func handle_notation():
 	
 	else:
 		rpc("handle_notation")
+	
+	if notation_output.game_result != '*': notation_output.display_game_result()
 
 func set_clickable(value):
 	clickable = value
@@ -183,11 +188,12 @@ func set_clickable(value):
 func draw_possible_moves():
 	Board.set_cells(range_of_movement, 4)
 
-func game_over(message, double_call = false):
+func game_over(message, result = null, double_call = false):
 	self.clickable = false
+	$"../NotationOutput".game_result = result
 	$HUD/Announcement/Announcement.text = message
 	$HUD/Announcement.visible = true
 	$HUD/EndGame.visible = true
 	
 	if is_multiplayer and not double_call:
-		rpc('game_over', message, true)
+		rpc('game_over', message, result, true)

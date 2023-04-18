@@ -12,6 +12,7 @@ public class LoadGame : Node
 	};
 
 	public string Variant;
+	public string Result;
 
 	public Array<string> GameNotation = new Array<string>();
 	public Array movesData = new Array();
@@ -26,6 +27,8 @@ public class LoadGame : Node
 		{
 			Variant = game.Tags["Variant"];
 		}
+
+		Result = game.Result.ToString();
 
 		foreach (Move move in moves)
 		{

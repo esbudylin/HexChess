@@ -10,6 +10,7 @@ onready var initial_output = turn_output.duplicate()
 var current_output
 
 var game_notation = Dictionary()
+var game_result setget , get_game_result
 
 var record_nodes = Dictionary()
 var highlighted_node_idx
@@ -56,7 +57,19 @@ func highlight_current_move(move_idx):
 		record_nodes[highlighted_node_idx].bbcode_text = game_notation[highlighted_node_idx]
 		
 	highlighted_node_idx = move_idx
-	
+
+func display_game_result(result = self.game_result):
+	current_output = initial_output.duplicate()
+	output_container.add_child(current_output)
+	current_output.get_child(1).text = result
+
+func get_game_result():
+	match game_result:
+		'draw': return '1/2-1/2'
+		'white': return '0-1'
+		'black': return '1-0'
+		_: return '*'
+
 func clean_output(): 
 	for i in output_container.get_children(): i.queue_free()
 

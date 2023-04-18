@@ -150,8 +150,8 @@ func reload_scene():
 	get_tree().reload_current_scene()
 	
 func _on_Resign_pressed():
-	gs.game_over(gs.player_colors[0] + ' resign')
-	gs.rpc('game_over', gs.player_colors[0] + ' resign')
+	gs.game_over(gs.player_colors[0] + ' resign', gs.player_colors[0])
+	gs.rpc('game_over', gs.player_colors[0] + ' resign', gs.player_colors[0])
 
 func _on_Draw_pressed():
 	gs.clickable = false
@@ -159,8 +159,8 @@ func _on_Draw_pressed():
 
 func _on_Accept_pressed():
 	$'../Game/HUD/DrawOffer'.visible = false
-	gs.game_over('it is a draw')
-	gs.rpc('game_over', 'it is a draw')
+	gs.game_over('it is a draw', 'draw')
+	gs.rpc('game_over', 'it is a draw', 'draw')
 
 func _on_Decline_pressed():
 	$'../Game/HUD/DrawOffer'.visible = false

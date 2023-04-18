@@ -14,6 +14,7 @@ func save_game():
 	var save_path = path + '/' + date + "_" + time.replace(":", "-") + ".pgn"
 	
 	var save_string = String()
+	save_string += make_tag("Result", $'../NotationOutput'.game_result)
 	save_string += make_tag("Variant", $'../Game'.Board.Mapping.chess_type) 
 	save_string += "\n" + game_notation
 
