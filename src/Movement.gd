@@ -250,29 +250,33 @@ func pawn_attack(pawn, position, check = true):
 func king_movement(king, position):
 	var initial = delete_duplicates(
 		rook_movement(king, position, 2) + bishop_movement(king, position, 1))
+
+	var output = initial.duplicate()
 	
-	var coord_tiles_local = initial.duplicate()
-	chessmen_list.erase(king)
-	
-	for tile in initial:
-		for piece in chessmen_list:
-			
-			if piece.color != king.color:
-				if not 'Pawn' == piece.type and not 'King' == piece.type:
-					if tile in find_possible_moves(piece):
-						coord_tiles_local.erase(tile)
+	for piece in chessmen_list:
+		var array_to_check
+		
+		if piece.color != king.color:
+			if not 'Pawn' == piece.type and not 'King' == piece.type:
+				array_to_check = find_possible_moves(piece)
+				
+			elif 'King' == piece.type:
+				array_to_check = rook_movement(piece, piece.tile_position, 2, false)\
+					+ bishop_movement(piece, piece.tile_position, 1, false)
 					
-				elif 'King' == piece.type:
-					if tile in rook_movement(piece, piece.tile_position, 2, false)\
-						+ bishop_movement(piece, piece.tile_position, 1, false):
-						coord_tiles_local.erase(tile)
+			elif 'Pawn' == piece.type:
+				array_to_check = pawn_attack(piece, piece.tile_position, false)
 						
-				elif 'Pawn' == piece.type:
-					if tile in pawn_attack(piece, piece.tile_position, false):
-						coord_tiles_local.erase(tile)
-	
-	chessmen_list.append(king)
-	return coord_tiles_local
+			output = remove_intersection(output, array_to_check)
+			
+	return output
+
+func remove_intersection(array_to_clean, array_to_check):
+	for tile in array_to_clean.duplicate():
+		if tile in array_to_check:
+			array_to_clean.erase(tile)
+			
+	return array_to_clean
 	
 func delete_duplicates(array):
 	var unique_elements = []
