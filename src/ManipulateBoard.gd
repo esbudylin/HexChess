@@ -25,6 +25,7 @@ func make_move(board, piece, new_position, promotion = null):
 
 func swap_boards(board):
 	board.visible = true
+	board.draw_map()
 	
 	var old_board = Game.Board
 	old_board.queue_free()

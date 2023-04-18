@@ -9,6 +9,8 @@ var current_turn_index = 0
 
 var fifty_moves_counter = 1
 
+var reverse
+
 onready var promotion_tiles = delete_duplicates(
 	$Mapping.draw_diagonal_line(Vector2(0, -5), 5, 1, 1)
 	+ $Mapping.draw_diagonal_line(Vector2(0, -5), 5, -1, 1)
@@ -18,15 +20,20 @@ onready var promotion_tiles = delete_duplicates(
 onready var verticals_1 = $Mapping.draw_diagonal_line(Vector2(-5, -3), 5, 1, -1)
 onready var verticals_2 = $Mapping.draw_diagonal_line(Vector2(5, -3), 4, -1, -1)
 
+onready var piece_scr = preload('res://src/Piece.gd')
+
 func _ready():
 	self.Mapping = $Mapping
-	draw_map()
 
 func draw_map():
 	set_verticals(verticals_1+verticals_2)
 	
 func set_verticals(tile_array):
-	var tilenumbers = [0, 1, 2]
+	var tilenumbers
+	
+	if reverse: tilenumbers = [1, 0, 2]
+	else: tilenumbers = [0, 1, 2]
+	
 	var index = 0
 	for vertical in tile_array:
 		var tile = vertical
@@ -47,16 +54,28 @@ func set_verticals(tile_array):
 		index+=1
 		if index == tilenumbers.size():
 			index = 0
-			
+
+func mirror_tile(tile):
+	if int(tile[0])%2:
+		return Vector2(tile[0], -tile[1]-1)
+	else:
+		return Vector2(tile[0], -tile[1])
+
+func world_to_board(position):
+	if reverse:
+		return mirror_tile(world_to_map(position))
+	else:
+		return world_to_map(position)
+
 func set_cells(set_tiles, tile_number):
 	for tile in set_tiles:
 		set_cell(tile[0], tile[1], tile_number)
 
 func add_piece(piece, tile_position, type, color = null):
+	piece.set_script(piece_scr)
 	add_child(piece)
-		
+	
 	piece.tile_position = tile_position
-	piece.position = map_to_world(piece.tile_position)
 	piece.type = type
 	piece.visible = true
 	
@@ -110,8 +129,7 @@ func kill_piece(NPC, notate = true):
 		fifty_moves_counter = 0
 		
 func move_piece(piece, new_position):
-	chessmen_coords.erase(piece.tile_position)			
-	piece.position = map_to_world(new_position)
+	chessmen_coords.erase(piece.tile_position)
 	piece.tile_position = new_position
 	chessmen_coords[new_position] = piece
 	

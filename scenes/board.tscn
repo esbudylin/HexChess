@@ -1,20 +1,8 @@
-[gd_scene load_steps=41 format=2]
+[gd_scene load_steps=29 format=2]
 
 [ext_resource path="res://src/Notation.gd" type="Script" id=1]
-[ext_resource path="res://src/Piece.gd" type="Script" id=2]
-[ext_resource path="res://tiles/black_queen.png" type="Texture" id=3]
+[ext_resource path="res://scenes/chessmen.tscn" type="PackedScene" id=2]
 [ext_resource path="res://icons/back.png" type="Texture" id=4]
-[ext_resource path="res://tiles/black_pawn.png" type="Texture" id=5]
-[ext_resource path="res://tiles/white_king.png" type="Texture" id=6]
-[ext_resource path="res://tiles/black_king.png" type="Texture" id=7]
-[ext_resource path="res://tiles/white_bishop.png" type="Texture" id=8]
-[ext_resource path="res://tiles/black_rook.png" type="Texture" id=9]
-[ext_resource path="res://tiles/white_rook.png" type="Texture" id=10]
-[ext_resource path="res://tiles/white_knight.png" type="Texture" id=11]
-[ext_resource path="res://tiles/black_bishop.png" type="Texture" id=12]
-[ext_resource path="res://tiles/black_knight.png" type="Texture" id=13]
-[ext_resource path="res://tiles/white_pawn.png" type="Texture" id=14]
-[ext_resource path="res://tiles/white_queen.png" type="Texture" id=15]
 [ext_resource path="res://fonts/Russo_One.ttf" type="DynamicFontData" id=16]
 [ext_resource path="res://res/menu_buttons.tres" type="StyleBox" id=17]
 [ext_resource path="res://res/chess_tileset.tres" type="TileSet" id=18]
@@ -106,119 +94,7 @@ script = ExtResource( 20 )
 [node name="Mapping" type="Node" parent="Game/TileMap"]
 script = ExtResource( 21 )
 
-[node name="Piece" type="Node2D" parent="Game/TileMap"]
-visible = false
-position = Vector2( 0, -1 )
-
-[node name="King" type="Node2D" parent="Game/TileMap/Piece"]
-visible = false
-position = Vector2( 0, 1 )
-script = ExtResource( 2 )
-
-[node name="Black" type="Sprite" parent="Game/TileMap/Piece/King"]
-visible = false
-position = Vector2( -10, -10 )
-scale = Vector2( 0.8, 0.8 )
-texture = ExtResource( 7 )
-centered = false
-
-[node name="White" type="Sprite" parent="Game/TileMap/Piece/King"]
-visible = false
-position = Vector2( -10, -10 )
-scale = Vector2( 0.8, 0.8 )
-texture = ExtResource( 6 )
-centered = false
-
-[node name="Queen" type="Node2D" parent="Game/TileMap/Piece"]
-visible = false
-position = Vector2( 0, 1 )
-script = ExtResource( 2 )
-
-[node name="Black" type="Sprite" parent="Game/TileMap/Piece/Queen"]
-visible = false
-position = Vector2( -10, -10 )
-scale = Vector2( 0.8, 0.8 )
-texture = ExtResource( 3 )
-centered = false
-
-[node name="White" type="Sprite" parent="Game/TileMap/Piece/Queen"]
-visible = false
-position = Vector2( -10, -10 )
-scale = Vector2( 0.8, 0.8 )
-texture = ExtResource( 15 )
-centered = false
-
-[node name="Pawn" type="Node2D" parent="Game/TileMap/Piece"]
-visible = false
-script = ExtResource( 2 )
-
-[node name="Black" type="Sprite" parent="Game/TileMap/Piece/Pawn"]
-visible = false
-position = Vector2( -10, -10 )
-scale = Vector2( 0.8, 0.8 )
-texture = ExtResource( 5 )
-centered = false
-
-[node name="White" type="Sprite" parent="Game/TileMap/Piece/Pawn"]
-visible = false
-position = Vector2( -10, -10 )
-scale = Vector2( 0.8, 0.8 )
-texture = ExtResource( 14 )
-centered = false
-
-[node name="Bishop" type="Node2D" parent="Game/TileMap/Piece"]
-visible = false
-script = ExtResource( 2 )
-
-[node name="Black" type="Sprite" parent="Game/TileMap/Piece/Bishop"]
-visible = false
-position = Vector2( -10, -10 )
-scale = Vector2( 0.8, 0.8 )
-texture = ExtResource( 12 )
-centered = false
-
-[node name="White" type="Sprite" parent="Game/TileMap/Piece/Bishop"]
-visible = false
-position = Vector2( -10, -10 )
-scale = Vector2( 0.8, 0.8 )
-texture = ExtResource( 8 )
-centered = false
-
-[node name="Rook" type="Node2D" parent="Game/TileMap/Piece"]
-visible = false
-script = ExtResource( 2 )
-
-[node name="Black" type="Sprite" parent="Game/TileMap/Piece/Rook"]
-visible = false
-position = Vector2( -10, -10 )
-scale = Vector2( 0.8, 0.8 )
-texture = ExtResource( 9 )
-centered = false
-
-[node name="White" type="Sprite" parent="Game/TileMap/Piece/Rook"]
-visible = false
-position = Vector2( -10, -10 )
-scale = Vector2( 0.8, 0.8 )
-texture = ExtResource( 10 )
-centered = false
-
-[node name="Knight" type="Node2D" parent="Game/TileMap/Piece"]
-visible = false
-script = ExtResource( 2 )
-
-[node name="Black" type="Sprite" parent="Game/TileMap/Piece/Knight"]
-visible = false
-position = Vector2( -10, -10 )
-scale = Vector2( 0.8, 0.8 )
-texture = ExtResource( 13 )
-centered = false
-
-[node name="White" type="Sprite" parent="Game/TileMap/Piece/Knight"]
-visible = false
-position = Vector2( -10, -10 )
-scale = Vector2( 0.8, 0.8 )
-texture = ExtResource( 11 )
-centered = false
+[node name="Piece" parent="Game/TileMap" instance=ExtResource( 2 )]
 
 [node name="HUD" type="CanvasLayer" parent="Game"]
 

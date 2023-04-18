@@ -1,0 +1,120 @@
+[gd_scene load_steps=13 format=2]
+
+[ext_resource path="res://tiles/black_queen.png" type="Texture" id=1]
+[ext_resource path="res://tiles/black_pawn.png" type="Texture" id=2]
+[ext_resource path="res://tiles/white_king.png" type="Texture" id=3]
+[ext_resource path="res://tiles/black_king.png" type="Texture" id=4]
+[ext_resource path="res://tiles/white_bishop.png" type="Texture" id=5]
+[ext_resource path="res://tiles/white_pawn.png" type="Texture" id=6]
+[ext_resource path="res://tiles/black_bishop.png" type="Texture" id=7]
+[ext_resource path="res://tiles/black_rook.png" type="Texture" id=8]
+[ext_resource path="res://tiles/black_knight.png" type="Texture" id=9]
+[ext_resource path="res://tiles/white_rook.png" type="Texture" id=10]
+[ext_resource path="res://tiles/white_knight.png" type="Texture" id=11]
+[ext_resource path="res://tiles/white_queen.png" type="Texture" id=12]
+
+[node name="Piece" type="Node"]
+
+[node name="King" type="Node2D" parent="."]
+visible = false
+position = Vector2( 0, 1 )
+
+[node name="Black" type="Sprite" parent="King"]
+visible = false
+position = Vector2( -10, -10 )
+scale = Vector2( 0.8, 0.8 )
+texture = ExtResource( 4 )
+centered = false
+
+[node name="White" type="Sprite" parent="King"]
+visible = false
+position = Vector2( -10, -10 )
+scale = Vector2( 0.8, 0.8 )
+texture = ExtResource( 3 )
+centered = false
+
+[node name="Queen" type="Node2D" parent="."]
+visible = false
+position = Vector2( 0, 1 )
+
+[node name="Black" type="Sprite" parent="Queen"]
+visible = false
+position = Vector2( -10, -10 )
+scale = Vector2( 0.8, 0.8 )
+texture = ExtResource( 1 )
+centered = false
+
+[node name="White" type="Sprite" parent="Queen"]
+visible = false
+position = Vector2( -10, -10 )
+scale = Vector2( 0.8, 0.8 )
+texture = ExtResource( 12 )
+centered = false
+
+[node name="Pawn" type="Node2D" parent="."]
+visible = false
+
+[node name="Black" type="Sprite" parent="Pawn"]
+visible = false
+position = Vector2( -10, -10 )
+scale = Vector2( 0.8, 0.8 )
+texture = ExtResource( 2 )
+centered = false
+
+[node name="White" type="Sprite" parent="Pawn"]
+visible = false
+position = Vector2( -10, -10 )
+scale = Vector2( 0.8, 0.8 )
+texture = ExtResource( 6 )
+centered = false
+
+[node name="Bishop" type="Node2D" parent="."]
+visible = false
+
+[node name="Black" type="Sprite" parent="Bishop"]
+visible = false
+position = Vector2( -10, -10 )
+scale = Vector2( 0.8, 0.8 )
+texture = ExtResource( 7 )
+centered = false
+
+[node name="White" type="Sprite" parent="Bishop"]
+visible = false
+position = Vector2( -10, -10 )
+scale = Vector2( 0.8, 0.8 )
+texture = ExtResource( 5 )
+centered = false
+
+[node name="Rook" type="Node2D" parent="."]
+visible = false
+
+[node name="Black" type="Sprite" parent="Rook"]
+visible = false
+position = Vector2( -10, -10 )
+scale = Vector2( 0.8, 0.8 )
+texture = ExtResource( 8 )
+centered = false
+
+[node name="White" type="Sprite" parent="Rook"]
+visible = false
+position = Vector2( -10, -10 )
+scale = Vector2( 0.8, 0.8 )
+texture = ExtResource( 10 )
+centered = false
+
+[node name="Knight" type="Node2D" parent="."]
+visible = false
+
+[node name="Black" type="Sprite" parent="Knight"]
+visible = false
+position = Vector2( -10, -10 )
+scale = Vector2( 0.8, 0.8 )
+texture = ExtResource( 9 )
+centered = false
+
+[node name="White" type="Sprite" parent="Knight"]
+visible = false
+position = Vector2( -10, -10 )
+scale = Vector2( 0.8, 0.8 )
+texture = ExtResource( 11 )
+centered = false

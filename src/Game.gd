@@ -6,7 +6,7 @@ var clickable = true setget set_clickable
 
 var active_piece
 
-var player_colors
+var player_colors setget set_player_colors
 
 var game_type_node
 
@@ -28,7 +28,7 @@ func _ready():
 	else:
 		game_type_node = $"../Singleplayer"
 	
-	set_player_colors()
+	handle_player_colors()
 	game_type_node.prepare_game()
 	
 # warning-ignore:return_value_discarded
@@ -39,20 +39,20 @@ func _ready():
 	for button in $HUD/PromotionBox.get_children():
 		button.connect('pressed', self, '_on_Promotion_pressed', [button.text])
 
-func set_player_colors():
+func handle_player_colors():
 	if is_multiplayer:
 		if is_server:
-			player_colors = [get_node('/root/PlayersData').master_color]
+			self.player_colors = [get_node('/root/PlayersData').master_color]
 		else:
-			player_colors = [get_node('/root/PlayersData').puppet_color]
+			self.player_colors = [get_node('/root/PlayersData').puppet_color]
 	else:	
-		player_colors = get_node('/root/PlayersData').colors
+		self.player_colors = get_node('/root/PlayersData').colors
 	
 func _unhandled_input(event):
 	if event is InputEventMouseButton:
 		if event.pressed and clickable and Board.turn in player_colors:
-			var clicked_cell = Board.world_to_map(get_global_mouse_position())
-			
+			var clicked_cell = Board.world_to_board(get_global_mouse_position())
+
 			if clicked_cell in range_of_movement:
 				range_of_movement = []
 					
@@ -184,9 +184,25 @@ func set_clickable(value):
 	else:
 		$HUD/RewindBox.visible = clickable
 		$HUD/BackPanel.visible = clickable
-		
+
+func set_player_colors(value):
+	player_colors = value
+	
+	if value == ['black']: Board.reverse = true
+	
+	Board.draw_map()
+
 func draw_possible_moves():
-	Board.set_cells(range_of_movement, 4)
+	if Board.reverse:
+		var reversed_range = Array()
+		
+		for tile in range_of_movement:
+			reversed_range.append(Board.mirror_tile(tile))
+			
+		Board.set_cells(reversed_range, 4)
+		
+	else:
+		Board.set_cells(range_of_movement, 4)
 
 func game_over(message, result = null, double_call = false):
 	self.clickable = false
