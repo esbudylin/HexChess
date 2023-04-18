@@ -28,7 +28,7 @@ public class LoadGame : Node
 			Variant = game.Tags["Variant"];
 		}
 
-		Result = game.Result.ToString();
+		Result = new GameEndEntry(game.Result).ToString();
 
 		foreach (Move move in moves)
 		{
