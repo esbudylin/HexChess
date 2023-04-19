@@ -250,10 +250,8 @@ func pawn_attack(pawn, position, check = true):
 	return coord_tiles_local
 	
 func king_movement(king, position):
-	var initial = delete_duplicates(
+	var output = delete_duplicates(
 		rook_movement(king, position, 2) + bishop_movement(king, position, 1))
-
-	var output = initial.duplicate()
 	
 	for piece in chessmen_list:
 		var array_to_check
