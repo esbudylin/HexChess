@@ -11,6 +11,7 @@ var current_output
 
 var game_notation = Dictionary()
 var game_result setget , get_game_result
+var result_output
 
 var record_nodes = Dictionary()
 var highlighted_node_idx
@@ -45,7 +46,11 @@ func update_notation(half_turn, new_record = null):
 		record_node.connect('gui_input', self, '_on_Turn_gui_input', [half_turn+1])
 		record_node.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		record_nodes[half_turn] = record_node
-		
+	
+	if result_output:
+		result_output.queue_free()
+		result_output = null
+	
 	game_notation[half_turn] = new_record
 
 func highlight_current_move(move_idx):
@@ -59,9 +64,9 @@ func highlight_current_move(move_idx):
 	highlighted_node_idx = move_idx
 
 func display_game_result(result = self.game_result):
-	current_output = initial_output.duplicate()
-	output_container.add_child(current_output)
-	current_output.get_child(1).text = result
+	result_output = initial_output.duplicate()
+	output_container.add_child(result_output)
+	result_output.get_child(1).text = result
 
 func get_game_result():
 	match game_result:
