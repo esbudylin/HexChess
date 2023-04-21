@@ -206,7 +206,7 @@ func pawn_movement(pawn, position):
 	var result = delete_duplicates(coord_tiles_local)
 	
 	if result.size() == 3:
-		passable_tiles[result[1]] = pawn
+		passable_tiles[pawn] = result[1]
 	
 	return result + pawn_attack(pawn, position)
 

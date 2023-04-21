@@ -144,8 +144,7 @@ func capture_on_position(piece, new_position):
 		
 		result.captured = true
 				
-	elif 'Pawn' == piece.type and new_position in jumped_over_tiles\
-	and new_position in pawn_attack(piece, piece.tile_position, false):
+	elif 'Pawn' == piece.type and new_position in jumped_over_tiles:
 		kill_piece(jumped_over_tiles[new_position])
 		
 		result.captured = true
@@ -231,10 +230,9 @@ func clean_up_jumped_over(color):
 			jumped_over_tiles.erase(tile)
 
 func update_jumped_over_tiles(moved_piece):
-	if moved_piece.type == "Pawn":
-		for tile in passable_tiles:
-			if passable_tiles[tile] == moved_piece:
-				jumped_over_tiles[tile] = moved_piece
+	if moved_piece.type == "Pawn" and moved_piece in passable_tiles:
+		if passable_tiles[moved_piece] != moved_piece.tile_position:
+			jumped_over_tiles[passable_tiles[moved_piece]] = moved_piece
 
 	passable_tiles = {}
 
