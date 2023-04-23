@@ -1,4 +1,4 @@
-// The file was modified to resolve an issue with displaying non-standart symbols.
+// HexChess: the file was modified to resolve an issue with displaying non-standart symbols.
 
 namespace ilf.pgn.Data
 {

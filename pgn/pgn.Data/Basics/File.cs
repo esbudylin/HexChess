@@ -1,4 +1,4 @@
-﻿// The file was modified to suit the bigger board of hexagonal chess.
+﻿// HexChess: the file was modified to suit the bigger board of hexagonal chess.
 
 namespace ilf.pgn.Data
 {
