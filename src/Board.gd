@@ -11,11 +11,7 @@ var fifty_moves_counter = 1
 
 var reverse
 
-onready var promotion_tiles = delete_duplicates(
-	$Mapping.draw_diagonal_line(Vector2(0, -5), 5, 1, 1)
-	+ $Mapping.draw_diagonal_line(Vector2(0, -5), 5, -1, 1)
-	+ $Mapping.draw_diagonal_line(Vector2(0, 5), 5, 1, -1)
-	+ $Mapping.draw_diagonal_line(Vector2(0, 5), 5, -1, -1)) 
+onready var promotion_tiles = $Mapping.promotion_tiles()
 
 onready var verticals_1 = $Mapping.draw_diagonal_line(Vector2(-5, -3), 5, 1, -1)
 onready var verticals_2 = $Mapping.draw_diagonal_line(Vector2(5, -3), 4, -1, -1)
@@ -40,7 +36,7 @@ func set_verticals(tile_array):
 		var i = 0
 		var index_while = index
 		
-		while tile in coord_tiles:
+		while tile in board_tiles:
 			set_cell(tile[0], tile[1], tilenumbers[index_while])
 			tile_colors[tile] = tilenumbers[index_while]
 			

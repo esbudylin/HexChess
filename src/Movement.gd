@@ -13,14 +13,14 @@ var Mapping setget setMapping
 var initial_pawn_tiles_white
 var initial_pawn_tiles_black
 
-var coord_tiles
+var board_tiles
 
 func setMapping(mapping_node):
 	Mapping = mapping_node
-	initial_pawn_tiles_white = delete_duplicates(Mapping.black_pawn_tiles)
-	initial_pawn_tiles_black = delete_duplicates(Mapping.white_pawn_tiles)
+	initial_pawn_tiles_white = Mapping.black_pawn_tiles
+	initial_pawn_tiles_black = Mapping.white_pawn_tiles
 
-	coord_tiles = Mapping.regular_hexagon(0, 0)
+	board_tiles = Mapping.regular_hexagon(0, 0)
 
 func check_possible_moves(NPC):
 	var initial_position = NPC.tile_position
@@ -107,72 +107,69 @@ func find_possible_moves(NPC):
 		range_of_movement = rook_movement(NPC, position)
 		
 	elif "Queen" == NPC.type:
-		range_of_movement = delete_duplicates(
-			bishop_movement(NPC, position) + rook_movement(NPC, position))
+		range_of_movement = bishop_movement(NPC, position) + rook_movement(NPC, position)
 	
 	elif "King" == NPC.type:
 		range_of_movement = king_movement(NPC, position)
 	
-	range_of_movement.erase(position)
-	
 	return range_of_movement
 
 func rook_movement(NPC, position, iterations = 12, check = true):
-	var coord_tiles_local = []
+	var result = []
 	var diagonals = [[1, 1], [1, -1], [-1, 1], [-1, -1]]
 	
 	for diagonal in diagonals:
-		if check:
-			coord_tiles_local.append_array(
-				check_array(Mapping.draw_diagonal_line(position, iterations-1, diagonal[0], diagonal[1]), true, NPC))
-		else:
-			coord_tiles_local.append_array(
-				Mapping.draw_diagonal_line(position, iterations-1, diagonal[0], diagonal[1]))
-			
-	if check:
-		coord_tiles_local.append_array(
-			check_array(Mapping.draw_vertical_line(position, iterations), true, NPC))
-		coord_tiles_local.append_array(
-			check_array(Mapping.draw_vertical_line(position, iterations, -1), true, NPC))
-	else:
-		coord_tiles_local.append_array(Mapping.draw_vertical_line(position, iterations))
-		coord_tiles_local.append_array(Mapping.draw_vertical_line(position, iterations, -1))
+		var array_to_check = Mapping.draw_diagonal_line(position, iterations-1, diagonal[0], diagonal[1]).slice(1, -1)
 		
-	coord_tiles_local = delete_duplicates(coord_tiles_local)
+		if check:
+			result.append_array(check_array(array_to_check, NPC))
+
+		else:
+			result.append_array(array_to_check)
 	
-	return coord_tiles_local
+	var vertical_1 = Mapping.draw_vertical_line(position, iterations).slice(1, -1)
+	var vertical_2 = Mapping.draw_vertical_line(position, iterations, -1).slice(1, -1)
+	
+	if check:
+		result.append_array(
+			check_array(vertical_1, NPC) + check_array(vertical_2, NPC))
+			
+	else:
+		result.append_array(vertical_1 + vertical_2)
+	
+	return result
 
 func bishop_movement(NPC, position, iterations = 5, check = true):
-	var coord_tiles_local = []
+	var result = []
 	var horizontal1 = []
 	var horizontal2 = []
 	
 	for i in iterations+1:
+		if i == 0: continue
 		horizontal1.append(Vector2(position[0]+i*2, position[1]))
 		horizontal2.append(Vector2(position[0]-i*2, position[1]))
 	
 	if check:
-		coord_tiles_local.append_array(
-			check_array(horizontal1, true, NPC)+check_array(horizontal2, true, NPC))
+		result.append_array(
+			check_array(horizontal1, NPC)+check_array(horizontal2, NPC))
 	else:
-		coord_tiles_local.append_array(horizontal1 + horizontal2)
+		result.append_array(horizontal1 + horizontal2)
 		
 	var diagonals = [[2, 1, 1], [-1, -2, 1], [2, 1, -1], [-1, -2, -1]]
 	
 	for diagonal in diagonals:
+		var array_to_check = Mapping.bishop_diagonal(position, diagonal[0], diagonal[1], diagonal[2], iterations)
+		
 		if check:
-			coord_tiles_local.append_array(check_array(
-				Mapping.bishop_diagonal(position, diagonal[0], diagonal[1], diagonal[2], iterations), false, NPC))
+			result.append_array(check_array(array_to_check, NPC))
 		else:
-			coord_tiles_local.append_array(
-				Mapping.bishop_diagonal(position, diagonal[0], diagonal[1], diagonal[2], iterations))
+			result.append_array(array_to_check)
 			
-	coord_tiles_local = delete_duplicates(coord_tiles_local)
-	return coord_tiles_local
+	return result
 
 func knight_movement(piece, position):
-	var coord_tiles_local = [position]
-	var moves = Array()
+	var result = []
+	var moves
 	
 	if int(position[0])%2==0:
 		moves = [[-1, -2], [-2, -2], [1, -2], [2, -2], [3, 0], [3, 1],
@@ -184,34 +181,34 @@ func knight_movement(piece, position):
 	for move in moves:
 		var tile =(Vector2(position[0]-move[0], position[1]-move[1]))
 		if check_movement(tile) or tile in chessmen_coords and chessmen_coords[tile].color != piece.color:
-			coord_tiles_local.append(tile)
+			result.append(tile)
 	
-	return coord_tiles_local
+	return result
 
 func pawn_movement(pawn, position):
-	var coord_tiles_local = []
+	var array_to_check
 	
 	if pawn.color == 'black' and position in initial_pawn_tiles_black:
-		coord_tiles_local.append_array(check_array(Mapping.draw_vertical_line(position, 3)))
+		array_to_check = Mapping.draw_vertical_line(position, 3)
 	
 	elif pawn.color == 'black':
-		coord_tiles_local.append_array(check_array(Mapping.draw_vertical_line(position, 2)))
+		array_to_check = Mapping.draw_vertical_line(position, 2)
 	
 	elif pawn.color == 'white' and position in initial_pawn_tiles_white:
-		coord_tiles_local.append_array(check_array(Mapping.draw_vertical_line(position, 3, -1)))
+		array_to_check = Mapping.draw_vertical_line(position, 3, -1)
 	
 	else:
-		coord_tiles_local.append_array(check_array(Mapping.draw_vertical_line(position, 2, -1)))
+		array_to_check = Mapping.draw_vertical_line(position, 2, -1)
 	
-	var result = delete_duplicates(coord_tiles_local)
+	var result = check_array(array_to_check.slice(1, -1))
 	
-	if result.size() == 3:
-		passable_tiles[pawn] = result[1]
+	if result.size() == 2:
+		passable_tiles[pawn] = result[0]
 	
 	return result + pawn_attack(pawn, position)
 
 func pawn_attack(pawn, position, check = true):
-	var coord_tiles_local = []
+	var result = []
 	var closest_tiles = Mapping.find_closest_tiles(position)
 	var attack_tiles = []
 	
@@ -240,19 +237,18 @@ func pawn_attack(pawn, position, check = true):
 			if tile in chessmen_coords:
 				var piece = chessmen_coords[tile]
 				if piece.color != pawn.color:
-					coord_tiles_local.append(tile)
+					result.append(tile)
 					
-			elif tile in jumped_over_tiles and jumped_over_tiles[tile].color != pawn.color:
-				coord_tiles_local.append(tile)
+			elif tile in jumped_over_tiles:
+				result.append(tile)
 	else:
-		coord_tiles_local = attack_tiles
+		result = attack_tiles
 
-	return coord_tiles_local
+	return result
 	
 func king_movement(king, position):
-	var output = delete_duplicates(
-		rook_movement(king, position, 2) + bishop_movement(king, position, 1))
-	
+	var output = rook_movement(king, position, 2) + bishop_movement(king, position, 1)
+
 	for piece in chessmen_list:
 		var array_to_check
 		
@@ -277,33 +273,22 @@ func remove_intersection(array_to_clean, array_to_check):
 			array_to_clean.erase(tile)
 			
 	return array_to_clean
-	
-func delete_duplicates(array):
-	var unique_elements = []
-	for element in array:
-		if not element in unique_elements:
-			unique_elements.append(element)
-		
-	return unique_elements	
 
-func check_array(tile_array, additional_check = true, piece = null):
-	var coord_tiles_local = Array()
+func check_array(tile_array, piece = null):
+	var result = Array()
 	
 	for tile in tile_array:
-		if tile == tile_array[0] and additional_check or check_movement(tile):
-			coord_tiles_local.append(tile)
+		if check_movement(tile):
+			result.append(tile)
 			
 		elif piece and tile in chessmen_coords and piece.color != chessmen_coords[tile].color:
-			coord_tiles_local.append(tile)
+			result.append(tile)
 			break
 			
 		else:
 			break
 			
-	return coord_tiles_local
+	return result
 	
 func check_movement(new_position):
-	if new_position in coord_tiles and not new_position in chessmen_coords:
-		return true
-	else:
-		return false
+	return new_position in board_tiles and not new_position in chessmen_coords
