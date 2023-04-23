@@ -1,4 +1,6 @@
-﻿[<AutoOpen>]
+﻿// HexChess: the file was modified to remove debug code.
+
+[<AutoOpen>]
 module ilf.pgn.PgnParsers.Move
 
 open System
