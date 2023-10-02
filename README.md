@@ -9,8 +9,8 @@ Starting from version 2.0, the app includes a portion of code written in Rust. I
 ## Main menu
   <img src="https://user-images.githubusercontent.com/111509227/195812418-600ef198-d417-40e6-8c7b-066831027378.png">
 
-## Local game (Glinski variant)
- <img src="https://user-images.githubusercontent.com/111509227/195812454-9062981c-6e5f-4fe4-9d18-709c964eac0c.png">
+## Local game against AI
+ <img src="https://github.com/esbudylin/HexChess/assets/111509227/1a752643-764c-4202-ade2-9de20d5dcd43">
 
-## Networked game (Hexofen)
- <img src="https://user-images.githubusercontent.com/111509227/195812474-63fb97ba-a39a-4719-9265-22626552d2af.png" >
+## Networked game
+ <img src="https://github.com/esbudylin/HexChess/assets/111509227/cb116144-b204-4346-b6fe-c0e7ff44cc8b" >
