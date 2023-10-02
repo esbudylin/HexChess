@@ -1,0 +1,18 @@
+[package]
+name = "hex_chess"
+version = "0.1.0"
+authors = ["esbudylin"]
+edition = "2023"
+
+[lib]
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies]
+gdnative = "0.11.0"
+# gdnative = { path = "../../godot-rust/gdnative" }
+itertools = "0.10.5"
+lazy_static = "1.4.0"
+slab_tree = "0.3.2"
+strum = "0.24.1"
+strum_macros = "0.24.3"
+rayon = "1.7.0"
