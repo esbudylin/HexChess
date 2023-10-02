@@ -1,10 +1,12 @@
 [entry]
 
 Windows.64="res://hex_chess.dll"
+X11.64="res://libhex_chess.so"
 
 [dependencies]
 
-Windows.64=[  ]
+Windows.64=[]
+X11.64=[]
 
 [general]
 
