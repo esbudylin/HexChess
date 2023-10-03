@@ -53,7 +53,7 @@ impl Board {
     pub fn check_for_game_over(&self, turn_idx: NodeId) -> Option<GameOver> {
         let turn_node = self.turn_history.get(turn_idx).unwrap();
         let turn = turn_node.data();
-        let checkmate_stalemate = self.checkmate_stalemate(turn);
+        let checkmate_stalemate = turn.checkmate_stalemate();
 
         if checkmate_stalemate.is_some() {
             return checkmate_stalemate;
@@ -69,22 +69,6 @@ impl Board {
         }
 
         None
-    }
-
-    fn checkmate_stalemate(&self, turn: &Turn) -> Option<GameOver> {
-        for (coords, chessman) in &turn.chessmen_placement {
-            if chessman.color == turn.color {
-                if !self.variant.find_possible_moves(turn, *coords).is_empty() {
-                    return None;
-                }
-            }
-        }
-
-        if turn.is_king_checked() {
-            return Some(GameOver::Checkmate);
-        } else {
-            return Some(GameOver::Stalemate);
-        }
     }
 
     fn threefold_rule(&self, turn: &Turn, turn_idx: NodeId) -> bool {

@@ -5,6 +5,7 @@ use itertools::Itertools;
 use rayon::prelude::*;
 use strum::IntoEnumIterator;
 
+use crate::basics::GameOver;
 use crate::{
     basics::{Chessman, ChessmanType, Color, Move},
     board::swap_color,
@@ -134,7 +135,7 @@ impl Turn {
             capture: None,
             able_to_checkmate: true,
             movement: None,
-            
+
             king_threats: vec![],
             possible_moves: vec![],
         };
@@ -198,6 +199,18 @@ impl Turn {
             .collect::<Vec<_>>();
 
         self.possible_moves = moves;
+    }
+
+    pub fn checkmate_stalemate(&self) -> Option<GameOver> {
+        return if self.possible_moves.is_empty() {
+            if self.is_king_checked() {
+                Some(GameOver::Checkmate)
+            } else {
+                Some(GameOver::Stalemate)
+            }
+        } else {
+            None
+        };
     }
 }
 
