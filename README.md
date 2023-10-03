@@ -16,7 +16,7 @@ On Linux, use this command:
 
   `mv target/release/libhex_chess.so godot`
 
-After moving the library, start the game normally via the Godot Engine. If you don't want to compile the Rust portion of the code and just want to modify the GDScript part of the project, you can use a precomiled library file from the latest [release](https://github.com/esbudylin/HexChess/releases) by placing it in the 'godot' subdirectory.
+After moving the library, start the game normally via the Godot Engine. If you don't want to compile the Rust portion of the code and just want to modify the GDScript part of the project, you can use a precompiled library file from the latest [release](https://github.com/esbudylin/HexChess/releases) by placing it in the 'godot' subdirectory.
 
 # Screenshots
 ## Local game against AI
