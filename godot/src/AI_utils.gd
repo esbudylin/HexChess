@@ -21,14 +21,11 @@ func get_computer_colors():
 	
 	return computer_colors
 
-func get_search_depth():
-	return search_depth.value
-
 func start_computer_move():
 	get_parent().clickable = false
 	computer_move_thread = Thread.new()
 	status.text = 'Opponent is thinking'
-	computer_move_thread.start(self, "_make_computer_move", get_search_depth())
+	computer_move_thread.start(self, "_make_computer_move", search_depth.value)
 
 func _make_computer_move(depth):
 	var new_move = get_parent().Board.make_computer_move(depth)
