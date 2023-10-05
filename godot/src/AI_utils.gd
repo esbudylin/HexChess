@@ -40,12 +40,13 @@ func _computer_move_done(new_move):
 	if new_move:
 		get_parent().update_game(new_move[0], new_move[1], new_move[2])
 	
-	if get_parent().current_color in get_computer_colors() \
-	and not get_parent().Board.check_for_game_over():
-		start_computer_move()
-	else:
-		status.text = 'Opponent is ready'
-		get_parent().clickable = true
+		if get_parent().current_color in get_computer_colors() \
+		and not get_parent().Board.check_for_game_over():
+			start_computer_move()
+
+		else:
+			status.text = 'Opponent is ready'
+			get_parent().clickable = true
 
 func _color_update():
 	var tilemap = get_parent().tilemap
