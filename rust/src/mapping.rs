@@ -270,6 +270,9 @@ fn map_tile_pairs_to_directions() -> HashMap<((i32, i32), (i32, i32)), Line> {
                 let line = draw_line(&tile_map.mapping, *dir, *tile, None);
 
                 for (distance, new_tile) in line.iter().enumerate() {
+                    if distance == 0 {
+                        continue;
+                    }
                     res.insert(
                         (*tile, *new_tile),
                         Line {
