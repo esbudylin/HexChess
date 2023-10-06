@@ -39,11 +39,11 @@ func mirror_tile(tile):
 	else:
 		return Vector2(tile[0], -tile[1])
 
-func world_to_board(position):
+func world_to_map(position):
 	if reverse:
-		return mirror_tile(world_to_map(position))
+		return mirror_tile(.world_to_map(position))
 	else:
-		return world_to_map(position)
+		return .world_to_map(position)
 
 func set_cells(set_tiles, tile_number):
 	for tile in set_tiles:

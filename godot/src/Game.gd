@@ -73,7 +73,7 @@ func prepare_game():
 func _unhandled_input(event):
 	if event is InputEventMouseButton:
 		if event.pressed and clickable and current_color in player_colors:
-			var clicked_cell = tilemap.world_to_board(get_global_mouse_position())
+			var clicked_cell = tilemap.world_to_map(get_global_mouse_position())
 			
 			if clicked_cell in range_of_movement:
 				range_of_movement = []
