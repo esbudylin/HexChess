@@ -386,6 +386,7 @@ pub fn find_king_threats(
                         if variant.pawn_movement == pawn_map
                             && line.len == 1
                             && pawn_direction(swap_color(color)) == line.dir.1 .1
+                            && line.dir.1 .0 != Hor::None
                         {
                             Some(line.tiles.clone())
                         } else {
