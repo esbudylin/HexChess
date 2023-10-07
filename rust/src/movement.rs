@@ -69,7 +69,7 @@ impl Variant {
         let mut result = HashSet::new();
 
         match chessman.ctype {
-            ChessmanType::Knight => return self.knight_movement(position, active_color, tile),
+            ChessmanType::Knight => return knight_movement(position, active_color, tile),
             ChessmanType::Pawn => {
                 return self.pawn_movement(position, chessman.color, tile, en_passant_check)
             }
@@ -110,27 +110,6 @@ impl Variant {
                 result
             }
         }
-    }
-
-    fn knight_movement(
-        &self,
-        position: &Position,
-        color: Color,
-        tile: (i32, i32),
-    ) -> HashSet<(i32, i32)> {
-        DIRECTIONS
-            .knight
-            .get(&tile)
-            .unwrap()
-            .iter()
-            .filter(
-                |tile| match check_tile_for_chessman(position, color, tile).0 {
-                    TileCheck::None | TileCheck::DifColor => true,
-                    TileCheck::SameColor => false,
-                },
-            )
-            .map(|t| *t)
-            .collect()
     }
 
     fn pawn_movement(
@@ -225,6 +204,22 @@ impl Variant {
             })
             .collect()
     }
+}
+
+fn knight_movement(position: &Position, color: Color, tile: (i32, i32)) -> HashSet<(i32, i32)> {
+    DIRECTIONS
+        .knight
+        .get(&tile)
+        .unwrap()
+        .iter()
+        .filter(
+            |tile| match check_tile_for_chessman(position, color, tile).0 {
+                TileCheck::None | TileCheck::DifColor => true,
+                TileCheck::SameColor => false,
+            },
+        )
+        .map(|t| *t)
+        .collect()
 }
 
 pub fn pawn_direction(color: Color) -> Ver {
