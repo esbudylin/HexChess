@@ -20,7 +20,8 @@ var current_color
 onready var Board = $ChessEngine
 onready var tilemap = $TileMap
 
-onready var chess_type = get_node('/root/PlayersData').chess_type
+onready var config_node = get_node('/root/Config')
+onready var chess_type = config_node.chess_type
 
 func _ready():
 	var game_type_node
@@ -51,14 +52,14 @@ func _ready():
 func handle_player_colors():
 	if is_multiplayer:
 		if is_server:
-			self.player_colors = [get_node('/root/PlayersData').master_color]
+			self.player_colors = [config_node.master_color]
 		else:
-			self.player_colors = [get_node('/root/PlayersData').puppet_color]
+			self.player_colors = [config_node.puppet_color]
 	else:	
 		self.player_colors = ['white', 'black']
 
 func prepare_game():
-	Board.set_board(chess_type, get_node('/root/PlayersData').get_chessmen_values())
+	Board.set_board(chess_type, config_node.get_chessmen_values())
 	
 	tilemap.tile_colors = Board.get_tile_colors()
 	

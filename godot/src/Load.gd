@@ -28,7 +28,7 @@ func load_game(save_path):
 	
 	var board = board_scr.new()
 	
-	board.set_board(Game.chess_type, get_node('/root/PlayersData').get_chessmen_values())
+	board.set_board(Game.chess_type, get_node('/root/Config').get_chessmen_values())
 	
 	if load_turns(loaded_game.movesData, board):
 		swap_boards(board)
