@@ -393,6 +393,14 @@ pub fn find_king_threats(
                     | (ChessmanType::Bishop, MapId::Bishop)
                     | (ChessmanType::Rook, MapId::Adjacent) => Some(line.tiles.clone()),
 
+                    (ChessmanType::King, _) => {
+                        if line.len == 1 {
+                            Some(line.tiles.clone())
+                        } else {
+                            None
+                        }
+                    }
+
                     _ => None,
                 }
             };
