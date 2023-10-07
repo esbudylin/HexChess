@@ -28,7 +28,7 @@ func load_game(save_path):
 	
 	var board = board_scr.new()
 	
-	board.set_board(Game.chess_type)
+	board.set_board(Game.chess_type, get_node('/root/PlayersData').get_chessmen_values())
 	
 	if load_turns(loaded_game.movesData, board):
 		swap_boards(board)
@@ -91,9 +91,7 @@ func set_notation(game_notation):
 func swap_boards(board):
 	var old_board = Game.Board
 	old_board.queue_free()
-	
-	board.set_negamax($'../Singleplayer'.chessmen_values)
-	
+		
 	Game.add_child(board)
 	Game.Board = board
 	Game.promotion_tiles = board.get_promotion_tiles()

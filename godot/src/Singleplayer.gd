@@ -2,8 +2,6 @@ extends Node
 
 onready var gs = $"../Game"
 
-onready var chessmen_values = get_node('/root/PlayersData').get_chessmen_values()
-
 func prepare_game():
 	$'../Game/HUD/BackPanel'.visible = true
 	$'../Game/HUD/RewindBox'.visible = true
@@ -15,7 +13,6 @@ func prepare_game():
 	$'../Game/HUD/RewindBox/Redo'.connect('pressed', self, '_on_Rewind_pressed', [1])
 	
 	gs.prepare_game()
-	gs.Board.set_negamax(chessmen_values)
 
 func _on_TryAgain_pressed():
 # warning-ignore:return_value_discarded	

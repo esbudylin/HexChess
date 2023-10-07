@@ -4,9 +4,9 @@ use itertools::Itertools;
 use slab_tree::NodeId;
 
 use crate::{
-    basics::{ChessmanType, Color, GameOver, Move},
+    basics::{ChessmanType, GameOver, Move},
     board::Board,
-    turn::{MoveMetadata, Position, Turn},
+    turn::{MoveMetadata, Turn},
 };
 
 enum SearchDir {
@@ -89,20 +89,8 @@ impl SearchState {
     }
 }
 
-pub struct Search {
-    chessman_values: HashMap<ChessmanType, i32>,
-    possible_moves: HashMap<NodeId, Vec<(Option<NodeId>, Move)>>,
-}
-
-impl Search {
-    pub fn new(chessman_values: HashMap<ChessmanType, i32>) -> Self {
-        Self {
-            chessman_values,
-            possible_moves: HashMap::new(),
-        }
-    }
-
-    pub fn search(&mut self, board: &mut Board, target_depth: usize, root: NodeId) -> NodeId {
+impl Board {
+    pub fn search(&mut self, target_depth: usize, root: NodeId) -> NodeId {
         // the function is roughly based on the Non Recursive Negamax implementation from the pythonic EasyAI library;
         // see: https://github.com/Zulko/easyAI/blob/master/easyAI/AI/NonRecursiveNegamax.py
 
@@ -119,7 +107,7 @@ impl Search {
         loop {
             match dir {
                 SearchDir::Down => {
-                    let game_over = board.check_for_game_over(cur_turn_id);
+                    let game_over = self.check_for_game_over(cur_turn_id);
 
                     depth += 1;
 
@@ -130,7 +118,7 @@ impl Search {
                             .possible_moves
                             .entry(cur_turn_id)
                             .or_insert(transform_possible_moves(
-                                board.turn_history.get(cur_turn_id).unwrap().data(),
+                                self.turn_history.get(cur_turn_id).unwrap().data(),
                                 &self.chessman_values,
                             ))
                             .len()
@@ -138,22 +126,18 @@ impl Search {
 
                         states[depth] = SearchState::new(parent, moves);
 
-                        cur_turn_id = self.make_move(board, &mut states[depth], cur_turn_id);
+                        cur_turn_id = self.make_move(&mut states[depth], cur_turn_id);
                     } else {
                         let parent = states.get_mut(depth - 1).unwrap();
 
-                        let turn = board.turn_history.get(cur_turn_id).unwrap().data();
+                        let turn = self.turn_history.get(cur_turn_id).unwrap().data();
 
-                        let score = -match game_over {
+                        let score = match game_over {
                             Some(game_over) => match game_over {
                                 GameOver::Checkmate => -EVAL_MAX,
                                 GameOver::Draw | GameOver::Stalemate => 0,
                             },
-                            None => self.eval_position(
-                                &turn.chessmen_placement,
-                                turn.color,
-                                turn.possible_moves.len(),
-                            ),
+                            None => turn.position_eval * 10 + turn.possible_moves.len() as i32,
                         };
 
                         if parent.should_update_score(score, depth) {
@@ -174,7 +158,7 @@ impl Search {
 
                     let state = &mut right[0];
 
-                    cur_turn_id = board
+                    cur_turn_id = self
                         .turn_history
                         .get(cur_turn_id)
                         .unwrap()
@@ -201,7 +185,7 @@ impl Search {
 
                         dir = SearchDir::Up;
                     } else {
-                        cur_turn_id = self.make_move(board, state, cur_turn_id);
+                        cur_turn_id = self.make_move(state, cur_turn_id);
 
                         dir = SearchDir::Down;
                     }
@@ -212,18 +196,13 @@ impl Search {
         states[1].best_move.unwrap()
     }
 
-    fn make_move(
-        &mut self,
-        board: &mut Board,
-        state: &mut SearchState,
-        parent_id: NodeId,
-    ) -> NodeId {
+    fn make_move(&mut self, state: &mut SearchState, parent_id: NodeId) -> NodeId {
         let (node, movement) = self.possible_moves[&parent_id][state.cur_move];
 
         let new_node = match node {
             Some(node) => node,
             None => {
-                let new_node = board.add_turn_to_history(movement, parent_id);
+                let new_node = self.add_turn_to_history(movement, parent_id);
 
                 self.possible_moves
                     .get_mut(&parent_id)
@@ -239,13 +218,6 @@ impl Search {
         state.cur_move += 1;
 
         new_node
-    }
-
-    fn eval_position(&self, position: &Position, color: Color, mobility: usize) -> i32 {
-        position.iter().fold(0, |acc, (_, el)| {
-            acc + self.chessman_values[&el.ctype] * el.color as i32 * 10
-        }) * color as i32
-            + 1 * mobility as i32
     }
 }
 

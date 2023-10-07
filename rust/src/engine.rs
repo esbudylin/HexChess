@@ -12,7 +12,7 @@ use crate::mapping::NOTATION_MAP;
 use crate::mapping::TILE_COLORS;
 use crate::movement::check_tile_for_chessman;
 use crate::movement::TileCheck;
-use crate::{basics::ChessmanType, board::Board, search::Search, turn::Turn, variant::VariantName};
+use crate::{basics::ChessmanType, board::Board, turn::Turn, variant::VariantName};
 
 lazy_static! {
     static ref TILES_BY_COLOR: HashMap<i32, Vec<Vector2>> = tiles_by_color();
@@ -25,7 +25,6 @@ lazy_static! {
 pub struct ChessEngine {
     board: Option<Board>,
     turn_seq: Vec<NodeId>,
-    chess_ai: Option<Search>,
 
     current_turn_index: usize,
 }
@@ -55,7 +54,6 @@ impl ChessEngine {
             board: None,
             turn_seq: vec![],
             current_turn_index: 0,
-            chess_ai: None,
         }
     }
 }
@@ -63,21 +61,17 @@ impl ChessEngine {
 #[methods]
 impl ChessEngine {
     #[method]
-    fn set_board(&mut self, variant: String) {
-        self.board = Some(Board::new(VariantName::from_str(&variant).unwrap()));
-
-        self.turn_seq = vec![self.board.as_ref().unwrap().turn_history.root_id().unwrap()];
-        self.current_turn_index = 0;
-    }
-
-    #[method]
-    fn set_negamax(&mut self, chessman_values: HashMap<String, i32>) {
-        self.chess_ai = Some(Search::new(
+    fn set_board(&mut self, variant: String, chessman_values: HashMap<String, i32>) {
+        self.board = Some(Board::new(
+            VariantName::from_str(&variant).unwrap(),
             chessman_values
                 .iter()
                 .map(|(c, value)| (ChessmanType::from_str(c).unwrap(), *value))
                 .collect(),
         ));
+
+        self.turn_seq = vec![self.board.as_ref().unwrap().turn_history.root_id().unwrap()];
+        self.current_turn_index = 0;
     }
 
     #[method]
@@ -169,8 +163,7 @@ impl ChessEngine {
     fn make_computer_move(&mut self, target_depth: f64) -> (Vector2, Option<String>, Variant) {
         let cur_node = self.get_node(self.current_turn_index);
 
-        let new_node = self.chess_ai.as_mut().unwrap().search(
-            &mut self.board.as_mut().unwrap(),
+        let new_node = self.board.as_mut().unwrap().search(
             target_depth as usize,
             cur_node,
         );
@@ -267,7 +260,7 @@ impl ChessEngine {
 
     #[method]
     fn is_captured(&self) -> bool {
-        self.get_current_turn().capture.is_some()
+        self.get_current_turn().capture
     }
 
     #[method]

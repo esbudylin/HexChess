@@ -44,7 +44,8 @@ pub struct Turn {
 
     pub king_coords: HashMap<Color, (i32, i32)>,
     pub king_threats: Vec<HashSet<(i32, i32)>>,
-    pub capture: Option<(i32, i32)>,
+    pub capture: bool,
+    pub position_eval: i32,
     pub able_to_checkmate: bool,
 
     pub movement: Option<Move>,
@@ -56,6 +57,7 @@ impl Turn {
         variant: &Variant,
         prev_turn: &Turn,
         (old_position, new_position, promotion): Move,
+        chessman_values: &HashMap<ChessmanType, i32>,
     ) -> Turn {
         let mut king_coords = prev_turn.king_coords.clone();
         let mut new_placement = prev_turn.chessmen_placement.clone();
@@ -70,11 +72,8 @@ impl Turn {
             None => *chessman,
         };
 
-        let mut capture = if new_placement.insert(new_position, moved_piece).is_some() {
-            Some(new_position)
-        } else {
-            None
-        };
+        let mut captured_chessman = new_placement.insert(new_position, moved_piece);
+
         new_placement.remove(&old_position);
 
         let mut en_passant = None;
@@ -86,8 +85,7 @@ impl Turn {
             ChessmanType::Pawn => {
                 if let Some(ep) = prev_turn.en_passant {
                     if ep.target_tile == new_position {
-                        new_placement.remove(&ep.target_piece_coords);
-                        capture = Some(ep.target_piece_coords);
+                        captured_chessman = new_placement.remove(&ep.target_piece_coords);
                     }
                 }
                 en_passant = check_for_en_passant(prev_turn.color, old_position, new_position);
@@ -101,7 +99,7 @@ impl Turn {
 
         let mut new_turn = Turn {
             movement: Some((old_position, new_position, promotion)),
-            fifty_move_counter: if !(capture.is_some() || is_pawn) {
+            fifty_move_counter: if !(captured_chessman.is_some() || is_pawn) {
                 prev_turn.fifty_move_counter + 1
             } else {
                 0
@@ -112,7 +110,14 @@ impl Turn {
             color,
             en_passant,
             king_coords,
-            capture,
+
+            capture: captured_chessman.is_some(),
+            position_eval: -prev_turn.position_eval
+                + if let Some(cp) = captured_chessman {
+                    chessman_values[&cp.ctype]
+                } else {
+                    0
+                },
 
             chessmen_placement: new_placement,
             possible_moves: vec![],
@@ -132,7 +137,8 @@ impl Turn {
             color: Color::White,
             fifty_move_counter: 0,
 
-            capture: None,
+            capture: false,
+            position_eval: 0,
             able_to_checkmate: true,
             movement: None,
 

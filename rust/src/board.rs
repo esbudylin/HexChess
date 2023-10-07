@@ -1,9 +1,11 @@
+use std::collections::HashMap;
+
 use slab_tree::{NodeId, Tree, TreeBuilder};
 use turn::Turn;
 use variant::Variant;
 
 use crate::{
-    basics::{Color, GameOver, Move},
+    basics::{ChessmanType, Color, GameOver, Move},
     turn::{self},
     variant::{self, VariantName},
 };
@@ -11,10 +13,12 @@ use crate::{
 pub struct Board {
     pub variant: Variant,
     pub turn_history: Tree<Turn>,
+    pub chessman_values: HashMap<ChessmanType, i32>,
+    pub possible_moves: HashMap<NodeId, Vec<(Option<NodeId>, Move)>>,
 }
 
 impl Board {
-    pub fn new(name: VariantName) -> Board {
+    pub fn new(name: VariantName, chessman_values: HashMap<ChessmanType, i32>) -> Board {
         let variant = Variant::new(name);
         let prototurn = Turn::prototurn(variant.initial_position.clone(), &variant);
         let turn_history = TreeBuilder::new().with_root(prototurn).build();
@@ -22,12 +26,19 @@ impl Board {
         Self {
             turn_history,
             variant,
+            chessman_values,
+            possible_moves: HashMap::new()
         }
     }
 
     pub fn add_turn_to_history(&mut self, movement: Move, parent_id: NodeId) -> NodeId {
         let prev_turn = self.turn_history.get(parent_id).unwrap().data();
-        let new_turn = Turn::new(&self.variant, prev_turn, movement);
+        let new_turn = Turn::new(
+            &self.variant,
+            prev_turn,
+            movement,
+            &self.chessman_values,
+        );
 
         self.turn_history
             .get_mut(parent_id)

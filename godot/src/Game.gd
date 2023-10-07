@@ -58,7 +58,7 @@ func handle_player_colors():
 		self.player_colors = ['white', 'black']
 
 func prepare_game():
-	Board.set_board(chess_type)
+	Board.set_board(chess_type, get_node('/root/PlayersData').get_chessmen_values())
 	
 	tilemap.tile_colors = Board.get_tile_colors()
 	
