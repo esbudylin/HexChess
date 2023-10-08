@@ -148,16 +148,15 @@ impl Variant {
 
         let directions = vec![(Hor::Left, ver), (Hor::Right, ver)];
 
-        let mapping = if self.name == VariantName::Glinski {
-            &DIRECTIONS.adjacent.mapping
-        } else {
-            &DIRECTIONS.bishop.mapping
+        let mapping = match self.pawn_movement {
+            MapId::Adjacent => &DIRECTIONS.adjacent.mapping,
+            MapId::Bishop => &DIRECTIONS.bishop.mapping,
         };
 
         directions
             .iter()
             .filter_map(|dir| {
-                if let Some(tile) = mapping.get(&tile).unwrap().get(&dir) {
+                if let Some(tile) = mapping.get(&tile).unwrap().get(dir) {
                     Some(*tile)
                 } else {
                     None
@@ -174,13 +173,13 @@ impl Variant {
         en_passant_check: Option<EnPassantTile>,
     ) -> HashSet<(i32, i32)> {
         self.pawn_threat(color, tile)
-            .iter()
+            .into_iter()
             .filter_map(|new_pos| {
                 if check_tile_for_chessman(position, color, &new_pos).0 == TileCheck::DifColor
                     || en_passant_check.is_some()
-                        && en_passant_check.unwrap().target_tile == *new_pos
+                        && en_passant_check.unwrap().target_tile == new_pos
                 {
-                    Some(*new_pos)
+                    Some(new_pos)
                 } else {
                     None
                 }
