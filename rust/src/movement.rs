@@ -3,11 +3,11 @@ use std::collections::HashSet;
 use itertools::Itertools;
 
 use crate::{
-    basics::{Chessman, ChessmanType, Color},
+    basics::{Chessman, ChessmanType, Color, Position},
     board::swap_color,
     mapping::{Direction, Hor, MapId, Ver, DIRECTIONS, TILE_PAIRS_TO_DIRS},
-    turn::{EnPassantTile, Position, Turn},
-    variant::{Variant, VariantName},
+    turn::{EnPassantTile, Turn},
+    variant::Variant,
 };
 
 #[derive(PartialEq)]

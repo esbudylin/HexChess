@@ -7,7 +7,7 @@ use strum::IntoEnumIterator;
 
 use crate::basics::GameOver;
 use crate::{
-    basics::{Chessman, ChessmanType, Color, Move},
+    basics::{Chessman, ChessmanType, Color, Move, Position},
     board::swap_color,
     mapping::{draw_line, Hor, DIRECTIONS, TILE_COLORS},
     movement::{find_king_threats, pawn_direction},
@@ -21,8 +21,6 @@ lazy_static! {
         .filter(|ctype| ctype != &ChessmanType::Pawn && ctype != &ChessmanType::King)
         .collect();
 }
-
-pub type Position = HashMap<(i32, i32), Chessman>;
 
 #[derive(Copy, PartialEq, Eq, Hash, Clone)]
 pub struct MoveMetadata {

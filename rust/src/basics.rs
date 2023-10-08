@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use strum_macros::{AsRefStr, EnumIter, EnumString};
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy, EnumIter, EnumString, AsRefStr)]
@@ -33,3 +35,5 @@ pub struct Chessman {
 type Promotion = Option<ChessmanType>;
 
 pub type Move = ((i32, i32), (i32, i32), Promotion);
+
+pub type Position = HashMap<(i32, i32), Chessman>;
