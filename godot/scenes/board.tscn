@@ -2,7 +2,7 @@
 
 [ext_resource path="res://src/Notation.gd" type="Script" id=1]
 [ext_resource path="res://scenes/chessmen.tscn" type="PackedScene" id=2]
-[ext_resource path="res://src/AI_utils.gd" type="Script" id=3]
+[ext_resource path="res://src/SearchUtils.gd" type="Script" id=3]
 [ext_resource path="res://icons/back.png" type="Texture" id=4]
 [ext_resource path="res://src/BoardOutput.gd" type="Script" id=5]
 [ext_resource path="res://hex_chess.gdns" type="Script" id=6]
@@ -84,7 +84,7 @@ script = ExtResource( 27 )
 [node name="Game" type="Node2D" parent="."]
 script = ExtResource( 23 )
 
-[node name="AI_utils" type="Node" parent="Game"]
+[node name="SearchUtils" type="Node" parent="Game"]
 script = ExtResource( 3 )
 
 [node name="ChessEngine" type="Node" parent="Game"]

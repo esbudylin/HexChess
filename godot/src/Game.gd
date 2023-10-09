@@ -106,8 +106,8 @@ func make_move(new_position, promotion, piece = active_piece):
 	if not is_multiplayer:
 		set_rewind_buttons()
 		
-		if current_color in $AI_utils.get_computer_colors():
-			$AI_utils.start_computer_move()
+		if current_color in $SearchUtils.get_computer_colors():
+			$SearchUtils.start_computer_move()
 	
 func update_game(new_position, promotion, piece):
 	$"../Notation".current_move = $"../Notation".Move.new(
