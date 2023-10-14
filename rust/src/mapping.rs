@@ -243,16 +243,14 @@ fn map_coords_to_notation() -> HashMap<(i32, i32), (char, i32)> {
 
     let mapping = &DIRECTIONS.adjacent.mapping;
 
-    let mut verticals = vec![];
-
-    verticals.extend(draw_line(mapping, (Hor::Right, Ver::Down), (-5, 2), None));
-    verticals.extend(draw_line(mapping, (Hor::Right, Ver::Up), (1, 4), None));
+    let verticals = draw_line(mapping, (Hor::Right, Ver::Down), (-5, 2), None)
+        .into_iter()
+        .chain(draw_line(mapping, (Hor::Right, Ver::Up), (1, 4), None));
 
     verticals
-        .iter()
         .zip(letters)
         .flat_map(|(coords, char)| {
-            draw_line(mapping, (Hor::None, Ver::Up), *coords, None)
+            draw_line(mapping, (Hor::None, Ver::Up), coords, None)
                 .iter()
                 .enumerate()
                 .map(|(i, coords)| (*coords, (char, (i as i32) + 1)))
