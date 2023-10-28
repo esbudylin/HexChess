@@ -30,7 +30,7 @@ pub struct MoveMetadata {
 
 #[derive(Clone, Copy, PartialEq)]
 pub struct EnPassantTile {
-    pub target_piece_coords: (i32, i32),
+    pub target_piece: (i32, i32),
     pub target_tile: (i32, i32),
 }
 
@@ -83,7 +83,7 @@ impl Turn {
             ChessmanType::Pawn => {
                 if let Some(ep) = prev_turn.en_passant {
                     if ep.target_tile == new_position {
-                        captured_chessman = new_placement.remove(&ep.target_piece_coords);
+                        captured_chessman = new_placement.remove(&ep.target_piece);
                     }
                 }
                 en_passant = check_for_en_passant(prev_turn.color, old_position, new_position);
@@ -234,7 +234,7 @@ fn check_for_en_passant(
 
     if double_jump.len() == 3 && new_position == *double_jump.last().unwrap() {
         en_passant_tile = Some(EnPassantTile {
-            target_piece_coords: new_position,
+            target_piece: new_position,
             target_tile: *double_jump.get(1).unwrap(),
         })
     }
