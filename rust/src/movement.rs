@@ -1,11 +1,11 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use itertools::Itertools;
 
 use crate::{
     basics::{Chessman, ChessmanType, Color, Position},
     board::swap_color,
-    mapping::{Direction, Hor, MapId, Ver, DIRECTIONS, TILE_PAIRS_TO_DIRS},
+    mapping::{Direction, Hor, Line, MapId, Ver, DIRECTIONS, TILE_PAIRS_TO_DIRS},
     turn::{EnPassantTile, Turn},
     variant::Variant,
 };
@@ -349,8 +349,6 @@ pub fn find_king_threats(
     king_coords: (i32, i32),
     color: Color,
 ) -> Vec<HashSet<(i32, i32)>> {
-    let dir_as_key = |dir: Direction| (dir.0 as i32, dir.1 .0 as i32, dir.1 .1 as i32);
-
     position
         .iter()
         .filter_map(
@@ -359,16 +357,21 @@ pub fn find_king_threats(
                 None => None,
             },
         )
-        .sorted_by_key(|(line, _)| dir_as_key(line.dir))
-        .group_by(|(line, _)| line.dir)
-        .into_iter()
-        .map(|(_, group)| {
-            group
-                .into_iter()
-                .sorted_by_key(|(line, _)| line.len)
-                .next()
-                .unwrap()
-        })
+        .fold(
+            HashMap::new(),
+            |mut acc: HashMap<&Direction, (&Line, Chessman)>, val| {
+                if let Some(entry) = acc.get_mut(&val.0.dir) {
+                    if val.0.len < (*entry).0.len {
+                        *entry = val;
+                    }
+                } else {
+                    acc.insert(&val.0.dir, val);
+                }
+
+                acc
+            },
+        )
+        .values()
         .filter_map(|(line, chessman)| {
             return if chessman.color == color {
                 None
