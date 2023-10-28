@@ -21,8 +21,6 @@ impl Variant {
     pub fn find_possible_moves(&self, turn: &Turn, origin: (i32, i32)) -> HashSet<(i32, i32)> {
         let chessman_to_move = turn.chessmen_placement.get(&origin).unwrap();
 
-        let is_king = chessman_to_move.ctype == ChessmanType::King;
-
         let basic_movement = self.basic_movement(
             &turn.chessmen_placement,
             turn.color,
@@ -33,8 +31,11 @@ impl Variant {
 
         let pin_area = find_pin_area(&turn, origin);
 
-        if !is_king {
-            match turn.king_threats.len() {
+        match chessman_to_move.ctype {
+            ChessmanType::King => {
+                return self.king_movement(turn, basic_movement);
+            }
+            _ => match turn.king_threats.len() {
                 0 => {
                     if pin_area.is_empty() {
                         return basic_movement;
@@ -52,9 +53,7 @@ impl Variant {
                     }
                 }
                 _ => return HashSet::new(),
-            }
-        } else {
-            return self.king_movement(turn, chessman_to_move, origin);
+            },
         }
     }
 
@@ -190,16 +189,15 @@ impl Variant {
     fn king_movement(
         &self,
         turn: &Turn,
-        king: &Chessman,
-        origin: (i32, i32),
+        basic_movement: HashSet<(i32, i32)>,
     ) -> HashSet<(i32, i32)> {
         let mut position_without_king = turn.chessmen_placement.clone();
-        position_without_king.remove_entry(&turn.king_coords[&king.color]);
+        position_without_king.remove_entry(&turn.king_coords[&turn.color]);
 
-        self.basic_movement(&turn.chessmen_placement, turn.color, king, origin, None)
+        basic_movement
             .into_iter()
             .filter(|tile| {
-                find_king_threats(&self, &position_without_king, *tile, king.color).len() == 0
+                find_king_threats(&self, &position_without_king, *tile, turn.color).len() == 0
             })
             .collect()
     }
