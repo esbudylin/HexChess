@@ -167,7 +167,7 @@ impl Board {
                         .node_id();
 
                     if state.cur_move >= state.available_moves || state.should_prune() {
-                        let mut parent = &mut left[depth - 1];
+                        let parent = &mut left[depth - 1];
 
                         let score = -state.best_score;
 
