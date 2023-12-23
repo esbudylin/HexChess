@@ -6,7 +6,6 @@ use strum_macros::{AsRefStr, EnumString};
 
 use crate::basics::{Chessman, ChessmanType, Color, Position};
 use crate::mapping::MapId;
-use crate::{basics::Chessman, basics::ChessmanType, basics::Color, turn::Position};
 
 #[derive(Clone, Copy, EnumString, PartialEq, AsRefStr)]
 #[strum(ascii_case_insensitive)]
