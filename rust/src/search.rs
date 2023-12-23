@@ -79,7 +79,7 @@ impl SearchState {
     }
 
     fn should_prune(&self) -> bool {
-        self.alpha < EVAL_MAX && self.alpha >= self.beta
+        self.alpha >= self.beta
     }
 
     fn update_score(&mut self, new_score: i32, new_depth: usize, new_move: NodeId) {
