@@ -2,7 +2,7 @@ extends Node
 
 const colors = ['white', 'black']
 
-const chessmen_values = {'Queen': 9, 'Rook': 5, 'Knight': 3, 
+var chessmen_values = {'Queen': 9, 'Rook': 5, 'Knight': 3, 
 						'Bishop': 4, 'Pawn': 1, 'King': 10}
 
 var master_color 
@@ -14,13 +14,13 @@ var chess_type setget , get_chess_type
 
 var config_path = "res://config.cfg"
 
-func get_chess_type():
+func get_chess_type() -> String:
 	if not chess_type: 
 		chess_type = call_config().get_value('options', 'chess_type', 'Glinski')
 	
 	return chess_type
 
-func get_chessmen_values():
+func get_chessmen_values() -> Dictionary:
 	var config = call_config()
 	var values = {}
 
@@ -29,7 +29,7 @@ func get_chessmen_values():
 	
 	return values
 
-func call_config():
+func call_config() -> ConfigFile:
 	var config = ConfigFile.new()
 	
 	var err = config.load(config_path)

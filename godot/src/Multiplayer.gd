@@ -3,9 +3,8 @@ extends Node
 var new_game_request
 
 onready var gs = $"../Game"
-onready var config_node = get_node('/root/Config')
 
-onready var peer = config_node.peer
+onready var peer = Config.peer
 
 func multiplayer_configs():
 	gs.rpc_config("game_over", 1)
@@ -98,12 +97,12 @@ func draw_offer():
 	$'../Game/HUD/Announcement/Announcement'.text = 'a draw offered'
 
 func swap_colors():
-	if config_node.master_color == 'white':
-		config_node.master_color = 'black'
-		config_node.puppet_color = 'white'
+	if Config.master_color == 'white':
+		Config.master_color = 'black'
+		Config.puppet_color = 'white'
 	else:
-		config_node.master_color = 'white'
-		config_node.puppet_color = 'black'
+		Config.master_color = 'white'
+		Config.puppet_color = 'black'
 
 func reload_scene():
 	swap_colors()

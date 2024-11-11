@@ -14,8 +14,6 @@ onready var text_panel = $TextPanel
 onready var host_button = $VBoxContainer/Host
 onready var join_button = $VBoxContainer/Join
 
-onready var config_node = get_node('/root/Config')
-
 var peer = null
 var color_index
 
@@ -41,22 +39,22 @@ func generate_color_index():
 		
 func set_colors(color_index_local):
 	if color_index_local == 0:
-		config_node.master_color = 'white'
-		config_node.puppet_color = 'black'
+		Config.master_color = 'white'
+		Config.puppet_color = 'black'
 	else:
-		config_node.master_color = 'black'
-		config_node.puppet_color = 'white'
+		Config.master_color = 'black'
+		Config.puppet_color = 'white'
 	
 	if get_tree().is_network_server():
 		set_chess_types()
 
 func set_chess_types(chess_type = null):
 	if chess_type == null:
-		chess_type = config_node.chess_type
+		chess_type = Config.chess_type
 		rpc('set_chess_types', chess_type)
 		
 	else:
-		config_node.chess_type = chess_type
+		Config.chess_type = chess_type
 	
 # warning-ignore:return_value_discarded
 	get_tree().change_scene("res://scenes/board.tscn")
@@ -86,7 +84,7 @@ func _on_Host_pressed():
 	port_forward_label.visible = true
 	
 	peer = NetworkedMultiplayerENet.new()
-	config_node.peer = peer
+	Config.peer = peer
 	
 	var err = peer.create_server(DEFAULT_PORT, 1)
 	if err != OK:
@@ -107,7 +105,7 @@ func _on_OkButton_pressed():
 		return
 
 	peer = NetworkedMultiplayerENet.new()
-	config_node.peer = peer
+	Config.peer = peer
 	
 	peer.create_client(ip, DEFAULT_PORT)
 	get_tree().set_network_peer(peer)
