@@ -1,7 +1,6 @@
 extends Control
 
-onready var config_node = get_node('/root/Config')
-onready var config = config_node.call_config()
+onready var config = Config.call_config()
 
 func _ready():
 	$Menu/VBoxContainer/Local.grab_focus()
@@ -17,7 +16,7 @@ func _on_Options_pressed():
 	$Options.visible = true
 	$Options/VBoxContainer/HBoxContainer/Glinski.grab_focus()
 	
-	var chess_type = config_node.chess_type
+	var chess_type = Config.chess_type
 	
 	for checkbox in get_tree().get_nodes_in_group('chess_types'):
 		if checkbox.name == chess_type:
@@ -33,6 +32,6 @@ func _on_BackPanel_pressed():
 	for checkbox in get_tree().get_nodes_in_group('chess_types'):
 		if checkbox.pressed:
 			config.set_value('options', 'chess_type', checkbox.name)
+			Config.chess_type = checkbox.name
+			config.save(Config.config_path)
 			break
-	
-	config.save("res://config.cfg")
